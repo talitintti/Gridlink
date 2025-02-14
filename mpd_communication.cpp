@@ -29,8 +29,8 @@ MPDCommunication::~MPDCommunication() {
     mpd_connection_free(conn);
 }
 
-QVector<QString> MPDCommunication::GetArtists(QString artist_type) {
-    QVector<QString> found_artists;
+QList<QString> MPDCommunication::GetArtists(QString artist_type) {
+    QList<QString> found_artists;
     const char* artist_type_c = artist_type.toStdString().c_str();
     enum mpd_tag_type mpd_tag_type_artist = mpd_tag_name_iparse(artist_type_c);
 
@@ -58,8 +58,8 @@ print_tag(const struct mpd_song *song, enum mpd_tag_type type,
 
 
 
-QVector<QString> MPDCommunication::GetAlbumsOfAnArtist(QString artist_name) {
-    QVector<QString> found_albums;
+QList<QString> MPDCommunication::GetAlbumsOfAnArtist(QString artist_name) {
+    QList<QString> found_albums;
     const char *tag_name = "AlbumArtist";
     enum mpd_tag_type artist_type = mpd_tag_name_iparse(tag_name);
     const char* artist_name_c = artist_name.toStdString().c_str();

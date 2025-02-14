@@ -14,6 +14,10 @@ bool DataHandler::Initialize() {
     return true;
 }
 
+QList<QString> DataHandler::GetArtistNames() {
+    return mpd_communicator.GetArtists(QString("AlbumArtist")); // maybe config file decides artist_type
+}
+
 
 
 

@@ -2,7 +2,7 @@
 #define MPD_COMMUNICATION_H
 
 #include <QString>
-#include <QVector>
+#include <QList>
 
 #include <mpd/client.h>
 
@@ -16,8 +16,8 @@ public:
     // Return false if no success
     bool Initialize();
 
-    QVector<QString> GetArtists(QString artist_type);
-    QVector<QString> GetAlbumsOfAnArtist(QString artist_name);
+    QList<QString> GetArtists(QString artist_type);
+    QList<QString> GetAlbumsOfAnArtist(QString artist_name);
 private:
     struct mpd_connection* conn;
 };

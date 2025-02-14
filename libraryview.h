@@ -14,7 +14,7 @@ class LibraryView : public QWidget
 
 public:
     explicit LibraryView(QWidget *parent = nullptr);
-    void show_data(const QVector<QString> &data);
+    void show_data(const QList<QString> &data);
     ~LibraryView();
 
 private:

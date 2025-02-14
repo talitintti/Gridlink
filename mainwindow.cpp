@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    datahandler.Initialize();
 
     SearchView *search_view = new SearchView(this);
     library_view = new LibraryView(this);
@@ -70,7 +71,7 @@ void MainWindow::onStackedWidgetCurrentChanged(int current) {
     case 0: // currently the libraryview (should be home view)
         break;
     case 1: // currently the libraryview
-        library_view->show_data(mpd_communicator->GetArtists(QString("AlbumArtist")));
+        library_view->show_data(datahandler.GetArtistNames());
         break;
     case 2: // currently the searchview
         break;

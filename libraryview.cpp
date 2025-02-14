@@ -14,7 +14,7 @@ LibraryView::~LibraryView()
     delete ui;
 }
 
-void LibraryView::show_data(const QVector<QString> &data) {
+void LibraryView::show_data(const QList<QString> &data) {
     for (QString item : data) {
         ui->listWidget->addItem(item);
     }

@@ -18,11 +18,9 @@ public:
 
 private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
-
-
     Config ReadConfigFile();
-    MPDCommunication mpd_communicator = MPDCommunication();
 
+    MPDCommunication mpd_communicator = MPDCommunication();
     Config config;
 
 };
