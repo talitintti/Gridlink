@@ -44,6 +44,7 @@ else()
             artistview.h artistview.cpp artistview.ui
             albumview.h albumview.cpp albumview.ui
             datahandler.h datahandler.cpp
+            config.h config.cpp
 
 
 
