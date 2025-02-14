@@ -11,10 +11,13 @@
 class Config {
 public:
     Config(int mpd_port) : mpd_port(mpd_port) {}
+    Config(){
+        mpd_port = 6600;
+    }
 
     // Method to load config from JSON
     bool LoadFromJson(const QString &filePath);
-
+    QString GetAsJsonString() const;
 private:
     int mpd_port;
 };

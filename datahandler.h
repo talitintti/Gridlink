@@ -13,13 +13,17 @@ public:
 
     // Returns an empty string on success
     // Return error msg on failure
-    QString Initialize();
+    bool Initialize();
     QList<QString> GetArtistNames();
 
 private:
-    QString CreateConfigFile(const QFile &configFile);
+    bool WriteConfigFile(QFile &configFile, const Config &config);
+
+
     Config ReadConfigFile();
     MPDCommunication mpd_communicator = MPDCommunication();
+
+    Config config;
 
 };
 

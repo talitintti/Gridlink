@@ -27,3 +27,15 @@ bool Config::LoadFromJson(const QString &filePath) {
 
     return true;
 }
+
+QString Config::GetAsJsonString() const {
+    QJsonObject configObject;
+    QJsonObject mpdObj;
+
+    mpdObj["port"] = mpd_port;
+    configObject["mpd"] = mpdObj;
+
+    QJsonDocument jsonDoc(configObject);
+
+    return jsonDoc.toJson(QJsonDocument::Indented);
+}

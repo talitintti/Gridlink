@@ -1,54 +1,76 @@
 #include "datahandler.h"
 #include <QStandardPaths>
 #include <QFile>
+#include <QDir>
 
 
 DataHandler::DataHandler() {}
 DataHandler::~DataHandler() {
 }
 
-QString DataHandler::Initialize() {
-    QString error_msg = QString();
-    // create config file
-    // read config file
-    // provide members with necessary values from config file
+bool DataHandler::Initialize() {
+    config = ReadConfigFile();
 
-    ReadConfigFile();
-    if (!error_msg.isEmpty()) {
-        return error_msg;
-    }
-
-
-    return error_msg;
+    return true;
 }
+
 
 
 
 Config DataHandler::ReadConfigFile() {
-    QString error_msg = QString();
 
+    // Figuring out where to config file should go
     QString configFolderPath = QStandardPaths::writableLocation(
         QStandardPaths::ConfigLocation
         );
 
+    // If XDG_DEFAULT_HOME is not set
     if (configFolderPath.isEmpty()) {
+        qWarning() << "Defeault config path is not set\n";
+        //TODO: signal slot error here
     }
 
     QString configFilePath = configFolderPath + "/Gridlink/config.yaml";
     QFile configFile(configFilePath);
+
     if (!configFile.exists()) {
-        CreateConfigFile(configFile);
-    }
-    else {
-        ReadConfigFile();
+        Config default_config = Config();
+        WriteConfigFile(configFile, default_config);
+        return default_config;
     }
 
-    return
+    // The config actually exists
+    Config config = Config();
+    config.LoadFromJson(configFilePath);
 
+    return config;
 }
 
 
 
-QString DataHandler::CreateConfigFile(QFile configFile) {
+bool DataHandler::WriteConfigFile(QFile &configFile, const Config &config) {
+    QDir dir = QFileInfo(configFile).dir();
 
+    // Check if the directory exists, and create it if it doesn't
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) {  // mkpath creates the directory and any necessary parent directories
+            qWarning() << "Failed to create directories for" << dir.absolutePath();
+            return false;
+        }
+    }
+
+    // Now that the directory exists, create the file
+    if (!configFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Could not create the file:" << configFile.errorString();
+        return false;
+    }
+
+    QString json(config.GetAsJsonString());
+    QTextStream out(&configFile);
+    out << json;
+    configFile.close();
+
+    qDebug() << "File created successfully at" << dir.absolutePath();
+
+    return true;
 }
