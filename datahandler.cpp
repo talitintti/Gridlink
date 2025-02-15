@@ -11,6 +11,10 @@ DataHandler::~DataHandler() {
 bool DataHandler::Initialize() {
     config = ReadConfigFile();
 
+    if (!mpd_communicator.Initialize()) {
+        return false;
+    }
+
     return true;
 }
 
