@@ -31,6 +31,8 @@ private:
     void Init_upper_toolbar(Ui::MainWindow *ui);
     void stick_and_tape();
 
+    void LoadStyleSheet(const QString &filePath);
+
     DataHandler datahandler = DataHandler();
 
     LibraryView *library_view;

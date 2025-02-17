@@ -12,6 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     datahandler.Initialize();
 
+    //QString appDir = "Gridlink//Gridlink/Styles/fourth.qss";
+    //LoadStyleSheet(appDir);
+
     SearchView *search_view = new SearchView(this);
     library_view = new LibraryView(this);
     QListWidget *home = new QListWidget();
@@ -84,14 +87,14 @@ void MainWindow::Init_upper_toolbar(Ui::MainWindow *ui) {
 
 void MainWindow::Init_lower_toolbar(Ui::MainWindow *ui) {
     int circ = 24;
-    ui->pushButton_last_song->setFixedHeight(circ);
-    ui->pushButton_last_song->setFixedWidth(circ);
+    //ui->pushButton_last_song->setFixedHeight(circ);
+    //ui->pushButton_last_song->setFixedWidth(circ);
 
-    ui->pushButton_next_song->setFixedHeight(circ);
-    ui->pushButton_next_song->setFixedWidth(circ);
+    //ui->pushButton_next_song->setFixedHeight(circ);
+    //ui->pushButton_next_song->setFixedWidth(circ);
 
-    ui->pushButton_pause->setFixedHeight(circ+4);
-    ui->pushButton_pause->setFixedWidth(circ+4);
+    //ui->pushButton_pause->setFixedHeight(circ+4);
+    //ui->pushButton_pause->setFixedWidth(circ+4);
 
    // QRect rect(0,0,circ-6,circ-6);
    // QRegion region(rect, QRegion::Ellipse);
@@ -122,3 +125,13 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
 }
 
 
+void MainWindow::LoadStyleSheet(const QString &filePath) {
+    QFile file(filePath);
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream stream(&file);
+        QString styleSheet = stream.readAll();
+        qDebug() << styleSheet;
+        this->setStyleSheet(styleSheet);
+        QApplication::setStyle(styleSheet);
+    }
+}

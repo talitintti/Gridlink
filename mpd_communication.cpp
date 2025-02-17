@@ -5,6 +5,7 @@ MPDCommunication::MPDCommunication() {
 }
 
 
+//TODO: set port as parameter to be loaded from config
 bool MPDCommunication::Initialize() {
     conn = mpd_connection_new("127.0.0.1", 6800, 0);
 
@@ -31,6 +32,7 @@ MPDCommunication::~MPDCommunication() {
 
 QList<QString> MPDCommunication::GetArtists(QString artist_type) {
     QList<QString> found_artists;
+
     const char* artist_type_c = artist_type.toStdString().c_str();
     enum mpd_tag_type mpd_tag_type_artist = mpd_tag_name_iparse(artist_type_c);
 
