@@ -15,6 +15,7 @@ public:
     // Return error msg on failure
     bool Initialize();
     QList<QString> GetArtistNames();
+    QList<QString> GetAlbumsForArtist(const QString &artist_name);
 
 private:
     bool WriteConfigFile(QFile &configFile, const Config &config);

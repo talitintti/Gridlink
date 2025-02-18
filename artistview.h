@@ -11,9 +11,13 @@ class ArtistView : public QWidget
 {
     Q_OBJECT
 
+
+
 public:
     explicit ArtistView(QWidget *parent = nullptr);
     ~ArtistView();
+
+    void show_data(const QList<QString> &data);
 
 private:
     Ui::ArtistView *ui;

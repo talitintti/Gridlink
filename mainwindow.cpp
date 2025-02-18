@@ -2,7 +2,9 @@
 #include "./ui_mainwindow.h"
 #include <QDebug>
 #include "searchview.h"
+#include "artistview.h"
 #include <QListWidget>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,14 +18,21 @@ MainWindow::MainWindow(QWidget *parent)
     //LoadStyleSheet(appDir);
 
     SearchView *search_view = new SearchView(this);
-    library_view = new LibraryView(this);
     QListWidget *home = new QListWidget();
+    library_view = new LibraryView(this);
+    artist_view = new ArtistView(this);
+    album_view = new AlbumView(this);
 
     ui->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
     ui->stackedWidget->addWidget(library_view);
+    ui->stackedWidget->addWidget(artist_view);
+    ui->stackedWidget->addWidget(album_view);
     ui->stackedWidget->addWidget(search_view);
 
-    QObject::connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &MainWindow::onStackedWidgetCurrentChanged);
+    connect(library_view,
+            &LibraryView::ArtistDoubleClickedSignal,
+            this,
+            &MainWindow::OnArtistDoubleClickedSlot);
 
     stringListModel_buttons = new QStringListModel(this);
     stringListModel_playlists = new QStringListModel(this);
@@ -69,16 +78,30 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-void MainWindow::onStackedWidgetCurrentChanged(int current) {
-    switch(current) {
-    case 0: // currently the libraryview (should be home view)
+void MainWindow::ChangeView(VIEW view) {
+    switch(view) {
+    case VIEW_HOME:
+        // TODO: IMPL
         break;
-    case 1: // currently the libraryview
-        library_view->show_data(datahandler.GetArtistNames());
+    case VIEW_LIBRARY:
+        ui->stackedWidget->setCurrentWidget(library_view);
         break;
-    case 2: // currently the searchview
+    case VIEW_ARTIST:
+        ui->stackedWidget->setCurrentWidget(artist_view);
+        break;
+    case VIEW_ALBUM:
+        ui->stackedWidget->setCurrentWidget(album_view);
+        break;
+    case VIEW_SEARCH:
+        //ui->stackedWidget->setCurrentWidget(search);
         break;
     }
+}
+
+
+MainWindow::~MainWindow()
+{
+    delete ui;
 }
 
 void MainWindow::Init_upper_toolbar(Ui::MainWindow *ui) {
@@ -103,10 +126,6 @@ void MainWindow::Init_lower_toolbar(Ui::MainWindow *ui) {
 }
 
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
 
 
 
@@ -121,8 +140,26 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
 {
     ui->listView_playlists->clearSelection();
     int selectedIndex = ui->listView_viewSelects->currentIndex().row();
-    ui->stackedWidget->setCurrentIndex(selectedIndex);
+
+    switch (selectedIndex) {
+    case 0:
+        ChangeView(VIEW_HOME);
+        break;
+    case 1:
+        library_view->show_data(datahandler.GetArtistNames());
+        ChangeView(VIEW_LIBRARY);
+        break;
+    case 2:
+        ChangeView(VIEW_SEARCH);
+        break;
+    }
 }
+
+void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
+    ChangeView(VIEW_ARTIST);
+    artist_view->show_data(datahandler.GetAlbumsForArtist(artistname));
+}
+
 
 
 void MainWindow::LoadStyleSheet(const QString &filePath) {

@@ -12,3 +12,9 @@ ArtistView::~ArtistView()
 {
     delete ui;
 }
+
+void ArtistView::show_data(const QList<QString> &data) {
+    for (QString item : data) {
+        ui->listWidget->addItem(item);
+    }
+}

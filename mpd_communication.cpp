@@ -43,6 +43,7 @@ QList<QString> MPDCommunication::GetArtists(QString artist_type) {
         found_artists.push_back(QString(pair->value));
         mpd_return_pair(conn, pair);
     }
+
     return found_artists;
 }
 
