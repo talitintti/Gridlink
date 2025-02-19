@@ -17,10 +17,10 @@ public:
     explicit ArtistView(QWidget *parent = nullptr);
     ~ArtistView();
 
-    void show_data(const QList<QString> &data);
+    void SetData(const QList<QString> &data);
 
 private:
-    Ui::ArtistView *ui;
+    Ui::ArtistView *ui_;
 };
 
 #endif // ARTISTVIEW_H

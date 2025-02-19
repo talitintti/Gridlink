@@ -10,16 +10,16 @@
 // Define a class to hold the config data
 class Config {
 public:
-    Config(int mpd_port) : mpd_port(mpd_port) {}
+    Config(int mpd_port) : mpd_port_(mpd_port) {}
     Config(){
-        mpd_port = 6600;
+        mpd_port_ = 6600;
     }
 
     // Method to load config from JSON
     bool LoadFromJson(const QString &filePath);
     QString GetAsJsonString() const;
 private:
-    int mpd_port;
+    int mpd_port_;
 };
 
 #endif // CONFIG_H

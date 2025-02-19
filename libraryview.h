@@ -15,14 +15,14 @@ class LibraryView : public QWidget
 
 public:
     explicit LibraryView(QWidget *parent = nullptr);
-    void show_data(const QList<QString> &data);
+    void SetData(const QList<QString> &data);
     ~LibraryView();
 signals:
     void ArtistDoubleClickedSignal(const QString &artistname);
 private slots:
     void ArtistDoubleClickedSlot(QListWidgetItem *item);
 private:
-    Ui::LibraryView *ui;
+    Ui::LibraryView *ui_;
 
 };
 

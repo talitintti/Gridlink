@@ -2,16 +2,16 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <QDir>
-
+#include <QDebug>
 
 DataHandler::DataHandler() {}
 DataHandler::~DataHandler() {
 }
 
 bool DataHandler::Initialize() {
-    config = ReadConfigFile();
+    config_ = ReadConfigFile();
 
-    if (!mpd_communicator.Initialize()) {
+    if (!mpd_communicator_.Initialize()) {
         return false;
     }
 
@@ -19,11 +19,12 @@ bool DataHandler::Initialize() {
 }
 
 QList<QString> DataHandler::GetArtistNames() {
-    return mpd_communicator.GetArtists(QString("AlbumArtist")); // maybe config file decides artist_type
+    return mpd_communicator_.GetArtists(QString("AlbumArtist")); // maybe config file decides artist_type
 }
 
 QList<QString> DataHandler::GetAlbumsForArtist(const QString &artist_name) {
-    return mpd_communicator.GetAlbumsOfAnArtist(artist_name);
+    auto list = mpd_communicator_.GetAlbumsOfAnArtist(artist_name);
+    return list;
 }
 
 

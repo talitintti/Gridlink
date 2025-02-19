@@ -8,28 +8,28 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui_(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    ui_->setupUi(this);
 
-    datahandler.Initialize();
+    datahandler_.Initialize();
 
     //QString appDir = "Gridlink//Gridlink/Styles/fourth.qss";
     //LoadStyleSheet(appDir);
 
     SearchView *search_view = new SearchView(this);
     QListWidget *home = new QListWidget();
-    library_view = new LibraryView(this);
-    artist_view = new ArtistView(this);
-    album_view = new AlbumView(this);
+    library_view_ = new LibraryView(this);
+    artist_view_ = new ArtistView(this);
+    album_view_ = new AlbumView(this);
 
-    ui->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
-    ui->stackedWidget->addWidget(library_view);
-    ui->stackedWidget->addWidget(artist_view);
-    ui->stackedWidget->addWidget(album_view);
-    ui->stackedWidget->addWidget(search_view);
+    ui_->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
+    ui_->stackedWidget->addWidget(library_view_);
+    ui_->stackedWidget->addWidget(artist_view_);
+    ui_->stackedWidget->addWidget(album_view_);
+    ui_->stackedWidget->addWidget(search_view);
 
-    connect(library_view,
+    connect(library_view_,
             &LibraryView::ArtistDoubleClickedSignal,
             this,
             &MainWindow::OnArtistDoubleClickedSlot);
@@ -61,19 +61,19 @@ MainWindow::MainWindow(QWidget *parent)
     stringListModel_buttons -> setStringList(buttons);
     stringListModel_playlists -> setStringList(playlists);
 
-    ui->listView_viewSelects->setModel(stringListModel_buttons);
-    ui->listView_playlists->setModel(stringListModel_playlists);
+    ui_->listView_viewSelects->setModel(stringListModel_buttons);
+    ui_->listView_playlists->setModel(stringListModel_playlists);
 
-    ui->listView_playlists->setSpacing(2);
-    ui->listView_viewSelects->setSpacing(2);
-
-
-    ui->playing_now_picture->setPixmap(QPixmap("/media/pictures/pepe_smile.jpg"));
+    ui_->listView_playlists->setSpacing(2);
+    ui_->listView_viewSelects->setSpacing(2);
 
 
-    ui->label->setAlignment(Qt::AlignCenter);
+    ui_->playing_now_picture->setPixmap(QPixmap("/media/pictures/pepe_smile.jpg"));
 
-    Init_lower_toolbar(ui);
+
+    ui_->label->setAlignment(Qt::AlignCenter);
+
+    Init_lower_toolbar(ui_);
     //Init_upper_toolbar(ui);
 
 }
@@ -84,13 +84,13 @@ void MainWindow::ChangeView(VIEW view) {
         // TODO: IMPL
         break;
     case VIEW_LIBRARY:
-        ui->stackedWidget->setCurrentWidget(library_view);
+        ui_->stackedWidget->setCurrentWidget(library_view_);
         break;
     case VIEW_ARTIST:
-        ui->stackedWidget->setCurrentWidget(artist_view);
+        ui_->stackedWidget->setCurrentWidget(artist_view_);
         break;
     case VIEW_ALBUM:
-        ui->stackedWidget->setCurrentWidget(album_view);
+        ui_->stackedWidget->setCurrentWidget(album_view_);
         break;
     case VIEW_SEARCH:
         //ui->stackedWidget->setCurrentWidget(search);
@@ -101,7 +101,7 @@ void MainWindow::ChangeView(VIEW view) {
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete ui_;
 }
 
 void MainWindow::Init_upper_toolbar(Ui::MainWindow *ui) {
@@ -132,21 +132,21 @@ void MainWindow::Init_lower_toolbar(Ui::MainWindow *ui) {
 
 void MainWindow::on_listView_playlists_pressed(const QModelIndex &index)
 {
-    ui->listView_viewSelects->clearSelection();
+    ui_->listView_viewSelects->clearSelection();
 }
 
 
 void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
 {
-    ui->listView_playlists->clearSelection();
-    int selectedIndex = ui->listView_viewSelects->currentIndex().row();
+    ui_->listView_playlists->clearSelection();
+    int selectedIndex = ui_->listView_viewSelects->currentIndex().row();
 
     switch (selectedIndex) {
     case 0:
         ChangeView(VIEW_HOME);
         break;
     case 1:
-        library_view->show_data(datahandler.GetArtistNames());
+        library_view_->SetData(datahandler_.GetArtistNames());
         ChangeView(VIEW_LIBRARY);
         break;
     case 2:
@@ -157,7 +157,7 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
 
 void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
     ChangeView(VIEW_ARTIST);
-    artist_view->show_data(datahandler.GetAlbumsForArtist(artistname));
+    artist_view_->SetData(datahandler_.GetAlbumsForArtist(artistname));
 }
 
 

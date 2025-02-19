@@ -23,8 +23,7 @@ public:
     ~SearchView();
 
 private:
-    Ui::SearchView *ui;
-    void populateTable(QTableWidget *table);
+    Ui::SearchView *ui_;
 };
 
 #endif // SEARCHVIEW_H

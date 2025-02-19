@@ -11,11 +11,11 @@ public:
     Song();
     Song(mpd_song *mpdSong);
 
-    Song(const Song &cop) : mpdSong(cop.mpdSong) { }
-    Song(Song &&mv) : mpdSong(std::move(mv.mpdSong)) { }
+    Song(const Song &cop) : mpd_song_(cop.mpd_song_) { }
+    Song(Song &&mv) : mpd_song_(std::move(mv.mpd_song_)) { }
     Song &operator=(Song assn)
     {
-        mpdSong = std::move(assn.mpdSong);
+        mpd_song_ = std::move(assn.mpd_song_);
         return *this;
     }
 
@@ -26,7 +26,7 @@ public:
     unsigned GetLengthSec() const;
 
 private:
-    std::shared_ptr<mpd_song> mpdSong;
+    std::shared_ptr<mpd_song> mpd_song_;
 
     const char* GetTagStr(mpd_tag_type) const;
 };

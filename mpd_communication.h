@@ -19,7 +19,8 @@ public:
     QList<QString> GetArtists(QString artist_type);
     QList<QString> GetAlbumsOfAnArtist(QString artist_name);
 private:
-    struct mpd_connection* conn;
+    QList<QString> GetTags(const char *return_tag, const char *constraint_tag, const char *constraint_val);
+    struct mpd_connection* conn_;
 };
 
 #endif // MPD_COMMUNICATION_H

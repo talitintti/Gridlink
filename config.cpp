@@ -22,7 +22,7 @@ bool Config::LoadFromJson(const QString &filePath) {
     // Populate the class members with values from the JSON object
     if (jsonObject.contains("mpd")) {
         QJsonObject mpdObject = jsonObject["mpd"].toObject();
-        mpd_port = mpdObject["port"].toInt();
+        mpd_port_ = mpdObject["port"].toInt();
     }
 
     return true;
@@ -32,7 +32,7 @@ QString Config::GetAsJsonString() const {
     QJsonObject configObject;
     QJsonObject mpdObj;
 
-    mpdObj["port"] = mpd_port;
+    mpdObj["port"] = mpd_port_;
     configObject["mpd"] = mpdObj;
 
     QJsonDocument jsonDoc(configObject);

@@ -3,18 +3,19 @@
 
 ArtistView::ArtistView(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::ArtistView)
+    , ui_(new Ui::ArtistView)
 {
-    ui->setupUi(this);
+    ui_->setupUi(this);
 }
 
 ArtistView::~ArtistView()
 {
-    delete ui;
+    delete ui_;
 }
 
-void ArtistView::show_data(const QList<QString> &data) {
+void ArtistView::SetData(const QList<QString> &data) {
+    ui_->listWidget->clear();
     for (QString item : data) {
-        ui->listWidget->addItem(item);
+        ui_->listWidget->addItem(item);
     }
 }

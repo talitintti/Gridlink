@@ -3,16 +3,14 @@
 
 SearchView::SearchView(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::SearchView)
+    , ui_(new Ui::SearchView)
 {
-    ui->setupUi(this);
+    ui_->setupUi(this);
 
 }
 
-void SearchView::populateTable(QTableWidget *table) {
-}
 
 SearchView::~SearchView()
 {
-    delete ui;
+    delete ui_;
 }

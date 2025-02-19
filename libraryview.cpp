@@ -5,12 +5,12 @@
 
 LibraryView::LibraryView(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::LibraryView)
+    , ui_(new Ui::LibraryView)
 {
-    ui->setupUi(this);
-    ui->listWidget->setDragEnabled(true);
+    ui_->setupUi(this);
+    ui_->listWidget->setDragEnabled(true);
 
-    connect(ui->listWidget,
+    connect(ui_->listWidget,
             &QListWidget::itemDoubleClicked,
             this,
             &LibraryView::ArtistDoubleClickedSlot);
@@ -18,12 +18,13 @@ LibraryView::LibraryView(QWidget *parent)
 
 LibraryView::~LibraryView()
 {
-    delete ui;
+    delete ui_;
 }
 
-void LibraryView::show_data(const QList<QString> &data) {
+void LibraryView::SetData(const QList<QString> &data) {
+    ui_->listWidget->clear();
     for (QString item : data) {
-        ui->listWidget->addItem(item);
+        ui_->listWidget->addItem(item);
     }
 }
 
