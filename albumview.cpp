@@ -3,12 +3,12 @@
 
 AlbumView::AlbumView(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::AlbumView)
+    , ui_(new Ui::AlbumView)
 {
-    ui->setupUi(this);
+    ui_->setupUi(this);
 }
 
 AlbumView::~AlbumView()
 {
-    delete ui;
+    delete ui_;
 }

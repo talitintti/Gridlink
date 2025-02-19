@@ -16,7 +16,7 @@ public:
     ~AlbumView();
 
 private:
-    Ui::AlbumView *ui;
+    Ui::AlbumView *ui_;
 };
 
 #endif // ALBUMVIEW_H

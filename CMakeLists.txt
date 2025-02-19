@@ -46,6 +46,7 @@ else()
             datahandler.h datahandler.cpp
             config.h config.cpp
             song.h song.cpp
+            album.h album.cpp
 
 
 

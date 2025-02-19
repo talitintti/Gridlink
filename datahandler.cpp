@@ -2,7 +2,7 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <QDir>
-#include <QDebug>
+
 
 DataHandler::DataHandler() {}
 DataHandler::~DataHandler() {
