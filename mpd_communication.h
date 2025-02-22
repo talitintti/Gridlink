@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QList>
+#include "song.h"
 
 #include <mpd/client.h>
 
@@ -16,8 +17,9 @@ public:
     // Return false if no success
     bool Initialize();
 
-    QList<QString> GetArtists(QString artist_type);
-    QList<QString> GetAlbumsOfAnArtist(QString artist_name);
+    QList<QString> GetArtists(const std::string artist_type);
+    QList<QString> GetAlbumNames(const std::string artist_name);
+    QList<Song> GetSongs(const std::string &artist_name, const std::string &album_name);
 private:
     QList<QString> GetTags(const char *return_tag, const char *constraint_tag, const char *constraint_val);
     struct mpd_connection* conn_;

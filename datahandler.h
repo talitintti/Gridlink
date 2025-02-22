@@ -4,6 +4,7 @@
 #include "mpd_communication.h"
 #include "config.h"
 #include <QFile>
+#include "album.h"
 
 class DataHandler
 {
@@ -15,7 +16,9 @@ public:
     // Return error msg on failure
     bool Initialize();
     QList<QString> GetArtistNames();
-    QList<QString> GetAlbumsForArtist(const QString &artist_name);
+    QList<QString> GetAlbumsNames(const QString &artist_name);
+    QList<Album> GetAlbums(const QString &artist_name);
+    Album GetAlbum(const QString &artist_name, const QString &album_name);
 
 private:
     bool WriteConfigFile(QFile &configFile, const Config &config);

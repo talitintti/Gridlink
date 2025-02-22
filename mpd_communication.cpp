@@ -1,5 +1,6 @@
 #include "mpd_communication.h"
 #include <QDebug>
+#include "song.h"
 
 MPDCommunication::MPDCommunication() {
 }
@@ -30,10 +31,10 @@ MPDCommunication::~MPDCommunication() {
     mpd_connection_free(conn_);
 }
 
-QList<QString> MPDCommunication::GetArtists(QString artist_type) {
+QList<QString> MPDCommunication::GetArtists(const std::string artist_type) {
     QList<QString> found_artists;
 
-    const char* artist_type_c = artist_type.toStdString().c_str();
+    const char* artist_type_c = artist_type.c_str();
     enum mpd_tag_type mpd_tag_type_artist = mpd_tag_name_iparse(artist_type_c);
 
     mpd_search_db_tags(conn_, mpd_tag_type_artist);
@@ -83,55 +84,42 @@ QList<QString> MPDCommunication::GetTags(const char *return_tag, const char *con
 }
 
 
-QList<QString> MPDCommunication::GetAlbumsOfAnArtist(QString artist_name) {
+QList<QString> MPDCommunication::GetAlbumNames(const std::string artist_name) {
     const char *artist_tag = "AlbumArtist";
     const char *album_tag = "Album";
 
-    std::string std_string = artist_name.toStdString(); // this is disgusting
-    const char *artist_name_c = std_string.c_str();
+    const char *artist_name_c = artist_name.c_str();
 
     QList<QString> found_albums = GetTags(album_tag, artist_tag, artist_name_c);
 
     return found_albums;
 }
 
-// We need a list of types "song"? These contain everything we need like URL?
-// search.h
-bool get_album_songs(mpd_connection *conn, const char *album_name, const char *album_artist_name) {
+
+QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std::string &album_name) {
     enum mpd_tag_type album_type_tag = MPD_TAG_ALBUM;
     enum mpd_tag_type artist_type_tag = MPD_TAG_ALBUM_ARTIST; // could be ARTIST_SORT
+    const char *artist_name_c = artist_name.c_str();
+    const char *album_name_c = album_name.c_str();
     struct mpd_song *song;
 
-    mpd_search_db_songs(conn, false);
-    mpd_search_add_tag_constraint(conn,
+    mpd_search_db_songs(conn_, false);
+    mpd_search_add_tag_constraint(conn_,
                                     MPD_OPERATOR_DEFAULT,
                                     album_type_tag,
-                                    album_name
+                                    album_name_c
                                     );
-    mpd_search_add_tag_constraint(conn,
+    mpd_search_add_tag_constraint(conn_,
                                     MPD_OPERATOR_DEFAULT,
                                     artist_type_tag,
-                                    album_artist_name
+                                    artist_name_c
                                     );
-    mpd_search_commit(conn);
+    mpd_search_commit(conn_);
 
-    while ((song = mpd_recv_song(conn)) != NULL) {
-        printf("uri: %s\n", mpd_song_get_uri(song));
-        print_tag(song, MPD_TAG_ARTIST, "artist");
-        print_tag(song, MPD_TAG_ALBUM, "album");
-        print_tag(song, MPD_TAG_TITLE, "title");
-        print_tag(song, MPD_TAG_TRACK, "track");
-        print_tag(song, MPD_TAG_NAME, "name");
-        print_tag(song, MPD_TAG_DATE, "date");
+    while ((song = mpd_recv_song(conn_)) != NULL) {
 
-        if (mpd_song_get_duration(song) > 0) {
-            printf("time: %u\n", mpd_song_get_duration(song));
-        }
-
-        printf("pos: %u\n", mpd_song_get_pos(song));
 
         mpd_song_free(song);
     }
-    return true;
 }
 
