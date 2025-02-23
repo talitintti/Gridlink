@@ -22,22 +22,20 @@ QList<QString> DataHandler::GetArtistNames() {
     return mpd_communicator_.GetArtists("AlbumArtist"); // maybe config file decides artist_type
 }
 
-QList<QString> DataHandler::GetAlbumsNames(const QString &artist_name) {
+QList<QString> DataHandler::GetAlbumNames(const QString &artist_name) {
     auto list = mpd_communicator_.GetAlbumNames(artist_name.toStdString());
     return list;
 }
 
 
 Album GetAlbum(const QString &artist_name, const QString &album_name) {
+    QList<QString> list;
+    list.emplaceBack("string");
+
 
 }
 
 QList<Album> DataHandler::GetAlbums(const QString &artist_name) {
-    QList<Album> albums;
-
-
-
-
 }
 
 

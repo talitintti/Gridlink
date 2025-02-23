@@ -1,5 +1,6 @@
 #include "mpd_communication.h"
 #include <QDebug>
+#include <QList>
 #include "song.h"
 
 MPDCommunication::MPDCommunication() {
@@ -96,7 +97,8 @@ QList<QString> MPDCommunication::GetAlbumNames(const std::string artist_name) {
 }
 
 
-QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std::string &album_name) {
+void MPDCommunication::GetSongs(const std::string &artist_name, const std::string &album_name, QList<const Song> &songs) {
+    QList<QString> list;
     enum mpd_tag_type album_type_tag = MPD_TAG_ALBUM;
     enum mpd_tag_type artist_type_tag = MPD_TAG_ALBUM_ARTIST; // could be ARTIST_SORT
     const char *artist_name_c = artist_name.c_str();
@@ -117,9 +119,10 @@ QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std
     mpd_search_commit(conn_);
 
     while ((song = mpd_recv_song(conn_)) != NULL) {
-
-
+        struct mpd_song *duplicate = mpd_song_dup(song);
+        //songs.emplace_back(duplicate);
         mpd_song_free(song);
     }
+
 }
 

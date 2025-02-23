@@ -16,7 +16,7 @@ public:
     // Return error msg on failure
     bool Initialize();
     QList<QString> GetArtistNames();
-    QList<QString> GetAlbumsNames(const QString &artist_name);
+    QList<QString> GetAlbumNames(const QString &artist_name);
     QList<Album> GetAlbums(const QString &artist_name);
     Album GetAlbum(const QString &artist_name, const QString &album_name);
 
