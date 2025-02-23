@@ -157,7 +157,7 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
 
 void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
     ChangeView(VIEW_ARTIST);
-    artist_view_->SetData(datahandler_.GetAlbumNames(artistname));
+    artist_view_->SetData(datahandler_.GetAlbums(artistname));
 }
 
 

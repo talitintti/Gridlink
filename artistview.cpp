@@ -6,6 +6,7 @@ ArtistView::ArtistView(QWidget *parent)
     , ui_(new Ui::ArtistView)
 {
     ui_->setupUi(this);
+    ui_->listView->setModel(&album_list_model_);
 }
 
 ArtistView::~ArtistView()
@@ -13,9 +14,6 @@ ArtistView::~ArtistView()
     delete ui_;
 }
 
-void ArtistView::SetData(const QList<QString> &data) {
-    ui_->listWidget->clear();
-    for (QString item : data) {
-        ui_->listWidget->addItem(item);
-    }
+void ArtistView::SetData(QList<Album> data) {
+    album_list_model_.setAlbums(data);
 }
