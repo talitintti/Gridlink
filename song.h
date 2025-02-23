@@ -23,6 +23,7 @@ public:
     QString GetArtist() const;
     QString GetAlbumArtist() const;
     QString GetAlbum() const;
+    QString GetGenre() const;
     unsigned GetLengthSec() const;
 
 private:

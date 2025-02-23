@@ -56,10 +56,6 @@ else()
             config.h config.cpp
             song.h song.cpp
             album.h album.cpp
-
-
-
-
         )
     endif()
 endif()

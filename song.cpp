@@ -32,6 +32,11 @@ QString Song::GetAlbum() const {
     return QString(tag);
 }
 
+QString Song::GetGenre() const {
+    auto tag = GetTagStr(MPD_TAG_GENRE);
+    return QString(tag);
+}
+
 unsigned Song::GetLengthSec() const {
     return mpd_song_get_duration(mpd_song_.get());
 }

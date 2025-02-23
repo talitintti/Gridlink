@@ -28,14 +28,28 @@ QList<QString> DataHandler::GetAlbumNames(const QString &artist_name) {
 }
 
 
-Album GetAlbum(const QString &artist_name, const QString &album_name) {
-    QList<QString> list;
-    list.emplaceBack("string");
+Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_name) {
+    QList<Song> songs;
+    std::string ar_name_std = artist_name.toStdString();
+    std::string al_name_std = album_name.toStdString();
+    songs = mpd_communicator_.GetSongs(ar_name_std, al_name_std);
 
+    Album album(std::move(songs));
 
+    return album;
 }
 
 QList<Album> DataHandler::GetAlbums(const QString &artist_name) {
+    QList<Album> albums;
+    std::string ar_name_std = artist_name.toStdString();
+
+    QList<QString> album_names(mpd_communicator_.GetAlbumNames(artist_name.toStdString()));
+    for (const auto &album_name : std::as_const(album_names)) {
+        std::string al_name_std = album_name.toStdString();
+        albums.emplace_back(mpd_communicator_.GetSongs(ar_name_std,al_name_std));
+    }
+
+    return albums;
 }
 
 
