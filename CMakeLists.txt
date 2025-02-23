@@ -17,6 +17,15 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        searchview.h searchview.cpp searchview.ui
+        mpd_communication.h mpd_communication.cpp
+        libraryview.h libraryview.cpp libraryview.ui
+        artistview.h artistview.cpp artistview.ui
+        albumview.h albumview.cpp albumview.ui
+        datahandler.h datahandler.cpp
+        config.h config.cpp
+        song.h song.cpp
+        album.h album.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
