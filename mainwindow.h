@@ -23,7 +23,7 @@ public:
 
 public slots:
     void OnArtistDoubleClickedSlot(const QString &artistname);
-
+    void OnAlbumDoubleClickedSlot(Album album);
 private slots:
     // Change these to camelCase or whatever
     void on_listView_playlists_pressed(const QModelIndex &index);

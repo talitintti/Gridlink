@@ -1,6 +1,5 @@
 #include "libraryview.h"
 #include "ui_libraryview.h"
-#include "mainwindow.h"
 #include <QDebug>
 
 LibraryView::LibraryView(QWidget *parent)

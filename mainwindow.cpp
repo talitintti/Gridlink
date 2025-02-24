@@ -34,6 +34,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::OnArtistDoubleClickedSlot);
 
+    connect(artist_view_,
+            &ArtistView::AlbumDoubleClickedSignal,
+            this,
+            &MainWindow::OnAlbumDoubleClickedSlot);
+
     stringListModel_buttons = new QStringListModel(this);
     stringListModel_playlists = new QStringListModel(this);
 
@@ -160,6 +165,10 @@ void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
     artist_view_->SetData(datahandler_.GetAlbums(artistname));
 }
 
+void MainWindow::OnAlbumDoubleClickedSlot(Album album) {
+    ChangeView(VIEW_ALBUM);
+    album_view_->SetData(std::move(album)); // check that this isn't retarded
+}
 
 
 void MainWindow::LoadStyleSheet(const QString &filePath) {

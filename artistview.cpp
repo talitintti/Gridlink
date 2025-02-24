@@ -1,5 +1,6 @@
 #include "artistview.h"
 #include "ui_artistview.h"
+#include <QListView>
 
 ArtistView::ArtistView(QWidget *parent)
     : QWidget(parent)
@@ -7,6 +8,11 @@ ArtistView::ArtistView(QWidget *parent)
 {
     ui_->setupUi(this);
     ui_->listView->setModel(&album_list_model_);
+
+    connect(ui_->listView,
+            &QAbstractItemView::doubleClicked,
+            this,
+            &ArtistView::AlbumDoubleClickedSlot);
 }
 
 ArtistView::~ArtistView()
@@ -16,4 +22,9 @@ ArtistView::~ArtistView()
 
 void ArtistView::SetData(QList<Album> data) {
     album_list_model_.setAlbums(data);
+}
+
+void ArtistView::AlbumDoubleClickedSlot(const QModelIndex &album_index) {
+    int row = album_index.row();
+    emit AlbumDoubleClickedSignal(album_list_model_.at(row));
 }

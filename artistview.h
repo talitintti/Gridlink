@@ -22,6 +22,15 @@ class AlbumListModel : public QAbstractListModel {
         return static_cast<int>(albums_.size());
     }
 
+    // TODO: maybe make shared_ptr in datahandler so we can avoid copying everything
+    Album at(int index) {
+        if (index >= 0 && index < albums_.count()) {
+            return albums_.at(index);
+        }
+
+        return Album();
+    }
+
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
         if (!index.isValid() || index.row() >= static_cast<int>(albums_.size()))
             return QVariant();
@@ -54,6 +63,11 @@ public:
 
     void SetData(QList<Album> albums);
 
+signals:
+    void AlbumDoubleClickedSignal(Album clicked_album);
+
+private slots:
+    void AlbumDoubleClickedSlot(const QModelIndex &album_index);
 
 private:
     Ui::ArtistView *ui_;
