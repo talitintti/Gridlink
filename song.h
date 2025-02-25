@@ -24,6 +24,7 @@ public:
     QString GetAlbumArtist() const;
     QString GetAlbum() const;
     QString GetGenre() const;
+    QString GetDuration() const;
     unsigned GetLengthSec() const;
 
 private:

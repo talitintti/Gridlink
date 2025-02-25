@@ -23,12 +23,11 @@ class AlbumListModel : public QAbstractListModel {
     }
 
     // TODO: maybe make shared_ptr in datahandler so we can avoid copying everything
-    Album at(int index) {
+    const Album &at(int index) {
         if (index >= 0 && index < albums_.count()) {
             return albums_.at(index);
         }
-
-        return Album();
+        throw "Trying to get with wrong index"; // TODO: Fix
     }
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
@@ -64,7 +63,7 @@ public:
     void SetData(QList<Album> albums);
 
 signals:
-    void AlbumDoubleClickedSignal(Album clicked_album);
+    void AlbumDoubleClickedSignal(const Album &clicked_album);
 
 private slots:
     void AlbumDoubleClickedSlot(const QModelIndex &album_index);

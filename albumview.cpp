@@ -12,3 +12,10 @@ AlbumView::~AlbumView()
 {
     delete ui_;
 }
+
+void AlbumView::SetData(const Album &album) {
+    if (!song_table_model_) {
+        song_table_model_ = new SongTableModel()
+    }
+
+}

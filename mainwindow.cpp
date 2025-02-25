@@ -165,9 +165,9 @@ void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
     artist_view_->SetData(datahandler_.GetAlbums(artistname));
 }
 
-void MainWindow::OnAlbumDoubleClickedSlot(Album album) {
+void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
     ChangeView(VIEW_ALBUM);
-    album_view_->SetData(std::move(album)); // check that this isn't retarded
+    album_view_->SetData(album); // check that this isn't retarded
 }
 
 
