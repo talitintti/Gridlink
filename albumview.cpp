@@ -44,7 +44,7 @@ void AlbumView::SetTableAppearance(QTableView *table_view) {
     table_view->horizontalHeader()->setStretchLastSection(false);
     table_view->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch); // Song Name column expands
 
-    // --- Apply Spotify Theme ---
+    // --- Apply Theme ---
     table_view->setStyleSheet(
         "QTableView {"
         "   background-color: #121212;" // Spotify Dark Theme
@@ -70,6 +70,13 @@ void AlbumView::SetTableAppearance(QTableView *table_view) {
         "	background:transparent;"
         "}"
         "QTableView::item:selected:focus { background:#333333; }"
+        "QHeaderView::section {		"
+        "background-color: #121212;		"
+        "color: lightgray;		"
+        "font-weight: normal;		"
+        "padding: 5px;		"
+        "border: 1px solid #292929;	"
+        "}	"
     );
 
 }
