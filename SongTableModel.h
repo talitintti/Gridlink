@@ -3,14 +3,15 @@
 
 #include <QAbstractTableModel>
 #include <QList>
+#include "helpers.h"
 #include "song.h"
 
 class SongTableModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
-    explicit SongTableModel(QList<Song> &songs, QObject *parent = nullptr)
-        : QAbstractTableModel(parent), song_list_(std::move(songs)) {}
+    explicit SongTableModel(const QList<Song> &songs, QObject *parent = nullptr)
+        : QAbstractTableModel(parent), song_list_(songs) {}
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override {
         Q_UNUSED(parent)
@@ -30,9 +31,9 @@ public:
 
         if (role == Qt::DisplayRole) {
             switch (index.column()) {
-                case 0: return index.row(); // Track #
+                case 0: return index.row() + 1; // Track #
                 case 1: return song.GetName();        // Name
-                case 2: return song.GetDuration();    // Duration
+                case 2: return FormattedTime(song.GetDurationSec());    // Duration
                 default: return QVariant();
             }
         }
@@ -51,6 +52,10 @@ public:
             }
         }
         return QVariant();
+    }
+
+    void ChangeSongList(const QList<Song> &songs) {
+        song_list_ = QList<Song>(songs);
     }
 
 private:

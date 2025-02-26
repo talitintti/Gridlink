@@ -24,8 +24,8 @@ public:
     QString GetAlbumArtist() const;
     QString GetAlbum() const;
     QString GetGenre() const;
-    QString GetDuration() const;
-    unsigned GetLengthSec() const;
+    unsigned GetDurationSec() const;
+
 
 private:
     std::shared_ptr<mpd_song> mpd_song_;

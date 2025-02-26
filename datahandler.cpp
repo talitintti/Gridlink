@@ -46,8 +46,11 @@ QList<Album> DataHandler::GetAlbums(const QString &artist_name) {
     QList<QString> album_names(mpd_communicator_.GetAlbumNames(artist_name.toStdString()));
     for (const auto &album_name : std::as_const(album_names)) {
         std::string al_name_std = album_name.toStdString();
-        albums.emplace_back(mpd_communicator_.GetSongs(ar_name_std,al_name_std));
+        albums.emplace_back(mpd_communicator_.GetSongs(ar_name_std, al_name_std));
+
+        auto list = mpd_communicator_.GetSongs(ar_name_std, al_name_std);
     }
+
 
     return albums;
 }

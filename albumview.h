@@ -4,7 +4,7 @@
 #include <QWidget>
 #include "album.h"
 #include "SongTableModel.h"
-
+#include <QTableView>
 
 namespace Ui {
 class AlbumView;
@@ -16,12 +16,15 @@ class AlbumView : public QWidget
 
 public:
     explicit AlbumView(QWidget *parent = nullptr);
-    void SetData(const Album &album);
     ~AlbumView();
 
+    void SetData(const Album &album);
 private:
     Ui::AlbumView *ui_;
     SongTableModel *song_table_model_ = nullptr;
+    Album album_;
+
+    void SetTableAppearance(QTableView *table);
 };
 
 #endif // ALBUMVIEW_H

@@ -1,4 +1,5 @@
 #include "song.h"
+#include <QTime>
 
 Song::Song(mpd_song *mpdSong) {
     mpd_song_ = std::shared_ptr<mpd_song>(mpdSong, mpd_song_free);
@@ -13,7 +14,7 @@ const char* Song::GetTagStr(mpd_tag_type tag_type) const {
 }
 
 QString Song::GetName() const {
-    auto tag = GetTagStr(MPD_TAG_NAME);
+    auto tag = GetTagStr(MPD_TAG_TITLE);
     return QString(tag);
 }
 
@@ -37,6 +38,7 @@ QString Song::GetGenre() const {
     return QString(tag);
 }
 
-unsigned Song::GetLengthSec() const {
+unsigned Song::GetDurationSec() const {
     return mpd_song_get_duration(mpd_song_.get());
 }
+

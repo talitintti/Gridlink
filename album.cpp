@@ -6,3 +6,7 @@ QString Album::GetName() const {
 
 
 
+
+const QList<Song> &Album::GetSongs() const {
+    return songs_;
+}

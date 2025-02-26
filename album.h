@@ -10,7 +10,7 @@ public:
     Album() = default;
     Album(QList<Song> &&songs) : songs_(std::move(songs)) {
         for (const Song &song : std::as_const(songs_)) {
-            length_sec_ += song.GetLengthSec();
+            length_sec_ += song.GetDurationSec();
         }
 
         if (!songs_.empty()) {
@@ -21,6 +21,7 @@ public:
         }
     }
     QString GetName() const;
+    const QList<Song> &GetSongs() const;
 
 private:
     QList<Song> songs_;
