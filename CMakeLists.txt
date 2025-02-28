@@ -12,6 +12,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+find_library(AVCODEC_LIBRARY avcodec REQUIRED)
+find_library(AVFORMAT_LIBRARY avformat REQUIRED)
+find_library(AVUTIL_LIBRARY avutil REQUIRED)
+find_library(SWSCALE_LIBRARY swscale REQUIRED)
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
@@ -62,8 +67,12 @@ else()
     endif()
 endif()
 
-target_link_libraries(Gridlink PRIVATE Qt${QT_VERSION_MAJOR}::Widgets mpdclient)
-
+target_link_libraries(Gridlink PRIVATE Qt${QT_VERSION_MAJOR}::Widgets mpdclient
+    ${AVCODEC_LIBRARY}
+    ${AVFORMAT_LIBRARY}
+    ${AVUTIL_LIBRARY}
+    ${SWSCALE_LIBRARY}
+)
 set_target_properties(Gridlink PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}

@@ -2,6 +2,7 @@
 #include "ui_libraryview.h"
 #include <QDebug>
 
+
 LibraryView::LibraryView(QWidget *parent)
     : QWidget(parent)
     , ui_(new Ui::LibraryView)

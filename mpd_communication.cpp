@@ -116,7 +116,6 @@ QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std
 
     while ((song = mpd_recv_song(conn_)) != NULL) {
         struct mpd_song *duplicate = mpd_song_dup(song);
-        qDebug() << mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
         songs.emplace_back(duplicate);
         mpd_song_free(song);
     }
