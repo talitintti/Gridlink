@@ -22,13 +22,15 @@ public:
     }
     QString GetName() const;
     const QList<Song> &GetSongs() const;
-
+    const uint8_t *GetCoverData() const;
+    void SetCoverData(std::vector<uint8_t> &&cover_data);
 private:
     QList<Song> songs_;
     QString album_name_;
     unsigned length_sec_ = 0;
     QString artist_name_;
     QString genre_;
+    std::vector<uint8_t> cover_data_;
 };
 
 #endif // ALBUM_H

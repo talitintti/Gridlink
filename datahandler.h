@@ -23,6 +23,7 @@ public:
 private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
     Config ReadConfigFile();
+    void SetAlbumCover(Album &album) const;
 
     MPDCommunication mpd_communicator_ = MPDCommunication();
     Config config_;

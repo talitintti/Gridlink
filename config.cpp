@@ -2,40 +2,49 @@
 
 
 // Method to load config from JSON
-bool Config::LoadFromJson(const QString &filePath) {
-    QFile file(filePath);
+bool Config::LoadFromJson(const QString &file_path) {
+    QFile file(file_path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Could not open the file for reading:" << file.errorString();
         return false;
     }
 
-    QByteArray fileData = file.readAll();
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QByteArray file_data = file.readAll();
+    QJsonDocument json_doc = QJsonDocument::fromJson(file_data);
 
-    if (jsonDoc.isNull()) {
+    if (json_doc.isNull()) {
         qWarning() << "Invalid JSON document";
         return false;
     }
 
-    QJsonObject jsonObject = jsonDoc.object();
+    QJsonObject json_object = json_doc.object();
 
-    // Populate the class members with values from the JSON object
-    if (jsonObject.contains("mpd")) {
-        QJsonObject mpdObject = jsonObject["mpd"].toObject();
-        mpd_port_ = mpdObject["port"].toInt();
+    if (json_object.contains("mpd")) {
+        mpd_port_ = json_object["port"].toInt();
+    }
+
+    if (json_object.contains("music_dir")) {
+        music_dir_ = json_object["music_dir"].toString();
     }
 
     return true;
 }
 
 QString Config::GetAsJsonString() const {
-    QJsonObject configObject;
-    QJsonObject mpdObj;
+    QJsonObject config_obj;
 
-    mpdObj["port"] = mpd_port_;
-    configObject["mpd"] = mpdObj;
+    config_obj["mpd_port"] = mpd_port_;
+    config_obj["music_dir"] = music_dir_;
 
-    QJsonDocument jsonDoc(configObject);
+    QJsonDocument jsonDoc(config_obj);
 
     return jsonDoc.toJson(QJsonDocument::Indented);
+}
+
+QString Config::GetMusicDir() const {
+    return music_dir_;
+}
+
+int Config::GetMPDPort() const {
+    return mpd_port_;
 }

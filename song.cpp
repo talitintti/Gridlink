@@ -42,3 +42,7 @@ unsigned Song::GetDurationSec() const {
     return mpd_song_get_duration(mpd_song_.get());
 }
 
+QString Song::GetSongPath() const {
+    const char *uri = mpd_song_get_uri(mpd_song_.get());
+    return QString(uri);
+}
