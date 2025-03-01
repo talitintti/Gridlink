@@ -18,7 +18,7 @@ public:
     explicit AlbumView(QWidget *parent = nullptr);
     ~AlbumView();
 
-    void SetData(const Album &album);
+    void SetAlbum(const Album &album);
 private:
     Ui::AlbumView *ui_;
     SongTableModel *song_table_model_ = nullptr;

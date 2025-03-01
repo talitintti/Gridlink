@@ -14,7 +14,7 @@ AlbumView::~AlbumView()
     delete ui_;
 }
 
-void AlbumView::SetData(const Album &album) {
+void AlbumView::SetAlbum(const Album &album) {
     album_ = album;
 
     QList<Song> albums = album_.GetSongs();

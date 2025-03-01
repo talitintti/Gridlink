@@ -50,6 +50,7 @@ Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_nam
 void DataHandler::SetAlbumCover(Album &album) const {
     int width, height;
     QString base_path = config_.GetMusicDir();
+    qDebug() << base_path;
     QString song_path = album.GetSongs().at(0).GetSongPath();
     QDir music_dir(base_path);
     const std::string full_path = music_dir.filePath(song_path).toStdString();

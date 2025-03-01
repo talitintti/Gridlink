@@ -19,7 +19,7 @@ bool Config::LoadFromJson(const QString &file_path) {
 
     QJsonObject json_object = json_doc.object();
 
-    if (json_object.contains("mpd")) {
+    if (json_object.contains("mpd_port")) {
         mpd_port_ = json_object["port"].toInt();
     }
 
