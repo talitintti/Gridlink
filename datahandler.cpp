@@ -10,7 +10,7 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
-std::optional<std::vector<uint8_t>> GetPicture(const std::string &path, int &width, int &height); // TODO: maybe move this function to other file instead
+uint8_t *GetPicture(const std::string &path, int &width, int &height); // TODO: maybe move this function to other file instead
 
 DataHandler::DataHandler() {}
 DataHandler::~DataHandler() {
@@ -50,15 +50,14 @@ Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_nam
 void DataHandler::SetAlbumCover(Album &album) const {
     int width, height;
     QString base_path = config_.GetMusicDir();
-    qDebug() << base_path;
     QString song_path = album.GetSongs().at(0).GetSongPath();
     QDir music_dir(base_path);
     const std::string full_path = music_dir.filePath(song_path).toStdString();
-    std::optional<std::vector<uint8_t>> picture_or = GetPicture(full_path, width, height);
 
-    if (picture_or) {
-        auto picture_data = picture_or.value();
-        album.SetCoverData(std::move(picture_data));
+    uint8_t *picture_data = GetPicture(full_path, width, height);
+    if (!picture_data) {
+        OImage image(picture_data, width, height, QImage::Format_RGB888);
+        album.SetCoverData(std::move(image));
     }
 }
 
@@ -138,19 +137,19 @@ bool DataHandler::WriteConfigFile(QFile &configFile, const Config &config) {
 }
 
 
-std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int& width, int& height) {
+uint8_t *GetPicture(const std::string& filename, int& width, int& height) {
     // Open the input file
     AVFormatContext* format_ctx = nullptr;
     if (avformat_open_input(&format_ctx, filename.c_str(), nullptr, nullptr) != 0) {
         qWarning() << ("Could not open file: " + filename);
-        return std::nullopt;
+        return nullptr;
     }
 
     // Retrieve stream information
     if (avformat_find_stream_info(format_ctx, nullptr) < 0) {
         avformat_close_input(&format_ctx);
         qWarning() << ("Could not find stream information.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Find the attached picture stream
@@ -165,7 +164,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
     if (image_stream_index == -1) {
         avformat_close_input(&format_ctx);
         qWarning() << ("No embedded image found in the file.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Get the attached picture packet
@@ -177,7 +176,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
     if (!codec) {
         avformat_close_input(&format_ctx);
         qWarning() << ("Unsupported image codec.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Allocate a codec context
@@ -185,7 +184,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
     if (!codec_ctx) {
         avformat_close_input(&format_ctx);
         qWarning() << ("Could not allocate codec context.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Copy codec parameters to the codec context
@@ -193,7 +192,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
         avcodec_free_context(&codec_ctx);
         avformat_close_input(&format_ctx);
         qWarning() << ("Could not copy codec parameters to context.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Open the codec
@@ -201,7 +200,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
         avcodec_free_context(&codec_ctx);
         avformat_close_input(&format_ctx);
         qWarning() << ("Could not open codec.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Allocate a frame for decoding
@@ -210,7 +209,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
         avcodec_free_context(&codec_ctx);
         avformat_close_input(&format_ctx);
         qWarning() << ("Could not allocate frame.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Send the packet to the decoder
@@ -219,7 +218,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
         avcodec_free_context(&codec_ctx);
         avformat_close_input(&format_ctx);
         qWarning() << ("Failed to send packet to decoder.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Receive the decoded frame
@@ -228,7 +227,7 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
         avcodec_free_context(&codec_ctx);
         avformat_close_input(&format_ctx);
         qWarning() << ("Failed to receive frame from decoder.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Get image dimensions
@@ -246,16 +245,16 @@ std::optional<std::vector<uint8_t>> GetPicture(const std::string& filename, int&
         avcodec_free_context(&codec_ctx);
         avformat_close_input(&format_ctx);
         qWarning() << ("Could not initialize SwsContext.");
-        return std::nullopt;
+        return nullptr;
     }
 
     // Set the color range explicitly
     frame->color_range = AVCOL_RANGE_JPEG; // Use JPEG color range (full range)
 
     // Allocate buffer for the image data
-    std::vector<uint8_t> buffer(width * height * 3); // Assuming RGB24 format
+    uint8_t *buffer = new uint8_t[width * height * 3]; // Remeber to change if format is not compat
 
-    uint8_t* dest[1] = { buffer.data() };
+    uint8_t *dest[1] = { buffer };
     int dest_linesize[1] = { width * 3 };
     sws_scale(sws_ctx, frame->data, frame->linesize, 0, height, dest, dest_linesize);
 

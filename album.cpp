@@ -12,9 +12,13 @@ const QList<Song> &Album::GetSongs() const {
 }
 
 const uint8_t *Album::GetCoverData() const {
-    return cover_data_.data();
+    return cover_image_.GetImageData();
 }
 
-void Album::SetCoverData(std::vector<uint8_t> &&cover_data) {
-    cover_data_ = std::move(cover_data);
+void Album::SetCoverData(OImage &&image) {
+    cover_image_ = std::move(image);
+}
+
+bool Album::HasCoverData() const {
+    return cover_image_.HasImage();
 }

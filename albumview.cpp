@@ -27,6 +27,11 @@ void AlbumView::SetAlbum(const Album &album) {
     else {
         song_table_model_->ChangeSongList(albums);
     }
+
+    // Let's show the picture
+    if (album_.HasCoverData()) {
+
+    }
 }
 
 void AlbumView::SetTableAppearance(QTableView *table_view) {
