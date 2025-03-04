@@ -4,9 +4,6 @@ QString Album::GetName() const {
     return album_name_;
 }
 
-
-
-
 const QList<Song> &Album::GetSongs() const {
     return songs_;
 }
@@ -21,4 +18,8 @@ void Album::SetCoverData(OImage &&image) {
 
 bool Album::HasCoverData() const {
     return cover_image_.HasImage();
+}
+
+const OImage &Album::GetCover() const {
+    return cover_image_;
 }

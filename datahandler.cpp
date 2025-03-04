@@ -42,9 +42,8 @@ Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_nam
     std::string al_name_std = album_name.toStdString();
     songs = mpd_communicator_.GetSongs(ar_name_std, al_name_std);
 
-    Album album(std::move(songs));
 
-    return album;
+    return Album(std::move(songs));
 }
 
 void DataHandler::SetAlbumCover(Album &album) const {
@@ -55,7 +54,7 @@ void DataHandler::SetAlbumCover(Album &album) const {
     const std::string full_path = music_dir.filePath(song_path).toStdString();
 
     uint8_t *picture_data = GetPicture(full_path, width, height);
-    if (!picture_data) {
+    if (picture_data) {
         OImage image(picture_data, width, height, QImage::Format_RGB888);
         album.SetCoverData(std::move(image));
     }

@@ -267,7 +267,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="label_playing_info">
             <property name="maximumSize">
              <size>
               <width>200</width>
@@ -278,7 +278,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
              <string notr="true">background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #b8b8b8, stop:1 #878787);</string>
             </property>
             <property name="text">
-             <string>Ciao Bella</string>
+             <string/>
             </property>
            </widget>
           </item>
