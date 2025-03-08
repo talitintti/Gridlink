@@ -12,9 +12,6 @@ extern "C" {
 
 uint8_t *GetPicture(const std::string &path, int &width, int &height); // TODO: maybe move this function to other file instead
 
-DataHandler::DataHandler() {}
-DataHandler::~DataHandler() {
-}
 
 bool DataHandler::Initialize() {
     config_ = ReadConfigFile();

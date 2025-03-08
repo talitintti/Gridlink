@@ -2,6 +2,7 @@
 #include "EWIEGA46WW/moc_SongTableModel.cpp"
 #include "EWIEGA46WW/moc_albumview.cpp"
 #include "EWIEGA46WW/moc_artistview.cpp"
+#include "EWIEGA46WW/moc_datahandler.cpp"
 #include "EWIEGA46WW/moc_libraryview.cpp"
 #include "EWIEGA46WW/moc_mainwindow.cpp"
 #include "EWIEGA46WW/moc_searchview.cpp"

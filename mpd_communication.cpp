@@ -93,6 +93,7 @@ QList<QString> MPDCommunication::GetAlbumNames(const std::string artist_name) {
     return GetTags(album_tag, artist_tag, artist_name_c);
 }
 
+
 QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std::string &album_name) {
     QList<Song> songs;
     enum mpd_tag_type album_type_tag = MPD_TAG_ALBUM;

@@ -6,11 +6,13 @@
 #include <QFile>
 #include "album.h"
 
-class DataHandler
+class DataHandler : public QObject
 {
+    Q_OBJECT
+
 public:
-    DataHandler();
-    ~DataHandler();
+    DataHandler(QObject *parent = nullptr) : QObject(parent) {};
+    ~DataHandler() {};
 
     // Returns an empty string on success
     // Return error msg on failure

@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui_->playing_now_picture->setPixmap(QPixmap("/media/pictures/pepe_smile.jpg"));
 
 
-    ui_->label->setAlignment(Qt::AlignCenter);
+    ui_->label_playing_info->setAlignment(Qt::AlignCenter);
 
     Init_lower_toolbar(ui_);
     //Init_upper_toolbar(ui);

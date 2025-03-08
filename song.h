@@ -8,7 +8,7 @@
 class Song
 {
 public:
-    Song();
+    Song() = default;
     Song(mpd_song *mpdSong);
 
     Song(const Song &cop) : mpd_song_(cop.mpd_song_) { }
