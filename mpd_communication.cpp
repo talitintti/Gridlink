@@ -123,3 +123,19 @@ QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std
     return songs;
 }
 
+const Song MPDCommunication::GetCurrentSong() {
+    struct mpd_song *song;
+
+    if (!mpd_send_current_song(conn_)) {
+        return Song();
+    }
+
+    if ((song = mpd_recv_song(conn_)) == NULL) {
+        return Song();
+    }
+
+    struct mpd_song *duplicate = mpd_song_dup(song);
+    mpd_song_free(song);
+
+    return Song(duplicate);
+}
