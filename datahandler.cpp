@@ -10,7 +10,7 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
-uint8_t *GetPicture(const std::string &path, int &width, int &height); // TODO: maybe move this function to other file instead
+std::shared_ptr<uint8_t[]> GetPicture(const std::string &path, int &width, int &height); // TODO: maybe move this function to other file instead
 
 
 bool DataHandler::Initialize() {
@@ -50,7 +50,8 @@ void DataHandler::SetAlbumCover(Album &album) const {
     QDir music_dir(base_path);
     const std::string full_path = music_dir.filePath(song_path).toStdString();
 
-    uint8_t *picture_data = GetPicture(full_path, width, height);
+    //auto picture_data = GetPicture(full_path, width, height);
+    std::shared_ptr<uint8_t> picture_data;
     if (picture_data) {
         OImage image(picture_data, width, height, QImage::Format_RGB888);
         album.SetCoverData(std::move(image));
@@ -133,7 +134,8 @@ bool DataHandler::WriteConfigFile(QFile &configFile, const Config &config) {
 }
 
 
-uint8_t *GetPicture(const std::string& filename, int& width, int& height) {
+std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {
+    auto destination_format = AV_PIX_FMT_RGB24;
     // Open the input file
     AVFormatContext* format_ctx = nullptr;
     if (avformat_open_input(&format_ctx, filename.c_str(), nullptr, nullptr) != 0) {
@@ -233,7 +235,7 @@ uint8_t *GetPicture(const std::string& filename, int& width, int& height) {
     // Convert the frame to RGB24 format
     SwsContext* sws_ctx = sws_getContext(
     width, height, codec_ctx->pix_fmt, // Source format
-    width, height, AV_PIX_FMT_RGB24,  // Destination format
+    width, height, destination_format,  // Destination format
     SWS_BILINEAR, nullptr, nullptr, nullptr);
 
     if (!sws_ctx) {
@@ -244,15 +246,19 @@ uint8_t *GetPicture(const std::string& filename, int& width, int& height) {
         return nullptr;
     }
 
-    // Set the color range explicitly
-    frame->color_range = AVCOL_RANGE_JPEG; // Use JPEG color range (full range)
+    uint8_t *dst_data[4] = { nullptr };
+    int dest_linesize[4] = { 0 };
 
-    // Allocate buffer for the image data
-    uint8_t *buffer = new uint8_t[width * height * 3]; // Remeber to change if format is not compat
-
-    uint8_t *dest[1] = { buffer };
-    int dest_linesize[1] = { width * 3 };
-    sws_scale(sws_ctx, frame->data, frame->linesize, 0, height, dest, dest_linesize);
+    int buffer_size = av_image_alloc(dst_data, dest_linesize, width, height, destination_format, 1);
+    if (buffer_size < 0) {
+        qWarning() << "Error: Couldn't allocate destination buffer.";
+        sws_freeContext(sws_ctx);
+        av_frame_free(&frame);
+        avcodec_free_context(&codec_ctx);
+        avformat_close_input(&format_ctx);
+        return nullptr;
+    }
+    sws_scale(sws_ctx, frame->data, frame->linesize, 0, height, dst_data, dest_linesize);
 
     // Clean up
     sws_freeContext(sws_ctx);
@@ -260,5 +266,11 @@ uint8_t *GetPicture(const std::string& filename, int& width, int& height) {
     avcodec_free_context(&codec_ctx);
     avformat_close_input(&format_ctx);
 
-    return buffer;
+    // Create shared_ptr that will automatically call av_freep on `data[0]` when it goes out of scope
+    // Create a shared_ptr with a lambda deleter
+    std::shared_ptr<uint8_t[]> result(dst_data[0], [](uint8_t* ptr) {
+        av_freep(&ptr);  // Deleter to free the memory with av_freep
+    });
+
+    return result;
 }
