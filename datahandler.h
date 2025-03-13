@@ -5,6 +5,7 @@
 #include "config.h"
 #include <QFile>
 #include "album.h"
+#include "SongInfo.h"
 
 class DataHandler : public QObject
 {
@@ -22,6 +23,13 @@ public:
     QList<Album> GetAlbums(const QString &artist_name);
     Album GetAlbum(const QString &artist_name, const QString &album_name);
 
+    void StartTimer(unsigned timeout_msec);
+    void StopTimer();
+    void SongInfoUpdate();
+
+signals:
+    void SongInfoUpdateSignal(const SongInfo);
+
 private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
     Config ReadConfigFile();
@@ -29,6 +37,8 @@ private:
 
     MPDCommunication mpd_communicator_ = MPDCommunication();
     Config config_;
+
+    QTimer *timer_;
 
 };
 

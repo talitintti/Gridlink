@@ -11,20 +11,30 @@ bool MPDCommunication::Initialize() {
     conn_ = mpd_connection_new("127.0.0.1", 6800, 0);
 
     if (conn_ == NULL) {
-        //fprintf(stderr, "Out of memory\n");
-        //throw "Out of memory";
+        qWarning() << "Could not connect to mpd \n";
         return false;
     }
+
     if (mpd_connection_get_error(conn_) != MPD_ERROR_SUCCESS) {
-        //auto error_msg = mpd_connection_get_error_message(conn);
-        //fprintf(stderr, "%s\n", error_msg);
-        //throw error_msg;
+        qWarning() << "Could not connect to mpd \n";
+        auto error_msg = mpd_connection_get_error_message(conn_);
+        qWarning() <<  error_msg;
         mpd_connection_free(conn_);
         return false;
     }
 
     return true;
+}
 
+// True on no error; false on error
+bool CheckForMPDError(struct mpd_connection *connection) {
+    if (mpd_connection_get_error(connection) != MPD_ERROR_SUCCESS) {
+        auto error_msg = mpd_connection_get_error_message(connection);
+        qWarning() <<  error_msg;
+        return false;
+    }
+
+    return true;
 }
 
 MPDCommunication::~MPDCommunication() {
@@ -44,6 +54,7 @@ QList<QString> MPDCommunication::GetArtists(const std::string artist_type) {
         found_artists.emplace_back(QString(pair->value));
         mpd_return_pair(conn_, pair);
     }
+    mpd_response_finish(conn_);
 
     return found_artists;
 }
@@ -79,6 +90,7 @@ QList<QString> MPDCommunication::GetTags(const char *return_tag, const char *con
         tag_values.emplace_back(QString(pair->value));
         mpd_return_pair(conn_, pair);
     }
+    mpd_response_finish(conn_);
 
     return tag_values;
 }
@@ -120,6 +132,7 @@ QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std
         songs.emplace_back(duplicate);
         mpd_song_free(song);
     }
+    mpd_response_finish(conn_);
 
     return songs;
 }
@@ -128,15 +141,55 @@ const Song MPDCommunication::GetCurrentSong() {
     struct mpd_song *song;
 
     if (!mpd_send_current_song(conn_)) {
+        qWarning() << "Failed to send MPD status request\n";
+        CheckForMPDError(conn_);
         return Song();
     }
 
     if ((song = mpd_recv_song(conn_)) == NULL) {
+        qWarning() << "Failed to receive MPD song \n";
+        CheckForMPDError(conn_);
         return Song();
     }
 
     struct mpd_song *duplicate = mpd_song_dup(song);
     mpd_song_free(song);
+    mpd_response_finish(conn_);
 
     return Song(duplicate);
+}
+
+unsigned MPDCommunication::GetKbitRate() {            // Send status request asynchronously
+    if (!mpd_send_status(conn_)) {
+        CheckForMPDError(conn_);
+        qWarning() << "Failed to send MPD status request\n";
+        return 0;
+    }
+
+    // Receive response
+    struct mpd_status *status = mpd_recv_status(conn_);
+    unsigned kbit_rate = mpd_status_get_kbit_rate(status);
+
+    mpd_status_free(status);
+    mpd_response_finish(conn_);
+
+    return kbit_rate;
+}
+
+unsigned MPDCommunication::ElapsedMS() {
+    if (!mpd_send_status(conn_)) {
+        CheckForMPDError(conn_);
+        qWarning() << "Failed to send MPD status request\n";
+        return 0;
+    }
+
+    // Receive response
+    struct mpd_status *status = mpd_recv_status(conn_);
+    unsigned elapsed_ms = mpd_status_get_elapsed_ms(status);
+
+    mpd_status_free(status);
+    mpd_response_finish(conn_);
+
+    return elapsed_ms;
+
 }

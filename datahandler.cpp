@@ -2,6 +2,7 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <QDir>
+#include <QTimer>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -20,12 +21,40 @@ bool DataHandler::Initialize() {
         return false;
     }
 
+    // Initialize timer
+    timer_ = new QTimer(this);
+    connect(timer_,
+            &QTimer::timeout,
+            this,
+            &DataHandler::SongInfoUpdate);
+
     return true;
+}
+
+void DataHandler::SongInfoUpdate() {
+    unsigned kbps = mpd_communicator_.GetKbitRate();
+    unsigned elapsed_ms = mpd_communicator_.ElapsedMS();
+    Song song = std::move(mpd_communicator_.GetCurrentSong());
+
+    const SongInfo info(std::move(song), elapsed_ms, kbps);
+
+    emit SongInfoUpdateSignal(info);
+}
+
+// Starts the timer for periodic signals
+void DataHandler::StartTimer(unsigned timeout_msec) {
+    if (timeout_msec > INT_MAX) timeout_msec = INT_MAX;
+    timer_->start(timeout_msec);
+}
+
+void DataHandler::StopTimer() {
+    timer_->stop();
 }
 
 QList<QString> DataHandler::GetArtistNames() {
     return mpd_communicator_.GetArtists("AlbumArtist"); // maybe config file decides artist_type
 }
+
 
 QList<QString> DataHandler::GetAlbumNames(const QString &artist_name) {
     auto list = mpd_communicator_.GetAlbumNames(artist_name.toStdString());
@@ -42,6 +71,7 @@ Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_nam
 
     return Album(std::move(songs));
 }
+
 
 void DataHandler::SetAlbumCover(Album &album) const {
     int width, height;
@@ -132,6 +162,7 @@ bool DataHandler::WriteConfigFile(QFile &configFile, const Config &config) {
 
     return true;
 }
+
 
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {

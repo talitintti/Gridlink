@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     datahandler_ = new DataHandler(this);
     datahandler_->Initialize();
+    datahandler_->StartTimer(500);
 
     //QString appDir = "Gridlink//Gridlink/Styles/fourth.qss";
     //LoadStyleSheet(appDir);
@@ -40,6 +41,11 @@ MainWindow::MainWindow(QWidget *parent)
             &ArtistView::AlbumDoubleClickedSignal,
             this,
             &MainWindow::OnAlbumDoubleClickedSlot);
+
+    connect(datahandler_,
+            &DataHandler::SongInfoUpdateSignal,
+            this,
+            &MainWindow::SetCurrentSongInfoSlot);
 
     stringListModel_buttons = new QStringListModel(this);
     stringListModel_playlists = new QStringListModel(this);
@@ -170,6 +176,17 @@ void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
 void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
     ChangeView(VIEW_ALBUM);
     album_view_->SetAlbum(album); // check that this isn't retarded
+}
+
+void MainWindow::SetCurrentSongInfoSlot(const SongInfo info) {
+    // set album_art
+    // set artist_name & song name & album_name
+    QString song_name = info.song_.GetName();
+    QString artist_name = info.song_.GetArtist();
+    ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
+                                     arg(song_name, artist_name));
+    // set kbit rate
+    // set how much has been played and how long the song is
 }
 
 

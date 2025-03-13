@@ -21,6 +21,8 @@ public:
     QList<QString> GetAlbumNames(const std::string artist_name);
     QList<Song> GetSongs(const std::string &artist_name, const std::string &album_name);
     const Song GetCurrentSong();
+    unsigned GetKbitRate();
+    unsigned ElapsedMS();
 
 private:
     QList<QString> GetTags(const char *return_tag, const char *constraint_tag, const char *constraint_val);
