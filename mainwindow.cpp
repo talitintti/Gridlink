@@ -13,7 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui_->setupUi(this);
     setWindowTitle("Gridlink");
 
-    datahandler_.Initialize();
+    datahandler_ = new DataHandler(this);
+    datahandler_->Initialize();
 
     //QString appDir = "Gridlink//Gridlink/Styles/fourth.qss";
     //LoadStyleSheet(appDir);
@@ -152,7 +153,7 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
         ChangeView(VIEW_HOME);
         break;
     case 1:
-        library_view_->SetData(datahandler_.GetArtistNames());
+        library_view_->SetData(datahandler_->GetArtistNames());
         ChangeView(VIEW_LIBRARY);
         break;
     case 2:
@@ -163,7 +164,7 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
 
 void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
     ChangeView(VIEW_ARTIST);
-    artist_view_->SetData(datahandler_.GetAlbums(artistname));
+    artist_view_->SetData(datahandler_->GetAlbums(artistname));
 }
 
 void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {

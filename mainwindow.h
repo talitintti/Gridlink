@@ -44,7 +44,7 @@ private:
 
     void LoadStyleSheet(const QString &filePath);
 
-    DataHandler datahandler_ = DataHandler();
+    DataHandler *datahandler_;
 
     LibraryView *library_view_;
     ArtistView *artist_view_;
