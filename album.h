@@ -12,8 +12,8 @@ public:
         height_(0),
         image_format_(QImage::Format_Invalid) {}
 
-    OImage(uint8_t *image_data, uint width, uint height, QImage::Format format) :
-        //image_data_(std::shared_ptr<uint8_t>(image_data, std::default_delete<uint8_t[]>())),
+    OImage(std::shared_ptr<uint8_t> ptr, uint width, uint height, QImage::Format format) :
+        image_data_(ptr),
         width_(width),
         height_(height),
         image_format_(format)
@@ -22,8 +22,6 @@ public:
         if (format != QImage::Format_RGB888) {
             qCritical() << "USING UNSUPPORTED FORMAT, CHANGE OImage CLASS IMMEDIATELY\n";
         }
-
-        image_data_ = std::shared_ptr<uint8_t>(image_data, std::default_delete<uint8_t[]>());
     }
 
     uint GetWidth() const { return width_; }
