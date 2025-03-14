@@ -2,6 +2,32 @@
 #include <QDebug>
 #include "song.h"
 
+
+int MPDStatus::Volume() const { return mpd_status_get_volume(status_); }
+int MPDStatus::Random() const { return mpd_status_get_random(status_); }
+int MPDStatus::Repeat() const { return mpd_status_get_repeat(status_); }
+mpd_consume_state MPDStatus::Consume() const { return mpd_status_get_consume_state(status_); }
+unsigned MPDStatus::ElapsedTime() const { return mpd_status_get_elapsed_ms(status_); }
+unsigned MPDStatus::TotalTime() const{ return mpd_status_get_total_time(status_); }
+unsigned MPDStatus::KbitRate() const { return mpd_status_get_kbit_rate(status_); }
+enum mpd_state MPDStatus::State() const { return mpd_status_get_state(status_); }
+bool MPDStatus::Updating() const { return mpd_status_get_update_id(status_); }
+
+AudioFormat MPDStatus::AudioFormat() const {
+    auto mpd_format = mpd_status_get_audio_format(status_);
+    struct AudioFormat audio_format;
+
+    audio_format.sample_rate = mpd_format->sample_rate;
+    audio_format.bits = mpd_format->bits;
+    audio_format.channels = mpd_format->channels;
+
+    return audio_format;
+}
+
+
+
+
+
 MPDCommunication::MPDCommunication() {
 }
 
@@ -159,7 +185,9 @@ const Song MPDCommunication::GetCurrentSong() {
     return Song(duplicate);
 }
 
-unsigned MPDCommunication::GetKbitRate() {            // Send status request asynchronously
+
+
+unsigned MPDCommunication::GetKbitRate() {
     if (!mpd_send_status(conn_)) {
         CheckForMPDError(conn_);
         qWarning() << "Failed to send MPD status request\n";

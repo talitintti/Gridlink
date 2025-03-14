@@ -25,8 +25,6 @@ public:
 
     void StartTimer(unsigned timeout_msec);
     void StopTimer();
-    void SongInfoUpdate();
-
 signals:
     void SongInfoUpdateSignal(const SongInfo);
 
@@ -34,6 +32,8 @@ private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
     Config ReadConfigFile();
     void SetAlbumCover(Album &album) const;
+    void SongInfoUpdate();
+
 
     MPDCommunication mpd_communicator_ = MPDCommunication();
     Config config_;
