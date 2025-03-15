@@ -7,7 +7,7 @@
 #include "datahandler.h"
 #include "artistview.h"
 #include "albumview.h"
-#include "SongInfo.h"
+#include "mpdstatus.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,7 +25,7 @@ public:
 public slots:
     void OnArtistDoubleClickedSlot(const QString &artistname);
     void OnAlbumDoubleClickedSlot(const Album &album);
-    void SetCurrentSongInfoSlot(const SongInfo);
+    void StatusUpdate(const MPDStatus&);
 private slots:
     // Change these to camelCase or whatever
     void on_listView_playlists_pressed(const QModelIndex &index);

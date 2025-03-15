@@ -5,7 +5,7 @@
 #include "config.h"
 #include <QFile>
 #include "album.h"
-#include "SongInfo.h"
+#include "mpdstatus.h"
 
 class DataHandler : public QObject
 {
@@ -25,8 +25,9 @@ public:
 
     void StartTimer(unsigned timeout_msec);
     void StopTimer();
+
 signals:
-    void SongInfoUpdateSignal(const SongInfo);
+    void StatusUpdateSignal(const MPDStatus&);
 
 private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
@@ -37,6 +38,7 @@ private:
 
     MPDCommunication mpd_communicator_ = MPDCommunication();
     Config config_;
+    MPDStatus last_update_;
 
     QTimer *timer_;
 

@@ -43,9 +43,9 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::OnAlbumDoubleClickedSlot);
 
     connect(datahandler_,
-            &DataHandler::SongInfoUpdateSignal,
+            &DataHandler::StatusUpdateSignal,
             this,
-            &MainWindow::SetCurrentSongInfoSlot);
+            &MainWindow::StatusUpdate);
 
     stringListModel_buttons = new QStringListModel(this);
     stringListModel_playlists = new QStringListModel(this);
@@ -178,11 +178,11 @@ void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
     album_view_->SetAlbum(album); // check that this isn't retarded
 }
 
-void MainWindow::SetCurrentSongInfoSlot(const SongInfo info) {
+void MainWindow::StatusUpdate(const MPDStatus &info) {
     // set album_art
     // set artist_name & song name & album_name
-    QString song_name = info.song_.GetName();
-    QString artist_name = info.song_.GetArtist();
+    QString song_name = info.CurrentSong().GetName();
+    QString artist_name = info.CurrentSong().GetArtist();
     ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
                                      arg(song_name, artist_name));
     // set kbit rate

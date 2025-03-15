@@ -32,13 +32,17 @@ bool DataHandler::Initialize() {
 }
 
 void DataHandler::SongInfoUpdate() {
-    unsigned kbps = mpd_communicator_.GetKbitRate();
-    unsigned elapsed_ms = mpd_communicator_.ElapsedMS();
     Song song = std::move(mpd_communicator_.GetCurrentSong());
 
-    const SongInfo info(std::move(song), elapsed_ms, kbps);
+    auto mpd_status = mpd_communicator_.GetStatus();
+    if (mpd_status == NULL) {
+        return emit StatusUpdateSignal(last_update_);
+    }
 
-    emit SongInfoUpdateSignal(info);
+    MPDStatus status(mpd_status, std::move(song));
+    last_update_ = std::move(status);
+
+    emit StatusUpdateSignal(status);
 }
 
 // Starts the timer for periodic signals
