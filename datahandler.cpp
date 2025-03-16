@@ -32,17 +32,16 @@ bool DataHandler::Initialize() {
 }
 
 void DataHandler::SongInfoUpdate() {
-    Song song = std::move(mpd_communicator_.GetCurrentSong());
-
     auto mpd_status = mpd_communicator_.GetStatus();
-    if (mpd_status == NULL) {
+    if (mpd_status == NULL || mpd_status_get_state(mpd_status) == MPD_STATE_STOP) {
         return emit StatusUpdateSignal(last_update_);
     }
 
+    Song song = std::move(mpd_communicator_.GetCurrentSong());
     MPDStatus status(mpd_status, std::move(song));
     last_update_ = std::move(status);
 
-    emit StatusUpdateSignal(status);
+    emit StatusUpdateSignal(last_update_);
 }
 
 // Starts the timer for periodic signals
