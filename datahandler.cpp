@@ -14,6 +14,10 @@ extern "C" {
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string &path, int &width, int &height); // TODO: maybe move this function to other file instead
 
+DataHandler::~DataHandler() {
+    mpd_status_updates_->Stop();
+    delete mpd_status_updates_;
+}
 
 bool DataHandler::Initialize() {
     config_ = ReadConfigFile();
@@ -21,13 +25,6 @@ bool DataHandler::Initialize() {
     if (!mpd_communicator_.Initialize()) {
         return false;
     }
-
-    // Initialize timer for updating the UI through signals
-    timer_ = new QTimer(this);
-    connect(timer_,
-            &QTimer::timeout,
-            this,
-            &DataHandler::SongInfoUpdate);
 
     //Make a thread to get mpd notifications about status updates
     mpd_status_updates_ = new MPDNotif(this);
@@ -44,7 +41,8 @@ bool DataHandler::Initialize() {
     return true;
 }
 
-void DataHandler::SongInfoUpdate() {
+
+void DataHandler::StatusUpdate() {
     auto mpd_status = mpd_communicator_.GetStatus();
     if (mpd_status == NULL || mpd_status_get_state(mpd_status) == MPD_STATE_STOP) {
         return emit StatusUpdateSignal(last_update_);
@@ -57,15 +55,6 @@ void DataHandler::SongInfoUpdate() {
     emit StatusUpdateSignal(last_update_);
 }
 
-// Starts the timer for periodic signals
-void DataHandler::StartTimer(unsigned timeout_msec) {
-    if (timeout_msec > INT_MAX) timeout_msec = INT_MAX;
-    timer_->start(timeout_msec);
-}
-
-void DataHandler::StopTimer() {
-    timer_->stop();
-}
 
 QList<QString> DataHandler::GetArtistNames() {
     return mpd_communicator_.GetArtists("AlbumArtist"); // maybe config file decides artist_type
@@ -322,6 +311,10 @@ std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, i
     return result;
 }
 
+void DataHandler::PlayStateChange() {
+
+}
+
 //TODO: implement all
 void DataHandler::StatusUpdateSlot(mpd_idle events) {
     if (events & MPD_IDLE_DATABASE) {
@@ -337,6 +330,7 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
         std::cout << "Playlist changed!\n";
     }
     if (events & MPD_IDLE_PLAYER) {
+        PlayStateChange();
         std::cout << "Player state changed!\n";
     }
     if (events & MPD_IDLE_MIXER) {

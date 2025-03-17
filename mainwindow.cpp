@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     datahandler_ = new DataHandler(this);
     datahandler_->Initialize();
-    datahandler_->StartTimer(500);
 
     //QString appDir = "Gridlink//Gridlink/Styles/fourth.qss";
     //LoadStyleSheet(appDir);
