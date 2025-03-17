@@ -23,7 +23,7 @@ LibraryView::~LibraryView()
 
 void LibraryView::SetData(const QList<QString> &data) {
     ui_->listWidget->clear();
-    for (QString item : data) {
+    for (const QString &item : data) {
         ui_->listWidget->addItem(item);
     }
 }

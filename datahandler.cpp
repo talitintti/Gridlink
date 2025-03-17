@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDir>
 #include <QTimer>
+#include <iostream>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -21,12 +22,24 @@ bool DataHandler::Initialize() {
         return false;
     }
 
-    // Initialize timer
+    // Initialize timer for updating the UI through signals
     timer_ = new QTimer(this);
     connect(timer_,
             &QTimer::timeout,
             this,
             &DataHandler::SongInfoUpdate);
+
+    //Make a thread to get mpd notifications about status updates
+    mpd_status_updates_ = new MPDNotif(this);
+    if (!mpd_status_updates_->MakeConnection()) { //TODO:read from config file to get mpd settings
+        return false;
+    }
+
+    connect(mpd_status_updates_,
+            &MPDNotif::MpdNotifSignal,
+            this,
+            &DataHandler::StatusUpdateSlot);
+    mpd_status_updates_->start();
 
     return true;
 }
@@ -307,4 +320,44 @@ std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, i
     });
 
     return result;
+}
+
+//TODO: implement all
+void DataHandler::StatusUpdateSlot(mpd_idle events) {
+    if (events & MPD_IDLE_DATABASE) {
+        std::cout << "Database updated!\n";
+    }
+    if (events & MPD_IDLE_UPDATE) {
+        std::cout << "Update started!\n";
+    }
+    if (events & MPD_IDLE_STORED_PLAYLIST) {
+        std::cout << "Stored playlist changed!\n";
+    }
+    if (events & MPD_IDLE_PLAYLIST) {
+        std::cout << "Playlist changed!\n";
+    }
+    if (events & MPD_IDLE_PLAYER) {
+        std::cout << "Player state changed!\n";
+    }
+    if (events & MPD_IDLE_MIXER) {
+        std::cout << "Mixer settings changed!\n";
+    }
+    if (events & MPD_IDLE_OUTPUT) {
+        std::cout << "Output settings changed!\n";
+    }
+    if (events & MPD_IDLE_OPTIONS) {
+        std::cout << "Options changed!\n";
+    }
+    if (events & MPD_IDLE_PARTITION) {
+        std::cout << "Partition changed!\n";
+    }
+    if (events & MPD_IDLE_STICKER) {
+        std::cout << "Sticker database changed!\n";
+    }
+    if (events & MPD_IDLE_SUBSCRIPTION) {
+        std::cout << "Subscription changed!\n";
+    }
+    if (events & MPD_IDLE_MESSAGE) {
+        std::cout << "New message received!\n";
+    }
 }

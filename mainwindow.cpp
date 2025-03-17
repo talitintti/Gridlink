@@ -185,8 +185,8 @@ void MainWindow::StatusUpdate(const MPDStatus &info) {
     QString artist_name = info.CurrentSong().GetArtist();
     ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
                                      arg(song_name, artist_name));
-    // set kbit rate
-    // set how much has been played and how long the song is
+    // TODO:set kbit rate
+    // TODO:set how much has been played and how long the song is
 }
 
 

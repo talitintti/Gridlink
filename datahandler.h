@@ -6,6 +6,7 @@
 #include <QFile>
 #include "album.h"
 #include "mpdstatus.h"
+#include "mpdnotif.h"
 
 class DataHandler : public QObject
 {
@@ -29,6 +30,9 @@ public:
 signals:
     void StatusUpdateSignal(const MPDStatus&);
 
+private slots:
+    void StatusUpdateSlot(mpd_idle);
+
 private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
     Config ReadConfigFile();
@@ -37,6 +41,7 @@ private:
 
 
     MPDCommunication mpd_communicator_ = MPDCommunication();
+    MPDNotif *mpd_status_updates_;
     Config config_;
     MPDStatus last_update_;
 
