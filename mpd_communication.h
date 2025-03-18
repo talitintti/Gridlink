@@ -24,7 +24,7 @@ public:
     unsigned GetKbitRate();
     unsigned ElapsedMS();
     mpd_status *GetStatus();
-
+    void TogglePlay(bool is_playing);
 
 private:
     QList<QString> GetTags(const char *return_tag, const char *constraint_tag, const char *constraint_val);

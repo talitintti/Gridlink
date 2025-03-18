@@ -32,6 +32,8 @@ private slots:
     void on_listView_viewSelects_pressed(const QModelIndex &index);
 
 
+    void on_pushButton_pause_clicked();
+
 private:
     enum VIEW {
         VIEW_LIBRARY, VIEW_ARTIST, VIEW_ALBUM, VIEW_SEARCH, VIEW_HOME

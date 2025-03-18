@@ -37,6 +37,7 @@ bool DataHandler::Initialize() {
 
 void DataHandler::StatusUpdate() {
     auto mpd_status = mpd_communicator_.GetStatus();
+
     if (mpd_status == NULL || mpd_status_get_state(mpd_status) == MPD_STATE_STOP) {
         return emit StatusUpdateSignal(last_update_);
     }
@@ -61,6 +62,7 @@ QList<QString> DataHandler::GetAlbumNames(const QString &artist_name) {
 
 
 Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_name) {
+    qDebug() << artist_name << "-" << album_name << "\n";
     QList<Song> songs;
     std::string ar_name_std = artist_name.toStdString();
     std::string al_name_std = album_name.toStdString();
@@ -343,5 +345,22 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
     }
     if (events & MPD_IDLE_MESSAGE) {
         std::cout << "New message received!\n";
+    }
+}
+
+void DataHandler::TogglePlay() {
+    auto state = last_update_.State();
+
+    switch(state) {
+    case MPD_STATE_PAUSE:
+        mpd_communicator_.TogglePlay(false);
+        break;
+    case MPD_STATE_PLAY:
+        mpd_communicator_.TogglePlay(true);
+        break;
+    case MPD_STATE_STOP:
+        break;
+    case MPD_STATE_UNKNOWN:
+        break;
     }
 }

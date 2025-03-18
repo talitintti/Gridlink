@@ -8,7 +8,7 @@ MPDCommunication::MPDCommunication() {
 
 //TODO: set port as parameter to be loaded from config
 bool MPDCommunication::Initialize() {
-    conn_ = mpd_connection_new("127.0.0.1", 6800, 0);
+    conn_ = mpd_connection_new(NULL, 0, 0);
 
     if (conn_ == NULL) {
         qWarning() << "Could not connect to mpd \n";
@@ -109,7 +109,7 @@ QList<QString> MPDCommunication::GetAlbumNames(const std::string artist_name) {
 QList<Song> MPDCommunication::GetSongs(const std::string &artist_name, const std::string &album_name) {
     QList<Song> songs;
     enum mpd_tag_type album_type_tag = MPD_TAG_ALBUM;
-    enum mpd_tag_type artist_type_tag = MPD_TAG_ALBUM_ARTIST; // could be ARTIST_SORT
+    enum mpd_tag_type artist_type_tag = MPD_TAG_ALBUM_ARTIST;
     const char *artist_name_c = artist_name.c_str();
     const char *album_name_c = album_name.c_str();
     struct mpd_song *song;
@@ -213,4 +213,9 @@ unsigned MPDCommunication::ElapsedMS() {
 
     return elapsed_ms;
 
+}
+
+// if true: pause, if false: resume
+void MPDCommunication::TogglePlay(bool is_playing) {
+    mpd_run_pause(conn_, is_playing);
 }

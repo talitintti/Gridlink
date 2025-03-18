@@ -46,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::StatusUpdate);
 
+
+    datahandler_->StatusUpdate(); // status update once at start
+
     stringListModel_buttons = new QStringListModel(this);
     stringListModel_playlists = new QStringListModel(this);
 
@@ -199,3 +202,9 @@ void MainWindow::LoadStyleSheet(const QString &filePath) {
         QApplication::setStyle(styleSheet);
     }
 }
+
+void MainWindow::on_pushButton_pause_clicked()
+{
+    datahandler_->TogglePlay();
+}
+

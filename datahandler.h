@@ -23,6 +23,8 @@ public:
     QList<QString> GetAlbumNames(const QString &artist_name);
     QList<Album> GetAlbums(const QString &artist_name);
     Album GetAlbum(const QString &artist_name, const QString &album_name);
+    void StatusUpdate();
+    void TogglePlay();
 
 signals:
     void StatusUpdateSignal(const MPDStatus&);
@@ -34,14 +36,12 @@ private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
     Config ReadConfigFile();
     void SetAlbumCover(Album &album) const;
-    void StatusUpdate();
 
 
     MPDCommunication mpd_communicator_ = MPDCommunication();
     MPDNotif *mpd_status_updates_;
     Config config_;
     MPDStatus last_update_;
-
 
 
 };
