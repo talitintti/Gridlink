@@ -42,7 +42,6 @@ private:
     Config config_;
     MPDStatus last_update_;
 
-    void PlayStateChange();
 
 
 };

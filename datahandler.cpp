@@ -15,8 +15,6 @@ extern "C" {
 std::shared_ptr<uint8_t[]> GetPicture(const std::string &path, int &width, int &height); // TODO: maybe move this function to other file instead
 
 DataHandler::~DataHandler() {
-    mpd_status_updates_->Stop();
-    delete mpd_status_updates_;
 }
 
 bool DataHandler::Initialize() {
@@ -26,17 +24,12 @@ bool DataHandler::Initialize() {
         return false;
     }
 
-    //Make a thread to get mpd notifications about status updates
-    mpd_status_updates_ = new MPDNotif(this);
-    if (!mpd_status_updates_->MakeConnection()) { //TODO:read from config file to get mpd settings
-        return false;
-    }
-
+    // Let's get updates from MPD on MPD server state changes
+    mpd_status_updates_ = new MPDNotif(this, NULL, 0, 1000);
     connect(mpd_status_updates_,
-            &MPDNotif::MpdNotifSignal,
+            &MPDNotif::PlayerStateChanged,
             this,
             &DataHandler::StatusUpdateSlot);
-    mpd_status_updates_->start();
 
     return true;
 }
@@ -311,9 +304,6 @@ std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, i
     return result;
 }
 
-void DataHandler::PlayStateChange() {
-
-}
 
 //TODO: implement all
 void DataHandler::StatusUpdateSlot(mpd_idle events) {
@@ -330,7 +320,7 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
         std::cout << "Playlist changed!\n";
     }
     if (events & MPD_IDLE_PLAYER) {
-        PlayStateChange();
+        StatusUpdate();
         std::cout << "Player state changed!\n";
     }
     if (events & MPD_IDLE_MIXER) {
