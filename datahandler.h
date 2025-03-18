@@ -25,6 +25,7 @@ public:
     Album GetAlbum(const QString &artist_name, const QString &album_name);
     void StatusUpdate();
     void TogglePlay();
+    //void StartPlaying();
 
 signals:
     void StatusUpdateSignal(const MPDStatus&);
@@ -42,8 +43,6 @@ private:
     MPDNotif *mpd_status_updates_;
     Config config_;
     MPDStatus last_update_;
-
-
 };
 
 #endif // DATAHANDLER_H

@@ -28,6 +28,11 @@ bool MPDCommunication::Initialize() {
 
 // True on no error; false on error
 bool CheckForMPDError(struct mpd_connection *connection) {
+    if (connection == NULL) {
+        qWarning() << "mpd_connection is null - aborting\n";
+        return false;
+    }
+
     if (mpd_connection_get_error(connection) != MPD_ERROR_SUCCESS) {
         auto error_msg = mpd_connection_get_error_message(connection);
         qWarning() <<  error_msg;
@@ -218,4 +223,18 @@ unsigned MPDCommunication::ElapsedMS() {
 // if true: pause, if false: resume
 void MPDCommunication::TogglePlay(bool is_playing) {
     mpd_run_pause(conn_, is_playing);
+}
+
+
+void MPDCommunication::AddToQueue(QList<Song> &song_list) {
+    if (!CheckForMPDError(conn_)) {
+        qWarning() << "Cannot add to queue \n";
+    }
+
+    for (const auto &song : song_list) {
+        auto path_std = song.GetSongPath().toStdString();
+        if (!mpd_run_add(conn_, path_std.c_str())) {
+            qWarning() << "Cannot add song " << path_std << " to queue\n";
+        }
+    }
 }
