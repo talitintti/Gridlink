@@ -41,6 +41,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::OnAlbumDoubleClickedSlot);
 
+    connect(album_view_,
+            &AlbumView::SongChosenForPlaySignal,
+            this,
+            &MainWindow::PlaySongsSlot);
+
     connect(datahandler_,
             &DataHandler::StatusUpdateSignal,
             this,
@@ -206,5 +211,12 @@ void MainWindow::LoadStyleSheet(const QString &filePath) {
 void MainWindow::on_pushButton_pause_clicked()
 {
     datahandler_->TogglePlay();
+}
+
+void MainWindow::PlaySongsSlot(const QList<Song> &songs, unsigned index) {
+    qDebug() << index;
+    datahandler_->ClearQueue();
+    datahandler_->AddToQueue(songs);
+    datahandler_->StartPlayingQueue(index);
 }
 

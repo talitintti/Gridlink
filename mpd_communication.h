@@ -26,7 +26,9 @@ public:
     mpd_status *GetStatus();
     void TogglePlay(bool is_playing);
 
-    void AddToQueue(QList<Song> &song_uri_list);
+    void AddToQueue(const QList<Song> &);
+    void PlayInQueue(unsigned index = 0);
+    void ClearQueue();
 
 private:
     QList<QString> GetTags(const char *return_tag, const char *constraint_tag, const char *constraint_val);

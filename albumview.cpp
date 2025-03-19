@@ -39,6 +39,8 @@ void AlbumView::SetAlbum(const Album &album) {
         QImage scaled_image = image.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(scaled_image));
     }
+
+    connect(ui_->tableView, &QTableView::doubleClicked, this, &AlbumView::SongChosenForPlaySlot);
 }
 
 void AlbumView::SetTableAppearance(QTableView *table_view) {
@@ -91,4 +93,13 @@ void AlbumView::SetTableAppearance(QTableView *table_view) {
         "}	"
     );
 
+}
+
+void AlbumView::SongChosenForPlaySlot(const QModelIndex &q_index) {
+    if (!q_index.isValid()) {
+        return;
+    }
+    unsigned row = q_index.row();
+
+    emit SongChosenForPlaySignal(album_.GetSongs(), row);
 }

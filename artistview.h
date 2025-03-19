@@ -13,6 +13,7 @@ class AlbumListModel : public QAbstractListModel {
 
     void setAlbums(QList<Album> albumList) {
         beginResetModel();
+        qDebug() << albumList.at(0).GetName() << " \n";
         albums_ = albumList;
         endResetModel();
     }

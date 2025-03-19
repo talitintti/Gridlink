@@ -226,7 +226,7 @@ void MPDCommunication::TogglePlay(bool is_playing) {
 }
 
 
-void MPDCommunication::AddToQueue(QList<Song> &song_list) {
+void MPDCommunication::AddToQueue(const QList<Song> &song_list) {
     if (!CheckForMPDError(conn_)) {
         qWarning() << "Cannot add to queue \n";
     }
@@ -235,6 +235,26 @@ void MPDCommunication::AddToQueue(QList<Song> &song_list) {
         auto path_std = song.GetSongPath().toStdString();
         if (!mpd_run_add(conn_, path_std.c_str())) {
             qWarning() << "Cannot add song " << path_std << " to queue\n";
+            CheckForMPDError(conn_);
         }
+    }
+}
+
+void MPDCommunication::PlayInQueue(unsigned index_in_queue) {
+    if (!mpd_send_play_id(conn_, index_in_queue)) {
+        qWarning() << "Cannot play in queue \n";
+        CheckForMPDError(conn_);
+    }
+
+    mpd_response_finish(conn_);
+}
+
+void MPDCommunication::ClearQueue() {
+    if (!CheckForMPDError(conn_)) {
+        qWarning() << "Cannot clear queue \n";
+    }
+
+    if (!mpd_run_clear(conn_)) {
+        CheckForMPDError(conn_);
     }
 }

@@ -25,7 +25,9 @@ public:
     Album GetAlbum(const QString &artist_name, const QString &album_name);
     void StatusUpdate();
     void TogglePlay();
-    //void StartPlaying();
+    void AddToQueue(const QList<Song> &);
+    void StartPlayingQueue(unsigned index = 0);
+    void ClearQueue();
 
 signals:
     void StatusUpdateSignal(const MPDStatus&);

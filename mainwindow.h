@@ -27,12 +27,11 @@ public slots:
     void OnAlbumDoubleClickedSlot(const Album &album);
     void StatusUpdate(const MPDStatus&);
 private slots:
-    // Change these to camelCase or whatever
+    // TODO: Change these to camelCase or whatever
     void on_listView_playlists_pressed(const QModelIndex &index);
     void on_listView_viewSelects_pressed(const QModelIndex &index);
-
-
     void on_pushButton_pause_clicked();
+    void PlaySongsSlot(const QList<Song> &, unsigned);
 
 private:
     enum VIEW {

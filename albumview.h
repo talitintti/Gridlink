@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "album.h"
-#include "SongTableModel.h"
+#include "songtablemodel.h"
 #include <QTableView>
 
 namespace Ui {
@@ -19,6 +19,12 @@ public:
     ~AlbumView();
 
     void SetAlbum(const Album &album);
+
+signals:
+    void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);
+private slots:
+    void SongChosenForPlaySlot(const QModelIndex &);
+
 private:
     Ui::AlbumView *ui_;
     SongTableModel *song_table_model_ = nullptr;

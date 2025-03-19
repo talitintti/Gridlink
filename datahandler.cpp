@@ -62,14 +62,12 @@ QList<QString> DataHandler::GetAlbumNames(const QString &artist_name) {
 
 
 Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_name) {
-    qDebug() << artist_name << "-" << album_name << "\n";
     QList<Song> songs;
     std::string ar_name_std = artist_name.toStdString();
     std::string al_name_std = album_name.toStdString();
     songs = mpd_communicator_.GetSongs(ar_name_std, al_name_std);
 
-
-    return Album(std::move(songs));
+    return Album(std::move(songs), album_name);
 }
 
 
@@ -96,7 +94,11 @@ QList<Album> DataHandler::GetAlbums(const QString &artist_name) {
     QList<QString> album_names(mpd_communicator_.GetAlbumNames(artist_name.toStdString()));
     for (const auto &album_name : std::as_const(album_names)) {
         std::string al_name_std = album_name.toStdString();
-        Album album(std::move(mpd_communicator_.GetSongs(ar_name_std, al_name_std)));
+
+        Album album(
+            std::move(mpd_communicator_.GetSongs(ar_name_std, al_name_std)),
+            album_name);
+
         SetAlbumCover(album);
         albums.push_back(std::move(album));
     }
@@ -363,4 +365,16 @@ void DataHandler::TogglePlay() {
     case MPD_STATE_UNKNOWN:
         break;
     }
+}
+
+void DataHandler::AddToQueue(const QList<Song> &songs) {
+    mpd_communicator_.AddToQueue(songs);
+}
+
+void DataHandler::StartPlayingQueue(unsigned index) {
+    mpd_communicator_.PlayInQueue(index);
+}
+
+void DataHandler::ClearQueue() {
+    mpd_communicator_.ClearQueue();
 }
