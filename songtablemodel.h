@@ -14,12 +14,10 @@ public:
         : QAbstractTableModel(parent), song_list_(songs) {}
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override {
-        Q_UNUSED(parent)
         return song_list_.size(); // Number of songs
     }
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const override {
-        Q_UNUSED(parent)
         return 3; // Track Number, Name, Duration
     }
 

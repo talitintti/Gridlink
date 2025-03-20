@@ -241,7 +241,7 @@ void MPDCommunication::AddToQueue(const QList<Song> &song_list) {
 }
 
 void MPDCommunication::PlayInQueue(unsigned index_in_queue) {
-    if (!mpd_send_play_id(conn_, index_in_queue)) {
+    if (!mpd_run_play_pos(conn_, index_in_queue)) {
         qWarning() << "Cannot play in queue \n";
         CheckForMPDError(conn_);
     }
