@@ -1,6 +1,7 @@
 #include "albumview.h"
 #include "ui_albumview.h"
 #include <QTableView>
+#include <QAbstractItemModel>
 
 AlbumView::AlbumView(QWidget *parent)
     : QWidget(parent)

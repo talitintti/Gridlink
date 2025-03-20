@@ -22,8 +22,10 @@ public:
 
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);
+
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);
+    //void InformSongPlayingSlot(unsigned index);
 
 private:
     Ui::AlbumView *ui_;

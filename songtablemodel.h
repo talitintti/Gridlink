@@ -5,13 +5,17 @@
 #include <QList>
 #include "helpers.h"
 #include "song.h"
+#include <QBrush>
 
 class SongTableModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
     explicit SongTableModel(const QList<Song> &songs, QObject *parent = nullptr)
-        : QAbstractTableModel(parent), song_list_(songs) {}
+        : QAbstractTableModel(parent),
+        song_list_(songs) ,
+        playing_song_row_(-1),
+        song_highlight_color_(Qt::green) {}
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override {
         return song_list_.size(); // Number of songs
@@ -29,10 +33,16 @@ public:
 
         if (role == Qt::DisplayRole) {
             switch (index.column()) {
-                case 0: return index.row() + 1; // Track #
-                case 1: return song.GetName();        // Name
-                case 2: return FormattedTime(song.GetDurationSec());    // Duration
+                case TRACK_NUMBER: return index.row() + 1; // Track #
+                case SONG_NAME: return song.GetName();        // Name
+                case SONG_LENGTH: return FormattedTime(song.GetDurationSec());    // Duration
                 default: return QVariant();
+            }
+        }
+
+        if (role == Qt::ForegroundRole) {
+            if (playing_song_row_ == index.row() && (index.column() == 0 || index.column() == 1)) {
+                return QBrush(QColor(song_highlight_color_));
             }
         }
 
@@ -43,9 +53,9 @@ public:
         if (role == Qt::DisplayRole) {
             if (orientation == Qt::Horizontal) {
                 switch (section) {
-                    case 0: return "#";         // Track Number
-                    case 1: return "Song Name"; // Name
-                    case 2: return "Duration";  // Duration
+                    case TRACK_NUMBER: return "#";         // Track Number
+                    case SONG_NAME: return "Song Name"; // Name
+                    case SONG_LENGTH: return "Duration";  // Duration
                 }
             }
         }
@@ -56,8 +66,28 @@ public:
         song_list_ = QList<Song>(songs);
     }
 
+    void HighlightSong(const Song &current_song) {
+        for (int i=0; i<song_list_.count(); i++) {
+            if (current_song == song_list_.at(i)) {
+                emit dataChanged(createIndex(i,TRACK_NUMBER),
+                                 createIndex(i,SONG_NAME),
+                                 {Qt::ForegroundRole});
+            }
+        }
+    }
+
+    void SetHighlightColor(QRgb color) {
+        song_highlight_color_ = color;
+    }
+
 private:
     QList<Song> song_list_;
+    int playing_song_row_;
+    QRgb song_highlight_color_;
+
+    static constexpr unsigned TRACK_NUMBER = 0;
+    static constexpr unsigned SONG_NAME = 1;
+    static constexpr unsigned SONG_LENGTH = 2;
 };
 
 #endif // SONGTABLEMODEL_H

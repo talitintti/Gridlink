@@ -19,6 +19,10 @@ public:
         return *this;
     }
 
+    bool operator==(const Song &other) const {
+        return this->GetSongPath() == other.GetSongPath();
+    }
+
     QString GetName() const;
     QString GetArtist() const;
     QString GetAlbumArtist() const;
