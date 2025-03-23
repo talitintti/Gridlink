@@ -11,10 +11,10 @@ class SongTableModel : public QAbstractTableModel {
     Q_OBJECT
 
 public:
-    explicit SongTableModel(const QList<Song> &songs, QObject *parent = nullptr)
+    explicit SongTableModel(QObject *parent = nullptr)
         : QAbstractTableModel(parent),
-        song_list_(songs) ,
         playing_song_row_(-1),
+        last_played_song_hash_(-1),
         song_highlight_color_(Qt::green) {}
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override {
@@ -62,32 +62,67 @@ public:
         return QVariant();
     }
 
-    void ChangeSongList(const QList<Song> &songs) {
-        song_list_ = QList<Song>(songs);
+
+    void SetSongAsPlaying(size_t song_hash) {
+        if (playing_song_row_ != -1) return; // Something is already playing
+
+        int song_index = FindSongInList(song_hash);
+        if (song_index == -1) {
+            qWarning() << "Trying to highlight song that doens't exist" << "\n";
+            return;
+        }
+
+        playing_song_row_ = song_index;
+        last_played_song_hash_ = song_hash;
+
+        emit dataChanged(createIndex(song_index, TRACK_NUMBER),
+                            createIndex(song_index, SONG_NAME),
+                            {Qt::ForegroundRole});
     }
 
-    void HighlightSong(const Song &current_song) {
-        for (int i=0; i<song_list_.count(); i++) {
-            if (current_song == song_list_.at(i)) {
-                emit dataChanged(createIndex(i,TRACK_NUMBER),
-                                 createIndex(i,SONG_NAME),
-                                 {Qt::ForegroundRole});
-            }
+    void SetPlayingAsStopped() {
+        if (playing_song_row_ == -1) return; // We are not playing anything
+        int song_index = FindSongInList(last_played_song_hash_);
+        if (song_index == -1) {
+            qWarning() << "Trying to unhighlight nonexistent song" << "\n";
+            return;
         }
+
+        emit dataChanged(createIndex(song_index, TRACK_NUMBER),
+                            createIndex(song_index, SONG_NAME),
+                            {Qt::ForegroundRole});
+
+        playing_song_row_ = -1;  // set as not playing
     }
+
+
 
     void SetHighlightColor(QRgb color) {
         song_highlight_color_ = color;
     }
 
+    void SetSongs(const QList<Song> &songs) {
+        song_list_ = songs;
+    }
+
 private:
     QList<Song> song_list_;
     int playing_song_row_;
+    size_t last_played_song_hash_; // needed since I wont rely on the song order not changing within the list
     QRgb song_highlight_color_;
 
     static constexpr unsigned TRACK_NUMBER = 0;
     static constexpr unsigned SONG_NAME = 1;
     static constexpr unsigned SONG_LENGTH = 2;
+
+
+    int FindSongInList(size_t song_hash) {
+        for (int i=0; i<song_list_.count(); i++) {
+            if (song_hash == song_list_.at(i).GetHash()) return i;
+        }
+        return -1;
+    }
+
 };
 
 #endif // SONGTABLEMODEL_H

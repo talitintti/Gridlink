@@ -5,7 +5,6 @@
 #include "artistview.h"
 #include <QListWidget>
 
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui_(new Ui::MainWindow)
@@ -47,12 +46,18 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::PlaySongsSlot);
 
     connect(datahandler_,
-            &DataHandler::StatusUpdateSignal,
+            &DataHandler::SongUpdateSignal,
             this,
-            &MainWindow::StatusUpdate);
+            &MainWindow::SongPlaySlot);
+
+    connect(datahandler_,
+            &DataHandler::SongStoppedSignal,
+            this,
+            &MainWindow::PlaybackStoppedSlot);
 
 
     datahandler_->StatusUpdate(); // status update once at start
+
 
     stringListModel_buttons = new QStringListModel(this);
     stringListModel_playlists = new QStringListModel(this);
@@ -67,7 +72,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     buttons << utf_house + " Home";
     buttons << utf_house + " Library";
-    buttons << utf_house + " Search";
     buttons << utf_house + " Discover";
 
     for (int i = 0; i < 50; i++) {
@@ -129,15 +133,15 @@ void MainWindow::Init_upper_toolbar(Ui::MainWindow *ui) {
 }
 
 void MainWindow::Init_lower_toolbar(Ui::MainWindow *ui) {
-    int circ = 24;
-    //ui->pushButton_last_song->setFixedHeight(circ);
-    //ui->pushButton_last_song->setFixedWidth(circ);
+//	int circ = 30;
+//   ui->pushButton_last_song->setFixedHeight(circ);
+//   ui->pushButton_last_song->setFixedWidth(circ);
 
-    //ui->pushButton_next_song->setFixedHeight(circ);
-    //ui->pushButton_next_song->setFixedWidth(circ);
+   //ui->pushButton_next_song->setFixedHeight(circ);
+   //ui->pushButton_next_song->setFixedWidth(circ);
 
-    //ui->pushButton_pause->setFixedHeight(circ+4);
-    //ui->pushButton_pause->setFixedWidth(circ+4);
+   //ui->pushButton_pause->setFixedHeight(circ+4);
+   //ui->pushButton_pause->setFixedWidth(circ+4);
 
    // QRect rect(0,0,circ-6,circ-6);
    // QRegion region(rect, QRegion::Ellipse);
@@ -185,16 +189,20 @@ void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
     album_view_->SetAlbum(album); // check that this isn't retarded
 }
 
-void MainWindow::StatusUpdate(const MPDStatus &info) {
-    // set album_art
-    // set artist_name & song name & album_name
-    QString song_name = info.CurrentSong().GetName();
-    QString artist_name = info.CurrentSong().GetArtist();
-    ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
-                                     arg(song_name, artist_name));
-    // TODO:set kbit rate
-    // TODO:set how much has been played and how long the song is
-}
+// Status updates from outside the UI
+//void MainWindow::StatusUpdate(const MPDStatus &info) {
+//    // set album_art
+//    // set artist_name & song name & album_name
+//    QString song_name = info.CurrentSong().GetName();
+//    QString artist_name = info.CurrentSong().GetArtist();
+//    ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
+//                                     arg(song_name, artist_name));
+//
+//
+//    // Tell albumview that we are playing something (if we are)
+//    // TODO:set kbit rate
+//    // TODO:set how much has been played and how long the song is
+//}
 
 
 void MainWindow::LoadStyleSheet(const QString &filePath) {
@@ -213,6 +221,7 @@ void MainWindow::on_pushButton_pause_clicked()
     datahandler_->TogglePlay();
 }
 
+// When UI component informs that some songs are to be played
 void MainWindow::PlaySongsSlot(const QList<Song> &songs, unsigned index) {
     qDebug() << index;
     datahandler_->ClearQueue();
@@ -220,3 +229,18 @@ void MainWindow::PlaySongsSlot(const QList<Song> &songs, unsigned index) {
     datahandler_->StartPlayingQueue(index);
 }
 
+
+void MainWindow::SongPlaySlot(const Song &song ) {
+    QString song_name = song.GetName();
+    QString artist_name = song.GetArtist();
+    if (song_name.isEmpty() || artist_name.isEmpty()) return;
+
+    ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
+                                     arg(song_name, artist_name));
+    album_view_->InformSongPlaying(song);
+}
+
+void MainWindow::PlaybackStoppedSlot() {
+    ui_->label_playing_info->setText("");
+    album_view_->InformSongNotPlaying();
+}

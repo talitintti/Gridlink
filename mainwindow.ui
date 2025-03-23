@@ -20,9 +20,7 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">font-family: &quot;Inter Display Medium&quot;;
-
-background: #383838</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
@@ -73,8 +71,7 @@ background: #383838</string>
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">
-background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #adadad, stop:1 #878787);</string>
+         <string notr="true"/>
         </property>
         <property name="frameShape">
          <enum>QFrame::Shape::StyledPanel</enum>
@@ -100,8 +97,7 @@ background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #adadad, stop:1 #87878
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">border: 0px;
-border-right: 1px solid black;</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>&lt;</string>
@@ -123,8 +119,7 @@ border-right: 1px solid black;</string>
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">border: 0px;
-border-left: 1px solid black;</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>&gt;</string>
@@ -146,8 +141,7 @@ border-left: 1px solid black;</string>
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background: white;
- border-radius: 9px;</string>
+              <string notr="true"/>
              </property>
             </widget>
            </item>
@@ -194,23 +188,7 @@ border-left: 1px solid black;</string>
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">QListView
-{
-
-}
-
-
-QListView:item:selected
-{
-	font-weight: bold;
-    background: #474747;
-}
-
-QListView:item
-{
-    color: #d4cfd3;
-}
-</string>
+             <string notr="true"/>
             </property>
            </widget>
           </item>
@@ -229,40 +207,7 @@ QListView:item
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">QListView
-{
-}
-QListView:item:selected
-{
-    background: #707070;
-}
-QListView:item
-{
-    color: #d4cfd3;
-}
-
-
-QScrollBar:vertical {
-	background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #2a2a2a, stop:1 #4f4f4f);
-}
-
-QScrollBar::handle:vertical {
-	min-height: 50px;
-	border-radius: 6px;
-	background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #a4a4a4, stop:1 #8b8b8b);
-}
-
-QScrollBar::add-line:vertical {
-	height: 0px;
-}
-
-QScrollBar::sub-line:vertical {
-	height: 0px;
-}
-
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-	height: 0px;
-}</string>
+             <string notr="true"/>
             </property>
            </widget>
           </item>
@@ -275,7 +220,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #b8b8b8, stop:1 #878787);</string>
+             <string notr="true"/>
             </property>
             <property name="text">
              <string/>
@@ -321,8 +266,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">border: #7a7a7a;
-background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #5f5f5f, stop:1 #4d4d4d);</string>
+         <string notr="true"/>
         </property>
         <property name="frameShape">
          <enum>QFrame::Shape::StyledPanel</enum>
@@ -368,46 +312,78 @@ background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #5f5f5f, stop:1 #4d4d4
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
-             <widget class="QPushButton" name="pushButton_last_song">
-              <property name="styleSheet">
-               <string notr="true">border-radius: 12px;
-background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #adadad, stop:1 #878787);
-
-</string>
-              </property>
-              <property name="text">
-               <string>⏪</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_pause">
-              <property name="styleSheet">
-               <string notr="true">border-radius: 14px;
-background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #adadad, stop:1 #878787);</string>
-              </property>
-              <property name="text">
-               <string>⏵</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_next_song">
-              <property name="styleSheet">
-               <string notr="true">border-radius: 12px;
-background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #adadad, stop:1 #878787);</string>
-              </property>
-              <property name="text">
-               <string>⏩</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="horizontalSlider">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QPushButton" name="pushButton_last_song">
+                <property name="minimumSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_pause">
+                <property name="minimumSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_next_song">
+                <property name="minimumSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="volume_slider">
+                <property name="maximumSize">
+                 <size>
+                  <width>90</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -428,45 +404,29 @@ background: qlineargradient( x0:0 y0:0, x0:1 y2:1, stop:0 #adadad, stop:1 #87878
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QLabel" name="label_current_song_position">
-              <property name="text">
-               <string>0:01</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="horizontalSlider_2">
-              <property name="styleSheet">
-               <string notr="true">QSlider::groove:horizontal { 
-	background-color: #3f3f3f;
-	border: 1px solid #111111; 
-	height: 10px; 
-	border-radius: 5px;
-}
-
-QSlider::handle:horizontal { 
-	background-color: #ffffff; 
-	border: 1px solid #121212;
-	width: 9px;
-	height: 9px;
-	border-radius: 5px; 
-}
-
-QSlider::handle:horizontal:hover { 
-	border-radius: 4px;
-}</string>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_song_length">
-              <property name="text">
-               <string>1:00</string>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QLabel" name="label_song_pos_2">
+                <property name="text">
+                 <string>0:00</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_song_len">
+                <property name="text">
+                 <string>1:00</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -493,42 +453,22 @@ QSlider::handle:horizontal:hover {
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
-             <widget class="QPushButton" name="pushButton_6">
-              <property name="minimumSize">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>🔁</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_5">
-              <property name="minimumSize">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>🔀</string>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QPushButton" name="pushButton_repeat">
+                <property name="text">
+                 <string>🔁</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_random">
+                <property name="text">
+                 <string>🔀</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>

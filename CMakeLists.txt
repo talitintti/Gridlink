@@ -44,6 +44,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mpdnotif.h
         songcollection.h
         songcollection.cpp
+        styles/style.qss
+        styles/style2.qss
 
     )
 # Define target properties for Android with Qt 6 as:

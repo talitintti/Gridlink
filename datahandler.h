@@ -30,7 +30,11 @@ public:
     void ClearQueue();
 
 signals:
-    void StatusUpdateSignal(const MPDStatus&);
+    //void StatusUpdateSignal(const MPDStatus&);
+    void SongUpdateSignal(const Song &);
+    //void SongPausedSignal();
+    void SongStoppedSignal();
+
 
 private slots:
     void StatusUpdateSlot(mpd_idle);

@@ -25,7 +25,12 @@ public:
 public slots:
     void OnArtistDoubleClickedSlot(const QString &artistname);
     void OnAlbumDoubleClickedSlot(const Album &album);
-    void StatusUpdate(const MPDStatus&);
+
+    //void StatusUpdate(const MPDStatus&);
+    //void SongChange(const Song &);
+    //void SongPause();
+    void SongPlaySlot(const Song &);
+    void PlaybackStoppedSlot();
 private slots:
     // TODO: Change these to camelCase or whatever
     void on_listView_playlists_pressed(const QModelIndex &index);

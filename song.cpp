@@ -46,3 +46,9 @@ QString Song::GetSongPath() const {
     const char *uri = mpd_song_get_uri(mpd_song_.get());
     return QString(uri);
 }
+
+std::size_t Song::GetHash() const {
+    std::size_t h1 = std::hash<QString>()(this->GetSongPath());
+    std::size_t h2 = std::hash<int>()(this->GetDurationSec()); // Example: hashing song duration
+    return h1 ^ (h2 << 1); // Bitwise XOR + shift for better distribution
+}

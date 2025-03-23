@@ -19,13 +19,14 @@ public:
     ~AlbumView();
 
     void SetAlbum(const Album &album);
+    void InformSongPlaying(const Song &);
+    void InformSongNotPlaying();
 
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);
 
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);
-    //void InformSongPlayingSlot(unsigned index);
 
 private:
     Ui::AlbumView *ui_;
@@ -33,6 +34,7 @@ private:
     Album album_;
 
     void SetTableAppearance(QTableView *table);
+    void ForegroundUpdateForItem(const Song &);
 };
 
 #endif // ALBUMVIEW_H

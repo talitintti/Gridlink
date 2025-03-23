@@ -28,3 +28,8 @@ void ArtistView::AlbumDoubleClickedSlot(const QModelIndex &album_index) {
     int row = album_index.row();
     emit AlbumDoubleClickedSignal(album_list_model_.at(row));
 }
+
+//TODO: set the proper things
+void SetAppearance(QListView *list_view) {
+    list_view->setAlternatingRowColors(true);
+}

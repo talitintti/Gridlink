@@ -20,7 +20,7 @@ public:
     }
 
     bool operator==(const Song &other) const {
-        return this->GetSongPath() == other.GetSongPath();
+        return this->GetHash() == other.GetHash();
     }
 
     QString GetName() const;
@@ -30,6 +30,7 @@ public:
     QString GetGenre() const;
     QString GetSongPath() const;
     unsigned GetDurationSec() const;
+    std::size_t GetHash() const;
 
 
 private:

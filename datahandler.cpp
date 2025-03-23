@@ -34,19 +34,20 @@ bool DataHandler::Initialize() {
     return true;
 }
 
-
+// Updates the DataHandler status and sends the signal
 void DataHandler::StatusUpdate() {
     auto mpd_status = mpd_communicator_.GetStatus();
 
-    if (mpd_status == NULL || mpd_status_get_state(mpd_status) == MPD_STATE_STOP) {
-        return emit StatusUpdateSignal(last_update_);
-    }
+    if (mpd_status == nullptr) return;
+
+    if (mpd_status_get_state(mpd_status) == MPD_STATE_STOP)
+        emit SongStoppedSignal();
 
     Song song = std::move(mpd_communicator_.GetCurrentSong());
     MPDStatus status(mpd_status, std::move(song));
     last_update_ = std::move(status);
 
-    emit StatusUpdateSignal(last_update_);
+    emit SongUpdateSignal(last_update_.CurrentSong());
 }
 
 
@@ -312,41 +313,41 @@ std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, i
 //TODO: implement all
 void DataHandler::StatusUpdateSlot(mpd_idle events) {
     if (events & MPD_IDLE_DATABASE) {
-        std::cout << "Database updated!\n";
+        std::cout << "Database updated! "<< std::endl;
     }
     if (events & MPD_IDLE_UPDATE) {
-        std::cout << "Update started!\n";
+        std::cout << "Update started! "<< std::endl;
     }
     if (events & MPD_IDLE_STORED_PLAYLIST) {
-        std::cout << "Stored playlist changed!\n";
+        std::cout << "Stored playlist changed! "<< std::endl;
     }
     if (events & MPD_IDLE_PLAYLIST) {
-        std::cout << "Playlist changed!\n";
+        std::cout << "Playlist changed! "<< std::endl;
     }
     if (events & MPD_IDLE_PLAYER) {
         StatusUpdate();
-        std::cout << "Player state changed!\n";
+        std::cout << "Player state changed! "<< std::endl;
     }
     if (events & MPD_IDLE_MIXER) {
-        std::cout << "Mixer settings changed!\n";
+        std::cout << "Mixer settings changed! "<< std::endl;
     }
     if (events & MPD_IDLE_OUTPUT) {
-        std::cout << "Output settings changed!\n";
+        std::cout << "Output settings changed! "<< std::endl;
     }
     if (events & MPD_IDLE_OPTIONS) {
-        std::cout << "Options changed!\n";
+        std::cout << "Options changed! "<< std::endl;
     }
     if (events & MPD_IDLE_PARTITION) {
-        std::cout << "Partition changed!\n";
+        std::cout << "Partition changed! "<< std::endl;
     }
     if (events & MPD_IDLE_STICKER) {
-        std::cout << "Sticker database changed!\n";
+        std::cout << "Sticker database changed! "<< std::endl;
     }
     if (events & MPD_IDLE_SUBSCRIPTION) {
-        std::cout << "Subscription changed!\n";
+        std::cout << "Subscription changed! "<< std::endl;
     }
     if (events & MPD_IDLE_MESSAGE) {
-        std::cout << "New message received!\n";
+        std::cout << "New message received! "<< std::endl;
     }
 }
 

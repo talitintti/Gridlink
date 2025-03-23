@@ -2,12 +2,16 @@
 #include "ui_albumview.h"
 #include <QTableView>
 #include <QAbstractItemModel>
+#include <QRgb>
 
 AlbumView::AlbumView(QWidget *parent)
     : QWidget(parent)
     , ui_(new Ui::AlbumView)
 {
     ui_->setupUi(this);
+    song_table_model_ = new SongTableModel(this);
+    ui_->tableView->setModel(song_table_model_);
+    SetTableAppearance(ui_->tableView);
 }
 
 AlbumView::~AlbumView()
@@ -20,14 +24,7 @@ void AlbumView::SetAlbum(const Album &album) {
 
     QList<Song> albums = album_.GetSongs();
 
-    if (!song_table_model_) { // Construct the SongTableModel if it isn't set yet
-        song_table_model_ = new SongTableModel(albums, this);
-        ui_->tableView->setModel(song_table_model_);
-        SetTableAppearance(ui_->tableView);
-    }
-    else {
-        song_table_model_->ChangeSongList(albums);
-    }
+    song_table_model_->SetSongs(album.GetSongs());
 
     // Let's show the picture
     if (album_.HasCoverData()) {
@@ -45,6 +42,10 @@ void AlbumView::SetAlbum(const Album &album) {
 }
 
 void AlbumView::SetTableAppearance(QTableView *table_view) {
+    // This is actually songtablemodel appearance but whatever
+    song_table_model_->SetHighlightColor(0xFF1DB954);
+
+    // The actual table
     table_view->setShowGrid(false); // Hide the grid
     table_view->setSelectionBehavior(QAbstractItemView::SelectRows); // Select whole row
     //tableView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -62,7 +63,7 @@ void AlbumView::SetTableAppearance(QTableView *table_view) {
     // --- Apply Theme ---
     table_view->setStyleSheet(
         "QTableView {"
-        "   background-color: #121212;" // Spotify Dark Theme
+        "   background-color: #121212;"
         "   color: white;" // White text
         "   selection-background-color: #333333;" // Dark Gray when row is selected
         "   gridline-color: #121212;"
@@ -103,4 +104,16 @@ void AlbumView::SongChosenForPlaySlot(const QModelIndex &q_index) {
     unsigned row = q_index.row();
 
     emit SongChosenForPlaySignal(album_.GetSongs(), row);
+}
+
+// Takes a song that is playing
+void AlbumView::InformSongPlaying(const Song &song) {
+    // Tell the songtablemodel that a song is playing
+    song_table_model_->SetSongAsPlaying(song.GetHash());
+
+}
+
+void AlbumView::InformSongNotPlaying() {
+    // Tell the songtablemodel that a song is playing
+    song_table_model_->SetPlayingAsStopped();
 }
