@@ -7,7 +7,7 @@
 #include "datahandler.h"
 #include "artistview.h"
 #include "albumview.h"
-#include "mpdstatus.h"
+#include "progressbarwidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -39,26 +39,25 @@ private slots:
     void PlaySongsSlot(const QList<Song> &, unsigned);
 
 private:
-    enum VIEW {
-        VIEW_LIBRARY, VIEW_ARTIST, VIEW_ALBUM, VIEW_SEARCH, VIEW_HOME
-    };
+    enum VIEW { VIEW_LIBRARY, VIEW_ARTIST, VIEW_ALBUM, VIEW_SEARCH, VIEW_HOME };
 
     Ui::MainWindow *ui_;
-    QStringListModel *stringListModel_buttons;
-    QStringListModel *stringListModel_playlists;
-    void Init_lower_toolbar(Ui::MainWindow *ui);
-    void Init_upper_toolbar(Ui::MainWindow *ui);
-    void ChangeView(VIEW view);
-
-    void LoadStyleSheet(const QString &filePath);
-
     DataHandler *datahandler_;
 
     LibraryView *library_view_;
     ArtistView *artist_view_;
     AlbumView *album_view_;
 
-    QVector<QString> artist_data_;
+    QStringListModel *stringListModel_buttons;
+    QStringListModel *stringListModel_playlists;
+
+    ProgressBarWidget *progress_bar_;
+
+    void Init_lower_toolbar(Ui::MainWindow *ui);
+    void Init_upper_toolbar(Ui::MainWindow *ui);
+    void ChangeView(VIEW view);
+
+    void LoadStyleSheet(const QString &filePath);
 
   };
 #endif // MAINWINDOW_H

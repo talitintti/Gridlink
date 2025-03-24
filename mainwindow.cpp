@@ -4,6 +4,7 @@
 #include "searchview.h"
 #include "artistview.h"
 #include <QListWidget>
+#include "progressbarwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,11 +19,18 @@ MainWindow::MainWindow(QWidget *parent)
     //QString appDir = "Gridlink//Gridlink/Styles/fourth.qss";
     //LoadStyleSheet(appDir);
 
+    // Init views
     SearchView *search_view = new SearchView(this);
     QListWidget *home = new QListWidget();
     library_view_ = new LibraryView(this);
     artist_view_ = new ArtistView(this);
     album_view_ = new AlbumView(this);
+
+    // Init the progress bar
+    //auto progressbar_frame = ui_->frame_2;
+    //auto frame_layout = new QHBoxLayout(progressbar_frame);
+    //progress_bar_ = new ProgressBarWidget(progressbar_frame);
+    //frame_layout->addWidget(progress_bar_);
 
     ui_->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
     ui_->stackedWidget->addWidget(library_view_);

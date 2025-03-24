@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QProgressBar>
+#include <QSlider>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QTimer>
@@ -25,7 +25,7 @@ public:
     void SetUpdateInterval(unsigned interval_ms);
 
 private:
-    QProgressBar *progress_bar_;
+    QSlider *progress_bar_;
     QTimer *timer_;
     QLabel *current_time_lab_;
     QLabel *total_time_lab_;
