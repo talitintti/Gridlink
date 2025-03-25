@@ -12,6 +12,11 @@ AlbumView::AlbumView(QWidget *parent)
     song_table_model_ = new SongTableModel(this);
     ui_->tableView->setModel(song_table_model_);
     SetTableAppearance(ui_->tableView);
+
+    connect(ui_->tableView,
+            &QTableView::doubleClicked,
+            this,
+            &AlbumView::SongChosenForPlaySlot);
 }
 
 AlbumView::~AlbumView()
@@ -22,23 +27,23 @@ AlbumView::~AlbumView()
 void AlbumView::SetAlbum(const Album &album) {
     album_ = album;
 
-    QList<Song> albums = album_.GetSongs();
-
-    song_table_model_->SetSongs(album.GetSongs());
+    song_table_model_->SetSongs(album_.GetSongs());
 
     // Let's show the picture
     if (album_.HasCoverData()) {
         auto label = ui_->label_album_pic;
         const OImage &cover = album.GetCover();
+
         QImage image(cover.GetImageData(),
                      cover.GetWidth(),
                      cover.GetHeight(),
                      cover.GetFormat());
+
         QImage scaled_image = image.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(scaled_image));
     }
 
-    connect(ui_->tableView, &QTableView::doubleClicked, this, &AlbumView::SongChosenForPlaySlot);
+
 }
 
 void AlbumView::SetTableAppearance(QTableView *table_view) {

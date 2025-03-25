@@ -30,6 +30,7 @@ public:
             return QVariant();
 
         const Song &song = song_list_.at(index.row());
+        qDebug() << index.row() << " : " << index.column() << " : " << role <<"\n";
 
         if (role == Qt::DisplayRole) {
             switch (index.column()) {
@@ -76,8 +77,8 @@ public:
         last_played_song_hash_ = song_hash;
 
         emit dataChanged(createIndex(song_index, TRACK_NUMBER),
-                            createIndex(song_index, SONG_NAME),
-                            {Qt::ForegroundRole});
+                         createIndex(song_index, SONG_NAME),
+                         {Qt::ForegroundRole});
     }
 
     void SetPlayingAsStopped() {
@@ -89,8 +90,8 @@ public:
         }
 
         emit dataChanged(createIndex(song_index, TRACK_NUMBER),
-                            createIndex(song_index, SONG_NAME),
-                            {Qt::ForegroundRole});
+                         createIndex(song_index, SONG_NAME),
+                         {Qt::ForegroundRole});
 
         playing_song_row_ = -1;  // set as not playing
     }
@@ -102,7 +103,10 @@ public:
     }
 
     void SetSongs(const QList<Song> &songs) {
+        beginResetModel();
         song_list_ = songs;
+        //RedrawAll();
+        endResetModel();
     }
 
 private:
@@ -110,6 +114,8 @@ private:
     int playing_song_row_;
     size_t last_played_song_hash_; // needed since I wont rely on the song order not changing within the list
     QRgb song_highlight_color_;
+
+    int counter = 0;
 
     static constexpr unsigned TRACK_NUMBER = 0;
     static constexpr unsigned SONG_NAME = 1;

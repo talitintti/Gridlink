@@ -82,19 +82,23 @@ QList<QString> MPDCommunication::GetTags(const char *return_tag, const char *con
     enum mpd_tag_type return_tag_type = mpd_tag_name_iparse(return_tag);
     enum mpd_tag_type constraint_tag_type = mpd_tag_name_iparse(constraint_tag);
 
-    mpd_search_db_tags(conn_, return_tag_type);
-    mpd_search_add_tag_constraint(conn_,
+    bool search_db, add_cnstr, commit;
+    search_db = mpd_search_db_tags(conn_, return_tag_type);
+    add_cnstr = mpd_search_add_tag_constraint(conn_,
         MPD_OPERATOR_DEFAULT,
         constraint_tag_type,
         constraint_val
     );
-    mpd_search_commit(conn_);
+    commit = mpd_search_commit(conn_);
+
+    if (search_db && add_cnstr && commit) CheckForMPDError(conn_);
 
     struct mpd_pair *pair;
     while ((pair = mpd_recv_pair_tag(conn_, return_tag_type)) != NULL) {
         tag_values.emplace_back(QString(pair->value));
         mpd_return_pair(conn_, pair);
     }
+
     mpd_response_finish(conn_);
 
     return tag_values;
@@ -152,7 +156,7 @@ const Song MPDCommunication::GetCurrentSong() {
     }
 
     if ((song = mpd_recv_song(conn_)) == NULL) {
-        qWarning() << "Failed to receive MPD song \n";
+        qWarning() << "No current song \n";
         CheckForMPDError(conn_);
         return Song();
     }
