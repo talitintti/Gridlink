@@ -83,7 +83,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="pushButton_view_back">
              <property name="minimumSize">
               <size>
                <width>35</width>
@@ -105,7 +105,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="pushButton_view_forward">
              <property name="minimumSize">
               <size>
                <width>35</width>

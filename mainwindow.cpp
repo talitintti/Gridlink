@@ -29,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
     // Init the progress bar
     auto progressbar_frame = ui_->frame_2;
     progress_bar_ = new ProgressBarWidget(progressbar_frame);
-    //progress_bar_->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
     auto layout = progressbar_frame->layout();
     layout->addWidget(progress_bar_);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -58,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(datahandler_,
             &DataHandler::SongUpdateSignal,
             this,
-            &MainWindow::SongPlaySlot);
+            &MainWindow::PlaySongSlot);
 
     connect(datahandler_,
             &DataHandler::SongStoppedSignal,
@@ -114,21 +113,21 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::ChangeView(VIEW view) {
     switch(view) {
-    case VIEW_HOME:
-        // TODO: IMPL
-        break;
-    case VIEW_LIBRARY:
-        ui_->stackedWidget->setCurrentWidget(library_view_);
-        break;
-    case VIEW_ARTIST:
-        ui_->stackedWidget->setCurrentWidget(artist_view_);
-        break;
-    case VIEW_ALBUM:
-        ui_->stackedWidget->setCurrentWidget(album_view_);
-        break;
-    case VIEW_SEARCH:
-        //ui->stackedWidget->setCurrentWidget(search);
-        break;
+        case VIEW_HOME:
+            // TODO: IMPL
+            break;
+        case VIEW_LIBRARY:
+            ui_->stackedWidget->setCurrentWidget(library_view_);
+            break;
+        case VIEW_ARTIST:
+            ui_->stackedWidget->setCurrentWidget(artist_view_);
+            break;
+        case VIEW_ALBUM:
+            ui_->stackedWidget->setCurrentWidget(album_view_);
+            break;
+        case VIEW_SEARCH:
+            //ui->stackedWidget->setCurrentWidget(search);
+            break;
     }
 }
 
@@ -190,13 +189,13 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
 }
 
 void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
-    ChangeView(VIEW_ARTIST);
     artist_view_->SetData(datahandler_->GetAlbums(artistname));
+    ChangeView(VIEW_ARTIST);
 }
 
 void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
-    ChangeView(VIEW_ALBUM);
     album_view_->SetAlbum(album); // check that this isn't retarded
+    ChangeView(VIEW_ALBUM);
 }
 
 // Status updates from outside the UI
@@ -240,7 +239,7 @@ void MainWindow::PlaySongsSlot(const QList<Song> &songs, unsigned index) {
 }
 
 
-void MainWindow::SongPlaySlot(const Song &song ) {
+void MainWindow::PlaySongSlot(const Song &song ) {
     QString song_name = song.GetName();
     QString artist_name = song.GetArtist();
     if (song_name.isEmpty() || artist_name.isEmpty()) return;

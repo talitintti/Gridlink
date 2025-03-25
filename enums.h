@@ -1,0 +1,6 @@
+#ifndef ENUMS_H
+#define ENUMS_H
+
+enum VIEW { VIEW_LIBRARY, VIEW_ARTIST, VIEW_ALBUM, VIEW_SEARCH, VIEW_HOME };
+
+#endif // ENUMS_H

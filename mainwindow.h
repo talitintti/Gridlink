@@ -8,6 +8,8 @@
 #include "artistview.h"
 #include "albumview.h"
 #include "progressbarwidget.h"
+#include "enums.h"
+#include "viewhistory.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -29,7 +31,7 @@ public slots:
     //void StatusUpdate(const MPDStatus&);
     //void SongChange(const Song &);
     //void SongPause();
-    void SongPlaySlot(const Song &);
+    void PlaySongSlot(const Song &);
     void PlaybackStoppedSlot();
 private slots:
     // TODO: Change these to camelCase or whatever
@@ -39,10 +41,10 @@ private slots:
     void PlaySongsSlot(const QList<Song> &, unsigned);
 
 private:
-    enum VIEW { VIEW_LIBRARY, VIEW_ARTIST, VIEW_ALBUM, VIEW_SEARCH, VIEW_HOME };
 
     Ui::MainWindow *ui_;
     DataHandler *datahandler_;
+    ViewHistory viewhistory_;
 
     LibraryView *library_view_;
     ArtistView *artist_view_;

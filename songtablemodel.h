@@ -30,7 +30,6 @@ public:
             return QVariant();
 
         const Song &song = song_list_.at(index.row());
-        qDebug() << index.row() << " : " << index.column() << " : " << role <<"\n";
 
         if (role == Qt::DisplayRole) {
             switch (index.column()) {
