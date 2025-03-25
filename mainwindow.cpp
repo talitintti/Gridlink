@@ -27,10 +27,12 @@ MainWindow::MainWindow(QWidget *parent)
     album_view_ = new AlbumView(this);
 
     // Init the progress bar
-    //auto progressbar_frame = ui_->frame_2;
-    //auto frame_layout = new QHBoxLayout(progressbar_frame);
-    //progress_bar_ = new ProgressBarWidget(progressbar_frame);
-    //frame_layout->addWidget(progress_bar_);
+    auto progressbar_frame = ui_->frame_2;
+    progress_bar_ = new ProgressBarWidget(progressbar_frame);
+    //progress_bar_->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    auto layout = progressbar_frame->layout();
+    layout->addWidget(progress_bar_);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     ui_->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
     ui_->stackedWidget->addWidget(library_view_);
