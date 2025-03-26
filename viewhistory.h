@@ -3,6 +3,7 @@
 
 #include "enums.h"
 #include <QList>
+#include <QDebug>
 
 // Stores VIEWS and remembers the current position
 class ViewHistory {
@@ -13,6 +14,7 @@ public:
     // If current is the last view, we return the current view
     VIEW MoveForward() {
         auto last_index = views_.count() - 1;
+        if (last_index == -1) return VIEW_UNKNOWN;
         if (current_index_ == last_index) return views_.at(last_index);
         current_index_++;
         return views_.at(current_index_);
@@ -20,6 +22,8 @@ public:
 
     // Adds a new view into the history
     void AddView(VIEW view) {
+        if (view == 0) views_.clear();
+        views_.removeOne(view); // No duplicates allowed in history
         current_index_++;
         views_.push_back(view);
     }
@@ -27,7 +31,8 @@ public:
     // Returns the last item
     // If current is the last item we return the current
     VIEW MoveBack() {
-        if (current_index_) return views_.at(0);
+        if (current_index_ == -1) return VIEW_UNKNOWN;
+        if (!current_index_) return views_.at(0);
 
         current_index_--;
         return views_.at(current_index_);

@@ -35,13 +35,14 @@ public slots:
     void PlaybackStoppedSlot();
 private slots:
     // TODO: Change these to camelCase or whatever
-    void on_listView_playlists_pressed(const QModelIndex &index);
-    void on_listView_viewSelects_pressed(const QModelIndex &index);
-    void on_pushButton_pause_clicked();
+    void on_listView_playlists_pressed(const QModelIndex &index); //TODO: connnect by hand
+    void on_listView_viewSelects_pressed(const QModelIndex &index);//TODO: connnect by hand
+    void on_pushButton_pause_clicked();//TODO: connnect by hand
     void PlaySongsSlot(const QList<Song> &, unsigned);
+    void ViewBackClicked();
+    void ViewForwardClicked();
 
 private:
-
     Ui::MainWindow *ui_;
     DataHandler *datahandler_;
     ViewHistory viewhistory_;

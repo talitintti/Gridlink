@@ -64,6 +64,15 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::PlaybackStoppedSlot);
 
+    connect(ui_->pushButton_view_back,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::ViewBackClicked);
+
+    connect(ui_->pushButton_view_forward,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::ViewForwardClicked);
 
     datahandler_->StatusUpdate(); // status update once at start
 
@@ -128,6 +137,8 @@ void MainWindow::ChangeView(VIEW view) {
         case VIEW_SEARCH:
             //ui->stackedWidget->setCurrentWidget(search);
             break;
+        default:
+            qWarning() << "Trying to change view to invalid values\n";
     }
 }
 
@@ -169,31 +180,39 @@ void MainWindow::on_listView_playlists_pressed(const QModelIndex &index)
 }
 
 
-void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index)
-{
+void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index) {
     ui_->listView_playlists->clearSelection();
     int selectedIndex = ui_->listView_viewSelects->currentIndex().row();
 
+    VIEW corrsp_view;
     switch (selectedIndex) {
     case 0:
-        ChangeView(VIEW_HOME);
+        corrsp_view = VIEW_HOME;
         break;
     case 1:
+        corrsp_view = VIEW_LIBRARY;
         library_view_->SetData(datahandler_->GetArtistNames());
-        ChangeView(VIEW_LIBRARY);
         break;
     case 2:
-        ChangeView(VIEW_SEARCH);
+        corrsp_view = VIEW_SEARCH;
         break;
+    default:
+        qWarning() << "Pressed invalid view in viewselect!\n";
+        return;
     }
+
+    viewhistory_.AddView(corrsp_view);
+    ChangeView(corrsp_view);
 }
 
 void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
+    viewhistory_.AddView(VIEW_ARTIST);
     artist_view_->SetData(datahandler_->GetAlbums(artistname));
     ChangeView(VIEW_ARTIST);
 }
 
 void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
+    viewhistory_.AddView(VIEW_ALBUM);
     album_view_->SetAlbum(album); // check that this isn't retarded
     ChangeView(VIEW_ALBUM);
 }
@@ -252,4 +271,16 @@ void MainWindow::PlaySongSlot(const Song &song ) {
 void MainWindow::PlaybackStoppedSlot() {
     ui_->label_playing_info->setText("");
     album_view_->InformSongNotPlaying();
+}
+
+void MainWindow::ViewBackClicked() {
+    VIEW last_view = viewhistory_.MoveBack();
+    qDebug() << last_view << "\n";
+    ChangeView(last_view);
+}
+
+void MainWindow::ViewForwardClicked() {
+    VIEW next_view = viewhistory_.MoveForward();
+    qDebug() << next_view << "\n";
+    ChangeView(next_view);
 }
