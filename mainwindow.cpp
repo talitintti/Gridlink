@@ -120,6 +120,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
+MainWindow::~MainWindow()
+{
+    delete ui_;
+}
+
 void MainWindow::ChangeView(VIEW view) {
     switch(view) {
         case VIEW_HOME:
@@ -142,11 +147,6 @@ void MainWindow::ChangeView(VIEW view) {
     }
 }
 
-
-MainWindow::~MainWindow()
-{
-    delete ui_;
-}
 
 void MainWindow::Init_upper_toolbar(Ui::MainWindow *ui) {
     ui->frame_highbar->setFixedHeight(80);
@@ -259,12 +259,15 @@ void MainWindow::PlaySongsSlot(const QList<Song> &songs, unsigned index) {
 
 
 void MainWindow::PlaySongSlot(const Song &song ) {
+    if (song.IsEmpty()) return;
+
     QString song_name = song.GetName();
     QString artist_name = song.GetArtist();
     if (song_name.isEmpty() || artist_name.isEmpty()) return;
 
     ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
                                      arg(song_name, artist_name));
+
     album_view_->InformSongPlaying(song);
 }
 
@@ -275,12 +278,10 @@ void MainWindow::PlaybackStoppedSlot() {
 
 void MainWindow::ViewBackClicked() {
     VIEW last_view = viewhistory_.MoveBack();
-    qDebug() << last_view << "\n";
     ChangeView(last_view);
 }
 
 void MainWindow::ViewForwardClicked() {
     VIEW next_view = viewhistory_.MoveForward();
-    qDebug() << next_view << "\n";
     ChangeView(next_view);
 }
