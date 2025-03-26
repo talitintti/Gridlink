@@ -31,6 +31,7 @@ public:
     QString GetSongPath() const;
     unsigned GetDurationSec() const;
     std::size_t GetHash() const;
+    bool IsEmpty() const;
 
 
 private:

@@ -52,3 +52,7 @@ std::size_t Song::GetHash() const {
     std::size_t h2 = std::hash<int>()(this->GetDurationSec()); // Example: hashing song duration
     return h1 ^ (h2 << 1); // Bitwise XOR + shift for better distribution
 }
+
+bool Song::IsEmpty() const {
+    return mpd_song_.get() == nullptr;
+}
