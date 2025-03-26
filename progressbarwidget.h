@@ -16,7 +16,7 @@ public:
 
     bool IsOn();
     void SetLength(unsigned seconds);  // Set total song duration in seconds
-    void SetPosition(unsigned seconds);    // Update progress bar with current time
+    void SetPosition(unsigned ms);    // Update progress bar with current time
     void HandlePlay();
     void HandlePause();
     void HandleStop();

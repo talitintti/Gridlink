@@ -57,12 +57,22 @@ MainWindow::MainWindow(QWidget *parent)
     connect(datahandler_,
             &DataHandler::SongUpdateSignal,
             this,
-            &MainWindow::PlaySongSlot);
+            &MainWindow::SongChanged);
 
     connect(datahandler_,
             &DataHandler::SongStoppedSignal,
             this,
-            &MainWindow::PlaybackStoppedSlot);
+            &MainWindow::PlaybackStopped);
+
+    connect(datahandler_,
+            &DataHandler::PlayStartedSignal,
+            this,
+            &MainWindow::PlaybackStarted);
+
+    connect(datahandler_,
+            &DataHandler::SongPausedSignal,
+            this,
+            &MainWindow::PlaybackPaused);
 
     connect(ui_->pushButton_view_back,
             &QPushButton::clicked,
@@ -74,7 +84,8 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::ViewForwardClicked);
 
-    datahandler_->StatusUpdate(); // status update once at start
+
+    datahandler_->ManualStatusUpdate(); // status update once at start
 
 
     stringListModel_buttons = new QStringListModel(this);
@@ -251,14 +262,13 @@ void MainWindow::on_pushButton_pause_clicked()
 
 // When UI component informs that some songs are to be played
 void MainWindow::PlaySongsSlot(const QList<Song> &songs, unsigned index) {
-    qDebug() << index;
     datahandler_->ClearQueue();
     datahandler_->AddToQueue(songs);
     datahandler_->StartPlayingQueue(index);
 }
 
 
-void MainWindow::PlaySongSlot(const Song &song ) {
+void MainWindow::SongChanged(const Song &song) {
     if (song.IsEmpty()) return;
 
     QString song_name = song.GetName();
@@ -269,16 +279,30 @@ void MainWindow::PlaySongSlot(const Song &song ) {
                                      arg(song_name, artist_name));
 
     album_view_->InformSongPlaying(song);
+    progress_bar_->SetLength(song.GetDurationSec());
 }
 
-void MainWindow::PlaybackStoppedSlot() {
+void MainWindow::PlaybackStopped() {
     ui_->label_playing_info->setText("");
     album_view_->InformSongNotPlaying();
+    progress_bar_->HandleStop();
+}
+
+void MainWindow::PlaybackPaused() {
+    progress_bar_->HandlePause();
+}
+
+void MainWindow::PlaybackStarted() {
+    progress_bar_->HandlePlay();
 }
 
 void MainWindow::ViewBackClicked() {
     VIEW last_view = viewhistory_.MoveBack();
     ChangeView(last_view);
+}
+
+void MainWindow::SongPositionChanged(unsigned elapsed_ms) {
+    progress_bar_->SetPosition(elapsed_ms);
 }
 
 void MainWindow::ViewForwardClicked() {

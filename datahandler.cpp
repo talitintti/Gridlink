@@ -35,20 +35,19 @@ bool DataHandler::Initialize() {
 }
 
 // Updates the DataHandler status and sends the signal
-void DataHandler::StatusUpdate() {
+bool DataHandler::FetchStatusUpdate() {
     auto mpd_status = mpd_communicator_.GetStatus();
 
-    if (mpd_status == nullptr) return;
-
-    if (mpd_status_get_state(mpd_status) == MPD_STATE_STOP)
-        emit SongStoppedSignal();
+    if (mpd_status == nullptr) return false;
 
     Song song = std::move(mpd_communicator_.GetCurrentSong());
     MPDStatus status(mpd_status, std::move(song));
     last_update_ = std::move(status);
 
-    emit SongUpdateSignal(last_update_.CurrentSong());
+    return true;
 }
+
+
 
 
 QList<QString> DataHandler::GetArtistNames() {
@@ -166,7 +165,106 @@ bool DataHandler::WriteConfigFile(QFile &configFile, const Config &config) {
     return true;
 }
 
+void DataHandler::ManualStatusUpdate() {
+    if (FetchStatusUpdate())
+        ParseStatusUpdate();
+}
 
+
+
+//TODO: implement all
+void DataHandler::StatusUpdateSlot(mpd_idle events) {
+    if (events & MPD_IDLE_DATABASE) {
+        std::cout << "Database updated! "<< std::endl;
+    }
+    if (events & MPD_IDLE_UPDATE) {
+        std::cout << "Update started! "<< std::endl;
+    }
+    if (events & MPD_IDLE_STORED_PLAYLIST) {
+        std::cout << "Stored playlist changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_PLAYLIST) {
+        std::cout << "Playlist changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_PLAYER) {
+        if (!FetchStatusUpdate()) return;
+        ParseStatusUpdate();
+        std::cout << "Player state changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_MIXER) {
+        std::cout << "Mixer settings changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_OUTPUT) {
+        std::cout << "Output settings changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_OPTIONS) {
+        std::cout << "Options changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_PARTITION) {
+        std::cout << "Partition changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_STICKER) {
+        std::cout << "Sticker database changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_SUBSCRIPTION) {
+        std::cout << "Subscription changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_MESSAGE) {
+        std::cout << "New message received! "<< std::endl;
+    }
+}
+
+void DataHandler::ParseStatusUpdate() {
+    auto state = last_update_.State();
+    auto last_song = last_update_.CurrentSong();
+
+    emit SongUpdateSignal(last_song);
+
+    switch(state) {
+        case MPD_STATE_PAUSE:
+            emit SongPausedSignal();
+            break;
+        case MPD_STATE_PLAY:
+            emit PlayStartedSignal();
+            break;
+        case MPD_STATE_STOP:
+            emit SongStoppedSignal();
+            break;
+        case MPD_STATE_UNKNOWN:
+            qWarning() << "Unkown state from last status update\n";
+            break;
+    }
+
+}
+
+void DataHandler::TogglePlay() {
+    auto state = last_update_.State();
+
+    switch(state) {
+    case MPD_STATE_PAUSE:
+        mpd_communicator_.TogglePlay(false);
+        break;
+    case MPD_STATE_PLAY:
+        mpd_communicator_.TogglePlay(true);
+        break;
+    case MPD_STATE_STOP:
+        break;
+    case MPD_STATE_UNKNOWN:
+        break;
+    }
+}
+
+void DataHandler::AddToQueue(const QList<Song> &songs) {
+    mpd_communicator_.AddToQueue(songs);
+}
+
+void DataHandler::StartPlayingQueue(unsigned index) {
+    mpd_communicator_.PlayInQueue(index);
+}
+
+void DataHandler::ClearQueue() {
+    mpd_communicator_.ClearQueue();
+}
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {
     auto destination_format = AV_PIX_FMT_RGB24;
@@ -307,75 +405,4 @@ std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, i
     });
 
     return result;
-}
-
-
-//TODO: implement all
-void DataHandler::StatusUpdateSlot(mpd_idle events) {
-    if (events & MPD_IDLE_DATABASE) {
-        std::cout << "Database updated! "<< std::endl;
-    }
-    if (events & MPD_IDLE_UPDATE) {
-        std::cout << "Update started! "<< std::endl;
-    }
-    if (events & MPD_IDLE_STORED_PLAYLIST) {
-        std::cout << "Stored playlist changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_PLAYLIST) {
-        std::cout << "Playlist changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_PLAYER) {
-        StatusUpdate();
-        std::cout << "Player state changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_MIXER) {
-        std::cout << "Mixer settings changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_OUTPUT) {
-        std::cout << "Output settings changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_OPTIONS) {
-        std::cout << "Options changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_PARTITION) {
-        std::cout << "Partition changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_STICKER) {
-        std::cout << "Sticker database changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_SUBSCRIPTION) {
-        std::cout << "Subscription changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_MESSAGE) {
-        std::cout << "New message received! "<< std::endl;
-    }
-}
-
-void DataHandler::TogglePlay() {
-    auto state = last_update_.State();
-
-    switch(state) {
-    case MPD_STATE_PAUSE:
-        mpd_communicator_.TogglePlay(false);
-        break;
-    case MPD_STATE_PLAY:
-        mpd_communicator_.TogglePlay(true);
-        break;
-    case MPD_STATE_STOP:
-        break;
-    case MPD_STATE_UNKNOWN:
-        break;
-    }
-}
-
-void DataHandler::AddToQueue(const QList<Song> &songs) {
-    mpd_communicator_.AddToQueue(songs);
-}
-
-void DataHandler::StartPlayingQueue(unsigned index) {
-    mpd_communicator_.PlayInQueue(index);
-}
-
-void DataHandler::ClearQueue() {
-    mpd_communicator_.ClearQueue();
 }

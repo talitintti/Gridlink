@@ -16,23 +16,22 @@ public:
     DataHandler(QObject *parent = nullptr) : QObject(parent) {};
     ~DataHandler();
 
-    // Returns an empty string on success
-    // Return error msg on failure
     bool Initialize();
     QList<QString> GetArtistNames();
     QList<QString> GetAlbumNames(const QString &artist_name);
     QList<Album> GetAlbums(const QString &artist_name);
     Album GetAlbum(const QString &artist_name, const QString &album_name);
-    void StatusUpdate();
     void TogglePlay();
     void AddToQueue(const QList<Song> &);
     void StartPlayingQueue(unsigned index = 0);
     void ClearQueue();
+    void ManualStatusUpdate();
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);
     void SongUpdateSignal(const Song &);
-    //void SongPausedSignal();
+    void PlayStartedSignal();
+    void SongPausedSignal();
     void SongStoppedSignal();
 
 
@@ -43,6 +42,8 @@ private:
     bool WriteConfigFile(QFile &configFile, const Config &config);
     Config ReadConfigFile();
     void SetAlbumCover(Album &album) const;
+    bool FetchStatusUpdate();
+    void ParseStatusUpdate();
 
 
     MPDCommunication mpd_communicator_ = MPDCommunication();

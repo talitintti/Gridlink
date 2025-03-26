@@ -25,22 +25,23 @@ public:
     ~MainWindow();
 
 public slots:
-    void OnArtistDoubleClickedSlot(const QString &artistname);
-    void OnAlbumDoubleClickedSlot(const Album &album);
 
     //void StatusUpdate(const MPDStatus&);
-    //void SongChange(const Song &);
-    //void SongPause();
-    void PlaySongSlot(const Song &);
-    void PlaybackStoppedSlot();
+    void PlaybackPaused();
+    void PlaybackStarted();
+    void SongPositionChanged(unsigned elapsed_ms);
+    void SongChanged(const Song &);
+    void PlaybackStopped();
 private slots:
-    // TODO: Change these to camelCase or whatever
+    // TODO: make uniform casing
     void on_listView_playlists_pressed(const QModelIndex &index); //TODO: connnect by hand
     void on_listView_viewSelects_pressed(const QModelIndex &index);//TODO: connnect by hand
     void on_pushButton_pause_clicked();//TODO: connnect by hand
     void PlaySongsSlot(const QList<Song> &, unsigned);
     void ViewBackClicked();
     void ViewForwardClicked();
+    void OnArtistDoubleClickedSlot(const QString &artistname);
+    void OnAlbumDoubleClickedSlot(const Album &album);
 
 private:
     Ui::MainWindow *ui_;
