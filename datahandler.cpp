@@ -241,16 +241,16 @@ void DataHandler::TogglePlay() {
     auto state = last_update_.State();
 
     switch(state) {
-    case MPD_STATE_PAUSE:
-        mpd_communicator_.TogglePlay(false);
-        break;
-    case MPD_STATE_PLAY:
-        mpd_communicator_.TogglePlay(true);
-        break;
-    case MPD_STATE_STOP:
-        break;
-    case MPD_STATE_UNKNOWN:
-        break;
+        case MPD_STATE_PAUSE:
+            mpd_communicator_.TogglePlay(false);
+            break;
+        case MPD_STATE_PLAY:
+            mpd_communicator_.TogglePlay(true);
+            break;
+        case MPD_STATE_STOP:
+            break;
+        case MPD_STATE_UNKNOWN:
+            break;
     }
 }
 

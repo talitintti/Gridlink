@@ -39,9 +39,7 @@ private slots:
         notifier_->setEnabled(false);
 
         mpd_idle events = mpd_recv_idle(conn_, true);
-        if (events & MPD_IDLE_PLAYER) {
-            emit PlayerStateChanged(events);
-        }
+        emit PlayerStateChanged(events);
 
         mpd_send_idle(conn_);  // Re-enter idle mode
         notifier_->setEnabled(true);

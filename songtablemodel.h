@@ -68,7 +68,6 @@ public:
 
         int song_index = FindSongInList(song_hash);
         if (song_index == -1) {
-            qWarning() << "Trying to highlight song that doens't exist" << "\n";
             return;
         }
 
@@ -84,7 +83,6 @@ public:
         if (playing_song_row_ == -1) return; // We are not playing anything
         int song_index = FindSongInList(last_played_song_hash_);
         if (song_index == -1) {
-            qWarning() << "Trying to unhighlight nonexistent song" << "\n";
             return;
         }
 
