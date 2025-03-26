@@ -40,8 +40,16 @@ bool DataHandler::FetchStatusUpdate() {
 
     if (mpd_status == nullptr) return false;
 
-    Song song = std::move(mpd_communicator_.GetCurrentSong());
-    MPDStatus status(mpd_status, std::move(song));
+    bool song_changed = false;
+    Song current_song = std::move(mpd_communicator_.GetCurrentSong());
+    size_t current_song_hash = current_song.GetHash();
+    size_t last_song_hash = last_update_.CurrentSong().GetHash();
+
+    if (current_song_hash != last_song_hash) song_changed = true;
+
+    MPDStatus status(mpd_status,
+                     std::move(current_song),
+                     song_changed);
     last_update_ = std::move(status);
 
     return true;
@@ -166,8 +174,7 @@ bool DataHandler::WriteConfigFile(QFile &configFile, const Config &config) {
 }
 
 void DataHandler::ManualStatusUpdate() {
-    if (FetchStatusUpdate())
-        ParseStatusUpdate();
+    if (FetchStatusUpdate()) ParseStatusUpdate();
 }
 
 
@@ -218,7 +225,9 @@ void DataHandler::ParseStatusUpdate() {
     auto state = last_update_.State();
     auto last_song = last_update_.CurrentSong();
 
-    emit SongUpdateSignal(last_song);
+    if (last_update_.SongChanged()) {
+        emit SongUpdateSignal(last_song);
+    }
 
     switch(state) {
         case MPD_STATE_PAUSE:

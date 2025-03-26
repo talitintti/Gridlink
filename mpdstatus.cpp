@@ -30,3 +30,11 @@ AudioFormat MPDStatus::GetAudioFormat() const {
 const Song &MPDStatus::CurrentSong() const {
     return current_song_;
 }
+
+bool MPDStatus::IsEmpty() const {
+    return status_ == nullptr;
+}
+
+bool MPDStatus::SongChanged() const {
+    return song_changed_;
+}

@@ -6,7 +6,7 @@ Song::Song(mpd_song *mpdSong) {
 }
 
 const char* Song::GetTagStr(mpd_tag_type tag_type) const {
-    if (mpd_song_.get() == nullptr) {
+    if (IsEmpty()) {
         return "";
     }
 
@@ -39,12 +39,11 @@ QString Song::GetGenre() const {
 }
 
 unsigned Song::GetDurationSec() const {
-    return mpd_song_get_duration(mpd_song_.get());
+    return IsEmpty() ? 0 : mpd_song_get_duration(mpd_song_.get());
 }
 
 QString Song::GetSongPath() const {
-    const char *uri = mpd_song_get_uri(mpd_song_.get());
-    return QString(uri);
+    return IsEmpty() ? "" : mpd_song_get_uri(mpd_song_.get());
 }
 
 std::size_t Song::GetHash() const {

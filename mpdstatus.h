@@ -14,13 +14,15 @@ class MPDStatus {
 
 public:
     MPDStatus() = default;
-    MPDStatus(struct mpd_status *status, Song &&current_song) :
+    MPDStatus(struct mpd_status *status, Song &&current_song, bool song_changed) :
         status_(status),
-        current_song_(std::move(current_song))    {}
+        current_song_(std::move(current_song)),
+        song_changed_(song_changed)    {}
 
     MPDStatus &operator=(MPDStatus &&other) noexcept {
         current_song_ = std::move(other.current_song_);
         status_ = other.status_;
+        song_changed_ = other.song_changed_;
         other.status_ = nullptr;
 
         return *this;
@@ -46,10 +48,13 @@ public:
     enum mpd_state State() const;
     bool Updating() const;
     const Song &CurrentSong() const;
+    bool IsEmpty() const;
+    bool SongChanged() const;
 
 private:
-    struct mpd_status *status_ = nullptr;
+    mpd_status *status_ = nullptr;
     Song current_song_;
+    bool song_changed_;
 };
 
 #endif // MPDSTATUS_H
