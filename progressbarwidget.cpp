@@ -63,7 +63,7 @@ void ProgressBarWidget::HandleStop() {
 
 void ProgressBarWidget::UpdateCurrentTime(unsigned current_time_ms) {
     current_time_ms_ = current_time_ms;
-    unsigned current_time_sec = current_time_ms / 1000;
+    unsigned current_time_sec = round(current_time_ms / 1000.0);
     current_time_lab_->setText(FormattedTime(current_time_sec));
     progress_bar_->setValue(current_time_ms);
 }
