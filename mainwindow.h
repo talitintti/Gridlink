@@ -32,6 +32,7 @@ public slots:
     void SongPositionChanged(unsigned elapsed_ms);
     void SongChanged(const Song &);
     void PlaybackStopped();
+
 private slots:
     // TODO: make uniform casing
     void on_listView_playlists_pressed(const QModelIndex &index); //TODO: connnect by hand

@@ -224,10 +224,11 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
 void DataHandler::ParseStatusUpdate() {
     auto state = last_update_.State();
     auto last_song = last_update_.CurrentSong();
+    auto elapsed_ms = last_update_.ElapsedTimeMs();
 
-    if (last_update_.SongChanged()) {
-        emit SongUpdateSignal(last_song);
-    }
+    if (last_update_.SongChanged()) emit SongUpdateSignal(last_song);
+
+    emit SongElapsedSignal(elapsed_ms);
 
     switch(state) {
         case MPD_STATE_PAUSE:

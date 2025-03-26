@@ -13,7 +13,11 @@ struct AudioFormat {
 class MPDStatus {
 
 public:
-    MPDStatus() = default;
+    MPDStatus() :
+        status_(nullptr),
+        current_song_(Song()),
+        song_changed_(true) {}
+
     MPDStatus(struct mpd_status *status, Song &&current_song, bool song_changed) :
         status_(status),
         current_song_(std::move(current_song)),
@@ -52,7 +56,7 @@ public:
     bool SongChanged() const;
 
 private:
-    mpd_status *status_ = nullptr;
+    mpd_status *status_;
     Song current_song_;
     bool song_changed_;
 };

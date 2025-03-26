@@ -74,6 +74,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::PlaybackPaused);
 
+    connect(datahandler_,
+            &DataHandler::SongElapsedSignal,
+            this,
+            &MainWindow::SongPositionChanged);
+
     connect(ui_->pushButton_view_back,
             &QPushButton::clicked,
             this,

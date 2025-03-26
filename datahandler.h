@@ -33,6 +33,7 @@ signals:
     void PlayStartedSignal();
     void SongPausedSignal();
     void SongStoppedSignal();
+    void SongElapsedSignal(unsigned elapsed_ms);
 
 
 private slots:
