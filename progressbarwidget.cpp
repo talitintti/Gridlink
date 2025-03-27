@@ -1,28 +1,33 @@
 #include "progressbarwidget.h"
 #include "helpers.h"
+#include <QApplication>
 
 ProgressBarWidget::ProgressBarWidget(QWidget *parent)
     : QWidget(parent), total_length_ms_(0), current_time_ms_(0), update_interval_ms_(1000){
 
 
     // Initialize UI elements
-    progress_bar_ = new QSlider(Qt::Horizontal, this);
+    slider_ = new QSlider(Qt::Horizontal, this);
     current_time_lab_ = new QLabel(this);
     total_time_lab_ = new QLabel(this);
 
     layout_ = new QHBoxLayout(this);
     layout_->addWidget(current_time_lab_);
-    layout_->addWidget(progress_bar_);
+    layout_->addWidget(slider_);
     layout_->addWidget(total_time_lab_);
     setLayout(layout_);
 
     // Timer for auto-progressing the bar
     timer_ = new QTimer(this);
-    connect(timer_, &QTimer::timeout, this, &ProgressBarWidget::UpdateProgress);
 
     SetUpdateInterval(update_interval_ms_); // Keeps tick step in once place
     UpdateCurrentTime(0);
     UpdateTotalTime(0);
+
+    connect(timer_, &QTimer::timeout, this, &ProgressBarWidget::UpdateProgress);
+    connect(slider_, &QSlider::actionTriggered, this, &ProgressBarWidget::UserClickedOnSlider);
+    connect(slider_, &QSlider::sliderMoved, this, &ProgressBarWidget::SliderDragged);
+    connect(slider_, &QSlider::sliderReleased, this, &ProgressBarWidget::UserReleasedDrag);
 }
 
 void ProgressBarWidget::SetLength(unsigned seconds) {
@@ -65,24 +70,44 @@ void ProgressBarWidget::UpdateCurrentTime(unsigned current_time_ms) {
     current_time_ms_ = current_time_ms;
     unsigned current_time_sec = round(current_time_ms / 1000.0);
     current_time_lab_->setText(FormattedTime(current_time_sec));
-    progress_bar_->setValue(current_time_ms);
+    slider_->setValue(current_time_ms);
 }
 
 void ProgressBarWidget::UpdateTotalTime(unsigned seconds) {
     total_length_ms_ = seconds * 1000;
     total_time_lab_->setText(FormattedTime(seconds));
-    progress_bar_->setRange(0, total_length_ms_);
+    slider_->setRange(0, total_length_ms_);
 }
 
 
 void ProgressBarWidget::SetUpdateInterval(unsigned update_interval_ms) {
     if (update_interval_ms == 0) return;
     update_interval_ms_ = update_interval_ms;
-    progress_bar_->setSingleStep(update_interval_ms_);
+    slider_->setSingleStep(update_interval_ms_);
 }
 
 bool ProgressBarWidget::IsOn() {
     return timer_->isActive();
 }
 
+void ProgressBarWidget::UserClickedOnSlider(int action) {
+if (action == QAbstractSlider::SliderPageStepAdd ||
+    action == QAbstractSlider::SliderPageStepSub)
+    {
+        QPoint local_mouse_pos = slider_->mapFromGlobal(QCursor::pos());
+        float pos_ratio = local_mouse_pos.x() / (float)slider_->size().width();
+        int slider_range = slider_->maximum() - slider_->minimum();
+        int clicked_slider_pos = slider_->minimum() + slider_range * pos_ratio;
+        qDebug() << clicked_slider_pos;
+        UpdateCurrentTime(clicked_slider_pos);
+        emit PositionChanged(current_time_ms_);
+    }
+}
 
+void ProgressBarWidget::SliderDragged(int value) {
+    temp_drag_value_ = value;
+}
+
+void ProgressBarWidget::UserReleasedDrag() {
+    emit PositionChanged(temp_drag_value_);
+}

@@ -89,6 +89,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::ViewForwardClicked);
 
+    connect(progress_bar_,
+            &ProgressBarWidget::PositionChanged,
+            this,
+            &MainWindow::SongPositionChangeByUser);
+
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -313,4 +318,7 @@ void MainWindow::SongPositionChanged(unsigned elapsed_ms) {
 void MainWindow::ViewForwardClicked() {
     VIEW next_view = viewhistory_.MoveForward();
     ChangeView(next_view);
+}
+
+void MainWindow::SongPositionChangeByUser(unsigned ms) {
 }

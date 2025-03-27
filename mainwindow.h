@@ -25,7 +25,6 @@ public:
     ~MainWindow();
 
 public slots:
-
     //void StatusUpdate(const MPDStatus&);
     void PlaybackPaused();
     void PlaybackStarted();
@@ -43,6 +42,7 @@ private slots:
     void ViewForwardClicked();
     void OnArtistDoubleClickedSlot(const QString &artistname);
     void OnAlbumDoubleClickedSlot(const Album &album);
+    void SongPositionChangeByUser(unsigned ms);
 
 private:
     Ui::MainWindow *ui_;

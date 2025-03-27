@@ -24,8 +24,16 @@ public:
 
     void SetUpdateInterval(unsigned interval_ms);
 
+signals:
+    void PositionChanged(unsigned ms); // Only user initted position change
+
+private slots:
+    void UserClickedOnSlider(int action);
+    void SliderDragged(int value);
+    void UserReleasedDrag();
+
 private:
-    QSlider *progress_bar_;
+    QSlider *slider_;
     QTimer *timer_;
     QLabel *current_time_lab_;
     QLabel *total_time_lab_;
@@ -35,6 +43,8 @@ private:
     unsigned current_time_ms_; // Current position in seconds
 
     unsigned update_interval_ms_;
+
+    unsigned temp_drag_value_; // changed only by SliderDragged and sent by UserReleasedDrag
 
     void UpdateProgress();
     void UpdateCurrentTime(unsigned ms);
