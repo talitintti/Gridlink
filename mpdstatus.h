@@ -25,6 +25,7 @@ public:
 
     MPDStatus &operator=(MPDStatus &&other) noexcept {
         current_song_ = std::move(other.current_song_);
+        if (status_ != nullptr) mpd_status_free(status_);
         status_ = other.status_;
         song_changed_ = other.song_changed_;
         other.status_ = nullptr;
