@@ -26,6 +26,7 @@ bool DataHandler::Initialize() {
 
     // Let's get updates from MPD on MPD server state changes
     mpd_status_updates_ = new MPDNotif(this, NULL, 0, 1000);
+    mpd_status_updates_->SetBlockingTime(500);
     connect(mpd_status_updates_,
             &MPDNotif::PlayerStateChanged,
             this,
@@ -199,6 +200,8 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
         std::cout << "Player state changed! "<< std::endl;
     }
     if (events & MPD_IDLE_MIXER) {
+        if (!FetchStatusUpdate()) return;
+        ParseStatusUpdate();
         std::cout << "Mixer settings changed! "<< std::endl;
     }
     if (events & MPD_IDLE_OUTPUT) {
@@ -225,10 +228,12 @@ void DataHandler::ParseStatusUpdate() {
     auto state = last_update_.State();
     auto last_song = last_update_.CurrentSong();
     auto elapsed_ms = last_update_.ElapsedTimeMs();
+    auto volume  = last_update_.Volume();
 
     if (last_update_.SongChanged()) emit SongUpdateSignal(last_song);
 
     emit SongElapsedSignal(elapsed_ms);
+    emit VolumeChanged(volume);
 
     switch(state) {
         case MPD_STATE_PAUSE:
@@ -280,6 +285,10 @@ void DataHandler::SeekPos(unsigned pos_ms) {
     unsigned seconds = round(pos_ms / 1000.0);
     unsigned pos_in_queue = 0; // Going with currently playing
     mpd_communicator_.SeekPos(pos_in_queue, seconds);
+}
+
+void DataHandler::SetVolume(unsigned volume) {
+    mpd_communicator_.SetVolume(volume);
 }
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {

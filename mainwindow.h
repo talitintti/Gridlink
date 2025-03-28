@@ -31,6 +31,7 @@ public slots:
     void SongPositionChanged(unsigned elapsed_ms);
     void SongChanged(const Song &);
     void PlaybackStopped();
+    void VolumeUpdate(unsigned vol);
 
 private slots:
     // TODO: make uniform casing
@@ -43,6 +44,7 @@ private slots:
     void OnArtistDoubleClickedSlot(const QString &artistname);
     void OnAlbumDoubleClickedSlot(const Album &album);
     void SongPositionChangeByUser(unsigned ms);
+    void VolumeChangeByUserSlot(int);
 
 private:
     Ui::MainWindow *ui_;

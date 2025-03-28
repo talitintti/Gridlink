@@ -271,3 +271,11 @@ void MPDCommunication::SeekPos(unsigned pos_in_queue, unsigned pos_seconds) {
         CheckForMPDError(conn_);
     }
 }
+
+void MPDCommunication::SetVolume(unsigned volume) {
+    if (!CheckForMPDError(conn_)) return;
+
+    if (mpd_run_set_volume(conn_, volume)) {
+        CheckForMPDError(conn_);
+    }
+}

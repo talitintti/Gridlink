@@ -27,6 +27,7 @@ public:
     void ClearQueue();
     void ManualStatusUpdate();
     void SeekPos(unsigned pos_ms);
+    void SetVolume(unsigned vol);
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);
@@ -35,6 +36,7 @@ signals:
     void SongPausedSignal();
     void SongStoppedSignal();
     void SongElapsedSignal(unsigned elapsed_ms);
+    void VolumeChanged(unsigned volume);
 
 
 private slots:

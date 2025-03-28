@@ -33,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(progress_bar_);
     layout->setContentsMargins(0, 0, 0, 0);
 
+    //Volume slider
+    ui_->volume_slider->setRange(0,100);
+
     ui_->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
     ui_->stackedWidget->addWidget(library_view_);
     ui_->stackedWidget->addWidget(artist_view_);
@@ -94,6 +97,15 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::SongPositionChangeByUser);
 
+    connect(ui_->volume_slider,
+            &QSlider::sliderMoved,
+            this,
+            &MainWindow::VolumeChangeByUserSlot);
+
+    connect(datahandler_,
+            &DataHandler::VolumeChanged,
+            this,
+            &MainWindow::VolumeUpdate);
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -322,4 +334,12 @@ void MainWindow::ViewForwardClicked() {
 
 void MainWindow::SongPositionChangeByUser(unsigned ms) {
     datahandler_->SeekPos(ms);
+}
+
+void MainWindow::VolumeChangeByUserSlot(int value) {
+    datahandler_->SetVolume(value);
+}
+
+void MainWindow::VolumeUpdate(unsigned volume) {
+    ui_->volume_slider->setValue(volume);
 }
