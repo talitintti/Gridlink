@@ -28,6 +28,8 @@ public:
     void ManualStatusUpdate();
     void SeekPos(unsigned pos_ms);
     void SetVolume(unsigned vol);
+    void PlayNext();
+    void PlayPrevious();
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);

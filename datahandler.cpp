@@ -291,6 +291,14 @@ void DataHandler::SetVolume(unsigned volume) {
     mpd_communicator_.SetVolume(volume);
 }
 
+void DataHandler::PlayNext() {
+    mpd_communicator_.PlayNext();
+}
+
+void DataHandler::PlayPrevious() {
+    mpd_communicator_.PlayPrevious();
+}
+
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {
     auto destination_format = AV_PIX_FMT_RGB24;
     // Open the input file

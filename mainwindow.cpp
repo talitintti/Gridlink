@@ -34,8 +34,12 @@ MainWindow::MainWindow(QWidget *parent)
     layout->setContentsMargins(0, 0, 0, 0);
 
     //Volume slider
-    volume_slider = ui_->volume_slider;
-    volume_slider->setRange(0,100);
+    volume_slider_ = ui_->volume_slider;
+    volume_slider_->setRange(0,100);
+
+    // Buttons
+    button_next_song_ = ui_->pushButton_next_song;
+    button_previous_song_ = ui_->pushButton_last_song;
 
     ui_->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
     ui_->stackedWidget->addWidget(library_view_);
@@ -103,15 +107,25 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::SongPositionChangeByUser);
 
-    connect(volume_slider,
+    connect(volume_slider_,
             &QSlider::sliderMoved,
             this,
             &MainWindow::VolumeChangeByUserSlot);
 
-    connect(volume_slider,
+    connect(volume_slider_,
             &QSlider::actionTriggered,
             this,
             &MainWindow::UserClickedVolSlider);
+
+    connect(button_next_song_,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::UserClickedNextSong);
+
+    connect(button_previous_song_,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::UserClickedLastSong);
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -350,16 +364,24 @@ void MainWindow::VolumeUpdate(unsigned volume) {
     ui_->volume_slider->setValue(volume);
 }
 
+void MainWindow::UserClickedNextSong() {
+    datahandler_->PlayNext();
+}
+
+void MainWindow::UserClickedLastSong() {
+    datahandler_->PlayPrevious();
+}
+
 void MainWindow::UserClickedVolSlider(int action) {
 if (action == QAbstractSlider::SliderPageStepAdd ||
     action == QAbstractSlider::SliderPageStepSub)
     {
-        QPoint local_mouse_pos = volume_slider->mapFromGlobal(QCursor::pos());
-        float pos_ratio = local_mouse_pos.x() / (float)volume_slider->size().width();
-        int volume_sliderrange = volume_slider->maximum() - volume_slider->minimum();
-        int clicked_volume_sliderpos = volume_slider->minimum() + volume_sliderrange * pos_ratio;
+        QPoint local_mouse_pos = volume_slider_->mapFromGlobal(QCursor::pos());
+        float pos_ratio = local_mouse_pos.x() / (float)volume_slider_->size().width();
+        int volume_sliderrange = volume_slider_->maximum() - volume_slider_->minimum();
+        int clicked_volume_sliderpos = volume_slider_->minimum() + volume_sliderrange * pos_ratio;
 
-        volume_slider->setValue(clicked_volume_sliderpos);
+        volume_slider_->setValue(clicked_volume_sliderpos);
         VolumeChangeByUserSlot(clicked_volume_sliderpos);
     }
 }

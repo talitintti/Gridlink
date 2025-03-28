@@ -169,21 +169,15 @@ const Song MPDCommunication::GetCurrentSong() {
 }
 
 mpd_status *MPDCommunication::GetStatus() {
-    if (!mpd_send_status(conn_)) {
-        CheckForMPDError(conn_);
-        qWarning() << "Failed to send MPD status request\n";
-        return nullptr;
-    }
+    if (!CheckForMPDError(conn_)) return nullptr;
 
     // Receive response
-    struct mpd_status *status = mpd_recv_status(conn_);
+    struct mpd_status *status = mpd_run_status(conn_);
     if (status == NULL) {
-        CheckForMPDError(conn_);
         qWarning() << "Failed to receive MPD status request\n";
+        CheckForMPDError(conn_);
         return nullptr;
     }
-
-    mpd_response_finish(conn_);
 
     return status;
 }
@@ -275,7 +269,26 @@ void MPDCommunication::SeekPos(unsigned pos_in_queue, unsigned pos_seconds) {
 void MPDCommunication::SetVolume(unsigned volume) {
     if (!CheckForMPDError(conn_)) return;
 
-    if (mpd_run_set_volume(conn_, volume)) {
+    if (!mpd_run_set_volume(conn_, volume)) {
+        qWarning() << "Could not set volume\n";
+        CheckForMPDError(conn_);
+    }
+}
+
+void MPDCommunication::PlayNext() {
+    if (!CheckForMPDError(conn_)) return;
+
+    if (!mpd_run_next(conn_)) {
+        qWarning() << "Could not play next\n";
+        CheckForMPDError(conn_);
+    }
+}
+
+void MPDCommunication::PlayPrevious() {
+    if (!CheckForMPDError(conn_)) return;
+
+    if (!mpd_run_previous(conn_)) {
+        qWarning() << "Could not play previous\n";
         CheckForMPDError(conn_);
     }
 }

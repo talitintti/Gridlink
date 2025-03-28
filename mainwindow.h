@@ -46,6 +46,8 @@ private slots:
     void SongPositionChangeByUser(unsigned ms);
     void VolumeChangeByUserSlot(int);
     void UserClickedVolSlider(int action);
+    void UserClickedNextSong();
+    void UserClickedLastSong();
 
 private:
     Ui::MainWindow *ui_;
@@ -60,7 +62,9 @@ private:
     QStringListModel *stringListModel_playlists;
 
     ProgressBarWidget *progress_bar_; //TODO: better name lol
-    QSlider *volume_slider;
+    QSlider *volume_slider_;
+    QPushButton *button_next_song_;
+    QPushButton *button_previous_song_;
 
     void Init_lower_toolbar(Ui::MainWindow *ui);
     void Init_upper_toolbar(Ui::MainWindow *ui);
