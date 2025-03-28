@@ -276,6 +276,12 @@ void DataHandler::ClearQueue() {
     mpd_communicator_.ClearQueue();
 }
 
+void DataHandler::SeekPos(unsigned pos_ms) {
+    unsigned seconds = round(pos_ms / 1000.0);
+    unsigned pos_in_queue = 0; // Going with currently playing
+    mpd_communicator_.SeekPos(pos_in_queue, seconds);
+}
+
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {
     auto destination_format = AV_PIX_FMT_RGB24;
     // Open the input file

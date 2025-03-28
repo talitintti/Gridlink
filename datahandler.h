@@ -26,6 +26,7 @@ public:
     void StartPlayingQueue(unsigned index = 0);
     void ClearQueue();
     void ManualStatusUpdate();
+    void SeekPos(unsigned pos_ms);
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);

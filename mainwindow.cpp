@@ -321,4 +321,5 @@ void MainWindow::ViewForwardClicked() {
 }
 
 void MainWindow::SongPositionChangeByUser(unsigned ms) {
+    datahandler_->SeekPos(ms);
 }

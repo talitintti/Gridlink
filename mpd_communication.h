@@ -24,7 +24,9 @@ public:
     unsigned GetKbitRate();
     unsigned ElapsedMS();
     mpd_status *GetStatus();
+
     void TogglePlay(bool is_playing);
+    void SeekPos(unsigned pos_in_queue, unsigned pos_seconds);
 
     void AddToQueue(const QList<Song> &);
     void PlayInQueue(unsigned index = 0);

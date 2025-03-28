@@ -262,3 +262,12 @@ void MPDCommunication::ClearQueue() {
         CheckForMPDError(conn_);
     }
 }
+
+void MPDCommunication::SeekPos(unsigned pos_in_queue, unsigned pos_seconds) {
+    if (!CheckForMPDError(conn_)) return;
+
+    if (!mpd_run_seek_pos(conn_, pos_in_queue, pos_seconds)) {
+        qWarning() << "Could not seek in song \n";
+        CheckForMPDError(conn_);
+    }
+}
