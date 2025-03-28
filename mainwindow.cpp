@@ -34,7 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
     layout->setContentsMargins(0, 0, 0, 0);
 
     //Volume slider
-    ui_->volume_slider->setRange(0,100);
+    volume_slider = ui_->volume_slider;
+    volume_slider->setRange(0,100);
 
     ui_->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
     ui_->stackedWidget->addWidget(library_view_);
@@ -82,6 +83,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::SongPositionChanged);
 
+    connect(datahandler_,
+            &DataHandler::VolumeChanged,
+            this,
+            &MainWindow::VolumeUpdate);
+
     connect(ui_->pushButton_view_back,
             &QPushButton::clicked,
             this,
@@ -97,15 +103,15 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::SongPositionChangeByUser);
 
-    connect(ui_->volume_slider,
+    connect(volume_slider,
             &QSlider::sliderMoved,
             this,
             &MainWindow::VolumeChangeByUserSlot);
 
-    connect(datahandler_,
-            &DataHandler::VolumeChanged,
+    connect(volume_slider,
+            &QSlider::actionTriggered,
             this,
-            &MainWindow::VolumeUpdate);
+            &MainWindow::UserClickedVolSlider);
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -342,4 +348,18 @@ void MainWindow::VolumeChangeByUserSlot(int value) {
 
 void MainWindow::VolumeUpdate(unsigned volume) {
     ui_->volume_slider->setValue(volume);
+}
+
+void MainWindow::UserClickedVolSlider(int action) {
+if (action == QAbstractSlider::SliderPageStepAdd ||
+    action == QAbstractSlider::SliderPageStepSub)
+    {
+        QPoint local_mouse_pos = volume_slider->mapFromGlobal(QCursor::pos());
+        float pos_ratio = local_mouse_pos.x() / (float)volume_slider->size().width();
+        int volume_sliderrange = volume_slider->maximum() - volume_slider->minimum();
+        int clicked_volume_sliderpos = volume_slider->minimum() + volume_sliderrange * pos_ratio;
+
+        volume_slider->setValue(clicked_volume_sliderpos);
+        VolumeChangeByUserSlot(clicked_volume_sliderpos);
+    }
 }
