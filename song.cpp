@@ -1,10 +1,6 @@
 #include "song.h"
 #include <QTime>
 
-Song::Song(mpd_song *mpdSong) {
-    mpd_song_ = std::shared_ptr<mpd_song>(mpdSong, mpd_song_free);
-}
-
 const char* Song::GetTagStr(mpd_tag_type tag_type) const {
     if (IsEmpty()) {
         return "";

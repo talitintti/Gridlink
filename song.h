@@ -9,7 +9,7 @@ class Song
 {
 public:
     Song() = default;
-    Song(mpd_song *mpdSong);
+    Song(mpd_song *mpd_song) : mpd_song_(mpd_song, mpd_song_free) {}
 
     Song(const Song &cop) : mpd_song_(cop.mpd_song_) { }
     Song(Song &&mv) : mpd_song_(std::move(mv.mpd_song_)) { }

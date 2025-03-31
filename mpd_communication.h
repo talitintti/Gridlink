@@ -10,6 +10,8 @@
 class MPDCommunication
 {
 public:
+    struct Playlist { std::string *path; time_t last_modif_posix; };
+
     MPDCommunication();
     ~MPDCommunication();
 
@@ -17,6 +19,9 @@ public:
     // Return false if no success
     bool Initialize();
 
+    QList<mpd_playlist*> GetPlaylistsRaw(); // you are responsible for freeing
+    QList<Playlist> GetPlaylists();
+    QList<Song> GetPlaylistSongs(const std::string playlist_name);
     QList<QString> GetArtists(const std::string artist_type);
     QList<QString> GetAlbumNames(const std::string artist_name);
     QList<Song> GetSongs(const std::string &artist_name, const std::string &album_name);

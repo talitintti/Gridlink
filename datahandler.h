@@ -45,17 +45,18 @@ private slots:
     void StatusUpdateSlot(mpd_idle);
 
 private:
+    MPDCommunication mpd_communicator_ = MPDCommunication();
+    MPDNotif *mpd_status_updates_;
+    Config config_;
+    MPDStatus last_update_;
+
+
     bool WriteConfigFile(QFile &configFile, const Config &config);
     Config ReadConfigFile();
     void SetAlbumCover(Album &album) const;
     bool FetchStatusUpdate();
     void ParseStatusUpdate();
-
-
-    MPDCommunication mpd_communicator_ = MPDCommunication();
-    MPDNotif *mpd_status_updates_;
-    Config config_;
-    MPDStatus last_update_;
+    void FetchPlaylists();
 };
 
 #endif // DATAHANDLER_H

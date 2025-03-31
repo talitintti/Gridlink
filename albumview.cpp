@@ -42,8 +42,6 @@ void AlbumView::SetAlbum(const Album &album) {
         QImage scaled_image = image.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(scaled_image));
     }
-
-
 }
 
 void AlbumView::SetTableAppearance(QTableView *table_view) {

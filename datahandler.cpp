@@ -59,6 +59,8 @@ bool DataHandler::FetchStatusUpdate() {
 
 
 
+
+
 QList<QString> DataHandler::GetArtistNames() {
     return mpd_communicator_.GetArtists("AlbumArtist"); // maybe config file decides artist_type
 }

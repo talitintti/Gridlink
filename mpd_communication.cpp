@@ -292,3 +292,61 @@ void MPDCommunication::PlayPrevious() {
         CheckForMPDError(conn_);
     }
 }
+
+QList<mpd_playlist*> MPDCommunication::GetPlaylistsRaw() {
+    QList<mpd_playlist*> playlist_list;
+    if (!CheckForMPDError(conn_))  return playlist_list;
+
+    if (!mpd_send_list_playlists(conn_))  {
+        qWarning() << "Could not fetch playlists\n";
+        CheckForMPDError(conn_);
+    }
+
+    mpd_playlist *playlist;
+    while ( (playlist = mpd_recv_playlist(conn_)) != NULL) {
+        playlist_list.push_back(playlist); // TODO: is it better to duplicate + free old here?
+    }
+
+    mpd_response_finish(conn_);
+
+    return playlist_list;
+}
+
+QList<MPDCommunication::Playlist> MPDCommunication::GetPlaylists() {
+    QList<MPDCommunication::Playlist> playlists;
+
+    auto playlist_pointers = GetPlaylistsRaw();
+    for (const auto &playlist_p : playlist_pointers) {
+        playlists.emplace_back(
+            mpd_playlist_get_path(playlist_p),
+            mpd_playlist_get_last_modified(playlist_p)
+        );
+        mpd_playlist_free(playlist_p);
+    }
+
+    return playlists;
+}
+
+
+QList<Song> MPDCommunication::GetPlaylistSongs(std::string playlist_name) {
+    QList<Song> playlist_songs;
+    const char *name = playlist_name.c_str();
+
+    if (!CheckForMPDError(conn_))  return playlist_songs;
+
+    if (!mpd_send_list_playlist_meta(conn_, name))  {
+        qWarning() << "Could not playlist songs\n";
+        CheckForMPDError(conn_);
+    }
+
+    mpd_entity *entity;
+    while ( (entity = mpd_recv_entity(conn_)) != NULL) {
+        const mpd_song *song = mpd_entity_get_song(entity);
+        playlist_songs.emplace_back(mpd_song_dup(song));
+        mpd_entity_free(entity);
+    }
+
+    mpd_response_finish(conn_);
+
+    return playlist_songs;
+}
