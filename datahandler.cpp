@@ -57,6 +57,7 @@ bool DataHandler::FetchStatusUpdate() {
 }
 
 QList<Playlist> &DataHandler::GetPlaylists() {
+    FetchPlaylists();
     return playlists_;
 }
 
@@ -64,7 +65,7 @@ void DataHandler::FetchPlaylists() {
     QList<Playlist> &ready_playlists = playlists_;
     auto mpd_playlists = mpd_communicator_.GetPlaylists();
 
-    for (const auto &mpd_playlist : mpd_playlists) {
+    for (const auto &mpd_playlist : std::as_const(mpd_playlists)) {
         auto path = mpd_playlist.path_;
         auto filename = QFileInfo(path).fileName();
         auto songs = mpd_communicator_.GetPlaylistSongs(filename.toStdString());
@@ -75,7 +76,7 @@ void DataHandler::FetchPlaylists() {
             filename,
             path,
             modif_time
-            );
+        );
     }
 }
 

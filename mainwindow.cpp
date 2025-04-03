@@ -33,6 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(progress_bar_);
     layout->setContentsMargins(0, 0, 0, 0);
 
+    // init the playlist bar on the left
+    playlist_model_ = new PlaylistListModel(this);
+    ui_->listView_playlists->setModel(playlist_model_);
+    auto playlists = datahandler_->GetPlaylists();
+    playlist_model_->AddPlaylists(playlists);
+
     //Volume slider
     volume_slider_ = ui_->volume_slider;
     volume_slider_->setRange(0,100);
@@ -127,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::UserClickedLastSong);
 
+
     datahandler_->ManualStatusUpdate(); // status update once at start
 
 
@@ -134,7 +141,6 @@ MainWindow::MainWindow(QWidget *parent)
     stringListModel_playlists = new QStringListModel(this);
 
     QStringList buttons;
-    QStringList playlists;
 
     QByteArray hex_note = QByteArray::fromHex("F09F8EB5");
     QString utf_note = QString::fromUtf8(hex_note);
@@ -145,19 +151,9 @@ MainWindow::MainWindow(QWidget *parent)
     buttons << utf_house + " Library";
     buttons << utf_house + " Discover";
 
-    for (int i = 0; i < 50; i++) {
-        playlists << utf_note + " You";
-        playlists << utf_note + " Found";
-        playlists << utf_note + " Freday Brazilectro";
-        playlists << utf_note + " Champange Evening";
-        playlists << utf_note + " Sleepy Evening";
-    }
-
     stringListModel_buttons -> setStringList(buttons);
-    stringListModel_playlists -> setStringList(playlists);
 
     ui_->listView_viewSelects->setModel(stringListModel_buttons);
-    ui_->listView_playlists->setModel(stringListModel_playlists);
 
     ui_->listView_playlists->setSpacing(2);
     ui_->listView_viewSelects->setSpacing(2);

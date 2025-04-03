@@ -10,6 +10,7 @@
 #include "progressbarwidget.h"
 #include "enums.h"
 #include "viewhistory.h"
+#include "playlistlistmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -65,6 +66,8 @@ private:
     QSlider *volume_slider_;
     QPushButton *button_next_song_;
     QPushButton *button_previous_song_;
+
+    PlaylistListModel *playlist_model_;
 
     void Init_lower_toolbar(Ui::MainWindow *ui);
     void Init_upper_toolbar(Ui::MainWindow *ui);

@@ -71,10 +71,6 @@ protected:
     QString name_;
     unsigned length_sec_ = 0;
     OImage cover_image_;
-
-    void CalcLength() {
-
-    }
 };
 
 #endif // SONGCOLLECTION_H
