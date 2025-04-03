@@ -7,6 +7,7 @@
 #include "album.h"
 #include "mpdstatus.h"
 #include "mpdnotif.h"
+#include "playlist.h"
 
 class DataHandler : public QObject
 {
@@ -30,6 +31,7 @@ public:
     void SetVolume(unsigned vol);
     void PlayNext();
     void PlayPrevious();
+    QList<Playlist> &GetPlaylists();
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);
@@ -49,6 +51,7 @@ private:
     MPDNotif *mpd_status_updates_;
     Config config_;
     MPDStatus last_update_;
+    QList<Playlist> playlists_;
 
 
     bool WriteConfigFile(QFile &configFile, const Config &config);

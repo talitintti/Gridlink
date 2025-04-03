@@ -49,6 +49,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         progressbarwidget.h progressbarwidget.cpp
         viewhistory.h
         enums.h
+        playlist.h
 
     )
 # Define target properties for Android with Qt 6 as:

@@ -7,10 +7,16 @@
 
 #include <mpd/client.h>
 
+
 class MPDCommunication
 {
 public:
-    struct Playlist { std::string *path; time_t last_modif_posix; };
+    struct Playlist {
+        Playlist(const QString &p, time_t t) : path_(p), timestamp_(t) {}
+
+        QString path_;
+        time_t timestamp_;
+    };
 
     MPDCommunication();
     ~MPDCommunication();

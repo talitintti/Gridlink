@@ -317,9 +317,11 @@ QList<MPDCommunication::Playlist> MPDCommunication::GetPlaylists() {
 
     auto playlist_pointers = GetPlaylistsRaw();
     for (const auto &playlist_p : playlist_pointers) {
-        playlists.emplace_back(
-            mpd_playlist_get_path(playlist_p),
-            mpd_playlist_get_last_modified(playlist_p)
+        playlists.push_back(
+            MPDCommunication::Playlist(
+                mpd_playlist_get_path(playlist_p),
+                mpd_playlist_get_last_modified(playlist_p)
+            )
         );
         mpd_playlist_free(playlist_p);
     }
