@@ -7,6 +7,7 @@
 #include "EWIEGA46WW/moc_mimedata.cpp"
 #include "EWIEGA46WW/moc_mpdnotif.cpp"
 #include "EWIEGA46WW/moc_playlistlistmodel.cpp"
+#include "EWIEGA46WW/moc_playlistview.cpp"
 #include "EWIEGA46WW/moc_progressbarwidget.cpp"
 #include "EWIEGA46WW/moc_searchview.cpp"
 #include "EWIEGA46WW/moc_songtablemodel.cpp"

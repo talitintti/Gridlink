@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     library_view_ = new LibraryView(this);
     artist_view_ = new ArtistView(this);
     album_view_ = new AlbumView(this);
+    playlist_view_ = new PlaylistView(this);
 
     // Init the progress bar
     auto progressbar_frame = ui_->frame_2;
@@ -35,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // init the playlist bar on the left
     playlist_model_ = new PlaylistListModel(this);
+    auto playlists = datahandler_->GetPlaylists();
+    playlist_model_->SetPlaylists(playlists);
     ui_->listView_playlists->setModel(playlist_model_);
 
     //Volume slider
@@ -50,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui_->stackedWidget->addWidget(artist_view_);
     ui_->stackedWidget->addWidget(album_view_);
     ui_->stackedWidget->addWidget(search_view);
+    ui_->stackedWidget->addWidget(playlist_view_);
 
     connect(library_view_,
             &LibraryView::ArtistDoubleClickedSignal,
@@ -143,7 +147,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     datahandler_->ManualStatusUpdate(); // status update once at start
-    datahandler_->GetPlaylists();
 
 
     stringListModel_buttons = new QStringListModel(this);
@@ -199,6 +202,9 @@ void MainWindow::ChangeView(VIEW view) {
             break;
         case VIEW_SEARCH:
             //ui->stackedWidget->setCurrentWidget(search);
+            break;
+        case VIEW_PLAYLIST:
+            ui_->stackedWidget->setCurrentWidget(playlist_view_);
             break;
         default:
             qWarning() << "Trying to change view to invalid values\n";
@@ -391,8 +397,8 @@ if (action == QAbstractSlider::SliderPageStepAdd ||
     }
 }
 
-void MainWindow::PlaylistUpdate(const QList<Playlist> &playlists) {
-    playlist_model_->AddPlaylists(playlists);
+void MainWindow::PlaylistUpdate() {
+    playlist_model_->ResetModel();
 }
 
 // Update all the views

@@ -56,9 +56,9 @@ bool DataHandler::FetchStatusUpdate() {
     return true;
 }
 
-void DataHandler::GetPlaylists() {
+QList<Playlist> &DataHandler::GetPlaylists() {
     FetchPlaylists();
-    emit PlaylistsChanged(playlists_);
+    return playlists_;
 }
 
 void DataHandler::FetchPlaylists() {
@@ -217,7 +217,7 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
     }
     if (events & MPD_IDLE_PLAYLIST) {
         FetchPlaylists();
-        emit PlaylistsChanged(playlists_);
+        emit PlaylistsChanged();
         std::cout << "Playlist changed! "<< std::endl;
     }
     if (events & MPD_IDLE_PLAYER) {

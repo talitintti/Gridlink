@@ -76,7 +76,12 @@ public:
         endInsertRows();
     }
 
-    void AddPlaylists(const QList<Playlist> &playlists) {
+    void ResetModel() {
+        beginResetModel();
+        endResetModel();
+    }
+
+    void SetPlaylists(const QList<Playlist> &playlists) {
         beginResetModel();
         playlists_ = playlists;
         endResetModel();

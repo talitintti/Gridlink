@@ -11,6 +11,7 @@
 #include "enums.h"
 #include "viewhistory.h"
 #include "playlistlistmodel.h"
+#include "playlistview.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -50,7 +51,7 @@ private slots:
     void SongChanged(const Song &);
     void PlaybackStopped();
     void VolumeUpdate(unsigned vol);
-    void PlaylistUpdate(const QList<Playlist> &);
+    void PlaylistUpdate();
     void DatabaseUpdated();
 
 private:
@@ -61,6 +62,7 @@ private:
     LibraryView *library_view_;
     ArtistView *artist_view_;
     AlbumView *album_view_;
+    PlaylistView *playlist_view_;
 
     QStringListModel *stringListModel_buttons;
     QStringListModel *stringListModel_playlists;
