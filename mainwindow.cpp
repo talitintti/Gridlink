@@ -36,8 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     // init the playlist bar on the left
     playlist_model_ = new PlaylistListModel(this);
     ui_->listView_playlists->setModel(playlist_model_);
-    auto playlists = datahandler_->GetPlaylists();
-    playlist_model_->AddPlaylists(playlists);
 
     //Volume slider
     volume_slider_ = ui_->volume_slider;
@@ -98,6 +96,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::VolumeUpdate);
 
+    connect(datahandler_,
+            &DataHandler::PlaylistsChanged,
+            this,
+            &MainWindow::PlaylistUpdate);
+
     connect(ui_->pushButton_view_back,
             &QPushButton::clicked,
             this,
@@ -135,6 +138,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     datahandler_->ManualStatusUpdate(); // status update once at start
+    datahandler_->GetPlaylists();
 
 
     stringListModel_buttons = new QStringListModel(this);
@@ -380,4 +384,8 @@ if (action == QAbstractSlider::SliderPageStepAdd ||
         volume_slider_->setValue(clicked_volume_sliderpos);
         VolumeChangeByUserSlot(clicked_volume_sliderpos);
     }
+}
+
+void MainWindow::PlaylistUpdate(const QList<Playlist> &playlists) {
+    playlist_model_->AddPlaylists(playlists);
 }

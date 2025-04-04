@@ -27,12 +27,6 @@ public:
 
 public slots:
     //void StatusUpdate(const MPDStatus&);
-    void PlaybackPaused();
-    void PlaybackStarted();
-    void SongPositionChanged(unsigned elapsed_ms);
-    void SongChanged(const Song &);
-    void PlaybackStopped();
-    void VolumeUpdate(unsigned vol);
 
 private slots:
     // TODO: make uniform casing
@@ -49,6 +43,14 @@ private slots:
     void UserClickedVolSlider(int action);
     void UserClickedNextSong();
     void UserClickedLastSong();
+
+    void PlaybackPaused();
+    void PlaybackStarted();
+    void SongPositionChanged(unsigned elapsed_ms);
+    void SongChanged(const Song &);
+    void PlaybackStopped();
+    void VolumeUpdate(unsigned vol);
+    void PlaylistUpdate(const QList<Playlist> &);
 
 private:
     Ui::MainWindow *ui_;

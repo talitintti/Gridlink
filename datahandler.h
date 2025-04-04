@@ -31,7 +31,7 @@ public:
     void SetVolume(unsigned vol);
     void PlayNext();
     void PlayPrevious();
-    QList<Playlist> &GetPlaylists();
+    void GetPlaylists();
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);
@@ -41,6 +41,7 @@ signals:
     void SongStoppedSignal();
     void SongElapsedSignal(unsigned elapsed_ms);
     void VolumeChanged(unsigned volume);
+    void PlaylistsChanged(const QList<Playlist> &);
 
 
 private slots:
