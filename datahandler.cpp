@@ -205,9 +205,11 @@ void DataHandler::ManualStatusUpdate() {
 //TODO: implement all
 void DataHandler::StatusUpdateSlot(mpd_idle events) {
     if (events & MPD_IDLE_DATABASE) {
+        emit DatabaseChanged();
         std::cout << "Database updated! "<< std::endl;
     }
     if (events & MPD_IDLE_UPDATE) {
+        /** a database update has started or finished. */
         std::cout << "Update started! "<< std::endl;
     }
     if (events & MPD_IDLE_STORED_PLAYLIST) {

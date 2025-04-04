@@ -51,6 +51,7 @@ private slots:
     void PlaybackStopped();
     void VolumeUpdate(unsigned vol);
     void PlaylistUpdate(const QList<Playlist> &);
+    void DatabaseUpdated();
 
 private:
     Ui::MainWindow *ui_;

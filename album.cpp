@@ -1,4 +1,4 @@
-//#include "album.h"
+#include "album.h"
 //
 //QString Album::GetName() const {
 //    return album_name_;
@@ -24,3 +24,7 @@
 //    return cover_image_;
 //}
 
+
+QString Album::GetAlbumArtist() {
+    return songs_.empty() ? "" : songs_.first().GetAlbumArtist();
+}

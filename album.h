@@ -42,38 +42,7 @@ class Album : public SongCollection
 public:
     using SongCollection::SongCollection;
 
-    //using SongCollection::GetName;
-    //using SongCollection::GetSongs;
-    //using SongCollection::GetCoverData;
-    //using SongCollection::GetCover;
-    //using SongCollection::HasCoverData;
-    //using SongCollection::AddSong;
-    //using SongCollection::SetCoverData;
-
-    //Album() = default;
-    //Album(const Album&) = default;
-    //Album& operator=(const Album&) = default;
-    //Album& operator=(Album &&other) = default;
-
-    //Album(QList<Song> &&songs) : songs_(std::move(songs)) {
-    //    for (const Song &song : std::as_const(songs_)) {
-    //        length_sec_ += song.GetDurationSec();
-    //    }
-
-    //    if (!songs_.empty()) {
-    //        Song song(songs_.at(0));
-    //        artist_name_ = song.GetArtist();
-    //        album_name_ = song.GetAlbum();
-    //        genre_ = song.GetGenre();
-    //    }
-    //}
-
-    //QString GetName() const;
-    //const QList<Song> &GetSongs() const;
-    //const uint8_t *GetCoverData() const;
-    //const OImage &GetCover() const;
-    //bool HasCoverData() const;
-    //void SetCoverData(OImage &&image);
+QString GetAlbumArtist();
 
 private:
     //QList<Song> songs_;

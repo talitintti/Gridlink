@@ -120,3 +120,7 @@ void AlbumView::InformSongNotPlaying() {
     // Tell the songtablemodel that a song is playing
     song_table_model_->SetPlayingAsStopped();
 }
+
+const Album &AlbumView::GetCurrentAlbum() {
+    return album_;
+}

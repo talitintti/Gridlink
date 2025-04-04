@@ -101,6 +101,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::PlaylistUpdate);
 
+    connect(datahandler_,
+            &DataHandler::DatabaseChanged,
+            this,
+            &MainWindow::DatabaseUpdated);
+
     connect(ui_->pushButton_view_back,
             &QPushButton::clicked,
             this,
@@ -260,7 +265,7 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index) {
 
 void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
     viewhistory_.AddView(VIEW_ARTIST);
-    artist_view_->SetData(datahandler_->GetAlbums(artistname));
+    artist_view_->SetData(datahandler_->GetAlbums(artistname), artistname);
     ChangeView(VIEW_ARTIST);
 }
 
@@ -388,4 +393,20 @@ if (action == QAbstractSlider::SliderPageStepAdd ||
 
 void MainWindow::PlaylistUpdate(const QList<Playlist> &playlists) {
     playlist_model_->AddPlaylists(playlists);
+}
+
+// Update all the views
+// TODO: IF OTHER VIEWS ADDED REMEMBER TO UPDATE THIS
+void MainWindow::DatabaseUpdated() {
+    library_view_->SetData(datahandler_->GetArtistNames());
+
+    auto current_artist_in_av = artist_view_->GetCurrentArtist();
+    artist_view_->SetData(datahandler_->GetAlbums(current_artist_in_av), current_artist_in_av);
+
+    auto current_album = album_view_->GetCurrentAlbum();
+    auto a_name = current_album.GetName();
+    auto a_artist = current_album.GetAlbumArtist();
+    album_view_->SetAlbum(datahandler_->GetAlbum(a_artist, a_name));
+
+    datahandler_->GetPlaylists();
 }

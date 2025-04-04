@@ -23,6 +23,7 @@ public:
         return this->GetHash() == other.GetHash();
     }
 
+    // TODO: needless copying, fix somehow, notice that when called through alb. even more copies
     QString GetName() const;
     QString GetArtist() const;
     QString GetAlbumArtist() const;

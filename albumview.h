@@ -21,6 +21,7 @@ public:
     void SetAlbum(const Album &album);
     void InformSongPlaying(const Song &);
     void InformSongNotPlaying();
+    const Album &GetCurrentAlbum();
 
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);

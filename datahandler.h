@@ -42,6 +42,7 @@ signals:
     void SongElapsedSignal(unsigned elapsed_ms);
     void VolumeChanged(unsigned volume);
     void PlaylistsChanged(const QList<Playlist> &);
+    void DatabaseChanged();
 
 
 private slots:

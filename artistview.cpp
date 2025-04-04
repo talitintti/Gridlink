@@ -20,8 +20,8 @@ ArtistView::~ArtistView()
     delete ui_;
 }
 
-void ArtistView::SetData(QList<Album> data) {
-    album_list_model_.setAlbums(data);
+void ArtistView::SetData(QList<Album> data, const QString &artist) {
+    album_list_model_.SetAlbums(data);
 }
 
 void ArtistView::AlbumDoubleClickedSlot(const QModelIndex &album_index) {
@@ -32,4 +32,8 @@ void ArtistView::AlbumDoubleClickedSlot(const QModelIndex &album_index) {
 //TODO: set the proper things
 void SetAppearance(QListView *list_view) {
     list_view->setAlternatingRowColors(true);
+}
+
+const QString &ArtistView::GetCurrentArtist() {
+    return current_artist_;
 }

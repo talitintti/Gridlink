@@ -11,7 +11,7 @@ class AlbumListModel : public QAbstractListModel {
  public:
     explicit AlbumListModel(QObject *parent = nullptr) : QAbstractListModel(parent) {}
 
-    void setAlbums(QList<Album> albumList) {
+    void SetAlbums(QList<Album> albumList) {
         beginResetModel();
         qDebug() << albumList.at(0).GetName() << " \n";
         albums_ = albumList;
@@ -61,7 +61,8 @@ public:
     explicit ArtistView(QWidget *parent = nullptr);
     ~ArtistView();
 
-    void SetData(QList<Album> albums);
+    void SetData(QList<Album> albums, const QString &artist);
+    const QString &GetCurrentArtist();
 
 signals:
     void AlbumDoubleClickedSignal(const Album &clicked_album);
@@ -72,6 +73,7 @@ private slots:
 private:
     Ui::ArtistView *ui_;
     AlbumListModel album_list_model_;
+    QString current_artist_;
 };
 
 #endif // ARTISTVIEW_H
