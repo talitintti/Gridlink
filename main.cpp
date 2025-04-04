@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     //a.setStyle(QStyleFactory::create("qt5ct-style"));
 
-    loadStylesheet(a, "/styles/style2.qss");
+    //loadStylesheet(a, "/styles/style2.qss");
 
     w.show();
     return a.exec();
