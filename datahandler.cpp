@@ -80,6 +80,10 @@ void DataHandler::FetchPlaylists() {
     }
 }
 
+const Playlist &DataHandler::GetPlaylist(uint row) {
+    return playlists_.at(row);
+}
+
 
 QList<QString> DataHandler::GetArtistNames() {
     return mpd_communicator_.GetArtists("AlbumArtist"); // maybe config file decides artist_type

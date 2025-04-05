@@ -29,7 +29,7 @@ void PlaylistView::SetPlaylist(const Playlist &playlist) {
 
     song_table_model_->SetSongs(playlist_.GetSongs());
 
-    // Let's show the picture
+    // Let's set the picture
     if (playlist_.HasCoverData()) {
         auto label = ui_->label_playlist_pic;
         const OImage &cover = playlist.GetCover();

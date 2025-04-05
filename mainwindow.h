@@ -44,6 +44,7 @@ private slots:
     void UserClickedVolSlider(int action);
     void UserClickedNextSong();
     void UserClickedLastSong();
+    void UserClickedPlaylist(const QModelIndex &index);
 
     void PlaybackPaused();
     void PlaybackStarted();

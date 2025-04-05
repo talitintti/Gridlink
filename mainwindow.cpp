@@ -146,6 +146,12 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::UserClickedLastSong);
 
 
+    connect(ui_->listView_playlists,
+            &QAbstractItemView::clicked,
+            this,
+            &MainWindow::UserClickedPlaylist);
+
+
     datahandler_->ManualStatusUpdate(); // status update once at start
 
 
@@ -415,4 +421,12 @@ void MainWindow::DatabaseUpdated() {
     album_view_->SetAlbum(datahandler_->GetAlbum(a_artist, a_name));
 
     datahandler_->GetPlaylists();
+}
+
+void MainWindow::UserClickedPlaylist(const QModelIndex &index) {
+    auto row = index.row();
+    auto playlist = datahandler_->GetPlaylist(row);
+    qDebug() << playlist.GetName();
+    playlist_view_->SetPlaylist(playlist);
+    ChangeView(VIEW_PLAYLIST);
 }
