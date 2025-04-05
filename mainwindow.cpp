@@ -70,6 +70,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::PlaySongsSlot);
 
+    connect(playlist_view_,
+            &PlaylistView::SongChosenForPlaySignal,
+            this,
+            &MainWindow::PlaySongsSlot);
+
     connect(datahandler_,
             &DataHandler::SongUpdateSignal,
             this,
