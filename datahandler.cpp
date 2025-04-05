@@ -62,7 +62,7 @@ QList<Playlist> &DataHandler::GetPlaylists() {
 }
 
 void DataHandler::FetchPlaylists() {
-    QList<Playlist> &ready_playlists = playlists_;
+    QList<Playlist> ready_playlists;
     auto mpd_playlists = mpd_communicator_.GetPlaylists();
 
     for (const auto &mpd_playlist : std::as_const(mpd_playlists)) {
@@ -78,6 +78,8 @@ void DataHandler::FetchPlaylists() {
             modif_time
         );
     }
+
+    playlists_ = std::move(ready_playlists);
 }
 
 const Playlist &DataHandler::GetPlaylist(uint row) {
@@ -327,6 +329,11 @@ void DataHandler::PlayNext() {
 
 void DataHandler::PlayPrevious() {
     mpd_communicator_.PlayPrevious();
+}
+
+
+void DataHandler::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
+//
 }
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {

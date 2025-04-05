@@ -5,6 +5,7 @@
 #include "album.h"
 #include "songtablemodel.h"
 #include <QTableView>
+#include "playlist.h"
 
 namespace Ui {
 class AlbumView;
@@ -23,11 +24,16 @@ public:
     void InformSongNotPlaying();
     const Album &GetCurrentAlbum();
 
+    std::function<const QList<Playlist>()> playlist_provider_;
+
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);
+    void UserAddingSongsToQueue(const QList<Song> &);
+    void UserAddingSongsToPlaylist(const QList<Song> &, const Playlist &);
 
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);
+    void OnTableContextMenu(const QPoint &pos);
 
 private:
     Ui::AlbumView *ui_;

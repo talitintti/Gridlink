@@ -27,6 +27,11 @@ MainWindow::MainWindow(QWidget *parent)
     album_view_ = new AlbumView(this);
     playlist_view_ = new PlaylistView(this);
 
+    // albumview stuff
+    album_view_->playlist_provider_ = [this]() {
+        return static_cast<const QList<Playlist> &>(datahandler_->GetPlaylists());
+    };
+
     // Init the progress bar
     auto progressbar_frame = ui_->frame_2;
     progress_bar_ = new ProgressBarWidget(progressbar_frame);
@@ -156,6 +161,15 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::UserClickedPlaylist);
 
+    connect(album_view_,
+           &AlbumView::UserAddingSongsToQueue,
+           this,
+           &MainWindow::AddToQueue);
+
+    connect(album_view_,
+            &AlbumView::UserAddingSongsToPlaylist,
+            this,
+            &MainWindow::AddToPlaylist);
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -331,6 +345,10 @@ void MainWindow::PlaySongsSlot(const QList<Song> &songs, unsigned index) {
     datahandler_->StartPlayingQueue(index);
 }
 
+void MainWindow::AddToQueue(const QList<Song> &songs)  {
+    datahandler_->AddToQueue(songs);
+}
+
 
 void MainWindow::SongChanged(const Song &song) {
     if (song.IsEmpty()) return;
@@ -434,4 +452,9 @@ void MainWindow::UserClickedPlaylist(const QModelIndex &index) {
     qDebug() << playlist.GetName();
     playlist_view_->SetPlaylist(playlist);
     ChangeView(VIEW_PLAYLIST);
+}
+
+
+void MainWindow::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
+
 }

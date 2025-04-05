@@ -33,6 +33,7 @@ public:
     void PlayPrevious();
     QList<Playlist> &GetPlaylists();
     const Playlist &GetPlaylist(uint row);
+    void AddToPlaylist(const QList<Song> &, const Playlist &);
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);

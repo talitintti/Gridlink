@@ -43,6 +43,7 @@ public:
     void AddToQueue(const QList<Song> &);
     void PlayInQueue(unsigned index = 0);
     void ClearQueue();
+    void AppendToPlaylist(const std::string &playlist_name, const QList<Song> songs);
     void PlayNext();
     void PlayPrevious();
 
