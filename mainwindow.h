@@ -80,6 +80,5 @@ private:
     void ChangeView(VIEW view);
 
     void LoadStyleSheet(const QString &filePath);
-
   };
 #endif // MAINWINDOW_H

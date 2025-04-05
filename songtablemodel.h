@@ -22,7 +22,7 @@ public:
     }
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const override {
-        return 3; // Track Number, Name, Duration
+        return 4; // Track Number, Name, Duration
     }
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
@@ -33,9 +33,10 @@ public:
 
         if (role == Qt::DisplayRole) {
             switch (index.column()) {
-                case TRACK_NUMBER: return index.row() + 1; // Track #
-                case SONG_NAME: return song.GetName();        // Name
-                case SONG_LENGTH: return FormattedTime(song.GetDurationSec());    // Duration
+                case TRACK_NUMBER: return index.row() + 1;
+                case SONG_NAME: return song.GetName();
+                case SONG_ARTIST: return song.GetAlbumArtist();
+                case SONG_LENGTH: return FormattedTime(song.GetDurationSec());
                 default: return QVariant();
             }
         }
@@ -46,6 +47,15 @@ public:
             }
         }
 
+        if (role == Qt::TextAlignmentRole) {
+            if (index.column() == SONG_ARTIST) {
+                return Qt::AlignCenter;
+            }
+            if (index.column() == SONG_LENGTH) {
+                return Qt::AlignRight;
+            }
+        }
+
         return QVariant();
     }
 
@@ -53,12 +63,23 @@ public:
         if (role == Qt::DisplayRole) {
             if (orientation == Qt::Horizontal) {
                 switch (section) {
-                    case TRACK_NUMBER: return "#";         // Track Number
-                    case SONG_NAME: return "Song Name"; // Name
-                    case SONG_LENGTH: return "Duration";  // Duration
+                    case TRACK_NUMBER: return "#";        // Track Number
+                    case SONG_NAME: return "Song Name";   // Name
+                    case SONG_ARTIST: return "Artist";
+                    case SONG_LENGTH: return "⏲";  // Duration
                 }
             }
         }
+
+        if (role == Qt::TextAlignmentRole) {
+            if (section == SONG_ARTIST) {
+                return Qt::AlignCenter;
+            }
+            if (section == SONG_LENGTH) {
+                return Qt::AlignRight;
+            }
+        }
+
         return QVariant();
     }
 
@@ -116,7 +137,8 @@ private:
 
     static constexpr unsigned TRACK_NUMBER = 0;
     static constexpr unsigned SONG_NAME = 1;
-    static constexpr unsigned SONG_LENGTH = 2;
+    static constexpr unsigned SONG_ARTIST = 2;
+    static constexpr unsigned SONG_LENGTH = 3;
 
 
     int FindSongInList(size_t song_hash) {

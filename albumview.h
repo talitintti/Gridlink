@@ -34,7 +34,6 @@ private:
     SongTableModel *song_table_model_ = nullptr;
     Album album_;
 
-    void SetTableAppearance(QTableView *table);
     void ForegroundUpdateForItem(const Song &);
 };
 
