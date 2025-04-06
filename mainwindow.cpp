@@ -5,6 +5,7 @@
 #include "artistview.h"
 #include <QListWidget>
 #include "progressbarwidget.h"
+#include <QMenu>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -29,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // albumview stuff
     album_view_->playlist_provider_ = [this]() {
-        return static_cast<const QList<Playlist> &>(datahandler_->GetPlaylists());
+        return datahandler_->GetPlaylists();
     };
 
     // Init the progress bar
@@ -39,11 +40,12 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(progress_bar_);
     layout->setContentsMargins(0, 0, 0, 0);
 
-    // init the playlist bar on the left
+    // init the playlist list on the left
     playlist_model_ = new PlaylistListModel(this);
     auto playlists = datahandler_->GetPlaylists();
     playlist_model_->SetPlaylists(playlists);
     ui_->listView_playlists->setModel(playlist_model_);
+    ui_->listView_playlists->setContextMenuPolicy(Qt::CustomContextMenu);
 
     //Volume slider
     volume_slider_ = ui_->volume_slider;
@@ -161,6 +163,11 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::UserClickedPlaylist);
 
+    connect(ui_->listView_playlists,
+            &QAbstractItemView::customContextMenuRequested,
+            this,
+            &MainWindow::OnPlaylistContextMenu);
+
     connect(album_view_,
            &AlbumView::UserAddingSongsToQueue,
            this,
@@ -170,6 +177,7 @@ MainWindow::MainWindow(QWidget *parent)
             &AlbumView::UserAddingSongsToPlaylist,
             this,
             &MainWindow::AddToPlaylist);
+
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -457,4 +465,28 @@ void MainWindow::UserClickedPlaylist(const QModelIndex &index) {
 
 void MainWindow::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
     datahandler_->AddToPlaylist(list, playlist);
+}
+
+void MainWindow::OnPlaylistContextMenu(const QPoint &pos) {
+    QModelIndex index = ui_->listView_playlists->indexAt(pos);
+
+    if (!index.isValid()) return;
+
+    int row = index.row();
+
+    QString delete_playlist_text = "Delete playlist";
+    QString rename_playlist_text = "Rename playlist";
+
+    QMenu menu;
+    QAction *delete_playlist_action = menu.addAction(delete_playlist_text);
+    QAction *rename_playlist_action = menu.addAction(rename_playlist_text);
+
+    QAction *selectedAction = menu.exec(ui_->listView_playlists->viewport()->mapToGlobal(pos));
+
+    if (selectedAction == delete_playlist_action) {
+        datahandler_->DeletePlaylist(row);
+    }
+    if (selectedAction == rename_playlist_action) {
+        //datahandler_.RenamePlaylist(uint row);
+    }
 }

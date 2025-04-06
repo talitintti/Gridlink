@@ -365,3 +365,12 @@ void MPDCommunication::AppendToPlaylist(const std::string &playlist_name, const 
     }
 
 }
+
+void MPDCommunication::RemovePlaylist(std::string name) {
+    if (!CheckForMPDError(conn_)) return;
+
+    if (!mpd_run_rm(conn_, name.c_str())) {
+        qWarning() << "Could not delete playlist \n";
+        CheckForMPDError(conn_);
+    }
+}

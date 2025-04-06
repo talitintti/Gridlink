@@ -24,7 +24,7 @@ public:
     void InformSongNotPlaying();
     const Album &GetCurrentAlbum();
 
-    std::function<const QList<Playlist>()> playlist_provider_;
+    std::function< QList<Playlist>*()> playlist_provider_;
 
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);

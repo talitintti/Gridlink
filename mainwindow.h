@@ -57,6 +57,8 @@ private slots:
     void AddToQueue(const QList<Song> &);
     void AddToPlaylist(const QList<Song> &, const Playlist &);
 
+    void OnPlaylistContextMenu(const QPoint &pos);
+
 private:
     Ui::MainWindow *ui_;
     DataHandler *datahandler_;

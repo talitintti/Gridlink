@@ -43,10 +43,11 @@ public:
     void AddToQueue(const QList<Song> &);
     void PlayInQueue(unsigned index = 0);
     void ClearQueue();
-    void AppendToPlaylist(const std::string &playlist_name, const QList<Song> songs);
     void PlayNext();
     void PlayPrevious();
 
+    void AppendToPlaylist(const std::string &playlist_name, const QList<Song> songs);
+    void RemovePlaylist(std::string playlist_name);
 private:
     QList<QString> GetTags(const char *return_tag, const char *constraint_tag, const char *constraint_val);
     struct mpd_connection* conn_;

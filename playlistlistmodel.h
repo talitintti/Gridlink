@@ -12,18 +12,18 @@ class PlaylistListModel : public QAbstractListModel {
     Q_OBJECT
 
 public:
-    PlaylistListModel(QObject *parent) : QAbstractListModel(parent) {}
+    PlaylistListModel(QObject *parent) : QAbstractListModel(parent) , playlists_(nullptr) {}
 
     int rowCount(const QModelIndex &parent) const {
-        if (parent.isValid()) return 0;
-        return playlists_.size();
+        if (playlists_ == nullptr || parent.isValid()) return 0;
+        return playlists_->size();
     }
 
     QVariant data(const QModelIndex &index, int role) const {
-        if (!index.isValid() || index.row() >= playlists_.size()) return QVariant();
+        if (playlists_ == nullptr || !index.isValid() || index.row() >= playlists_->size()) return QVariant();
 
         if (role == Qt::DisplayRole) {
-            return playlists_.at(index.row()).GetName();
+            return playlists_->at(index.row()).GetName();
         }
 
         return QVariant();
@@ -40,6 +40,8 @@ public:
     }
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+        if (playlists_ == nullptr) return false;
+
         Q_UNUSED(row)
         Q_UNUSED(column)
 
@@ -55,7 +57,7 @@ public:
             emit AlbumDroppedOnModel(album_pointer);
         } else {
             // Dropped on a specific playlist
-            Playlist target_playlist = playlists_.at(row);
+            Playlist target_playlist = playlists_->at(row);
             emit AlbumDroppedOnPlaylist(album_pointer, target_playlist);
         }
 
@@ -70,18 +72,12 @@ public:
         return Qt::CopyAction | Qt::MoveAction;
     }
 
-    void AddPlaylist(const Playlist &playlist) {
-        beginInsertRows(QModelIndex(), playlists_.size(), playlists_.size());
-        playlists_.append(playlist);
-        endInsertRows();
-    }
-
     void ResetModel() {
         beginResetModel();
         endResetModel();
     }
 
-    void SetPlaylists(const QList<Playlist> &playlists) {
+    void SetPlaylists(QList<Playlist> *playlists) {
         beginResetModel();
         playlists_ = playlists;
         endResetModel();
@@ -92,7 +88,7 @@ signals:
     void AlbumDroppedOnPlaylist(Album *album, const Playlist &playlist);
 
 private:
-    QList<Playlist> playlists_;
+    QList<Playlist> *playlists_;
 
 };
 

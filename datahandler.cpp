@@ -56,9 +56,9 @@ bool DataHandler::FetchStatusUpdate() {
     return true;
 }
 
-QList<Playlist> &DataHandler::GetPlaylists() {
+QList<Playlist> *DataHandler::GetPlaylists() {
     FetchPlaylists();
-    return playlists_;
+    return &playlists_;
 }
 
 void DataHandler::FetchPlaylists() {
@@ -334,6 +334,13 @@ void DataHandler::PlayPrevious() {
 
 void DataHandler::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
     mpd_communicator_.AppendToPlaylist(playlist.GetName().toStdString(), list);
+}
+
+void DataHandler::DeletePlaylist(uint row) {
+    if (row >= playlists_.count()) return;
+
+    auto playlist_name = playlists_.at(row).GetName();
+    mpd_communicator_.RemovePlaylist(playlist_name.toStdString());
 }
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {

@@ -94,15 +94,15 @@ void AlbumView::OnTableContextMenu(const QPoint &pos) {
     list.append(song);
 
     QMenu menu;
-    QAction *add_to_queue_action = menu.addAction(add_to_queue_text, [=]() {
+    QAction *add_to_queue_action = menu.addAction(add_to_queue_text, this, [=]() {
         emit UserAddingSongsToQueue(list);
     });
 
     QMenu *playlistmenu = new QMenu(add_to_playlist_text, &menu);
 
-
-    if (playlist_provider_) { //TOOD: SHOWS UP TWICE FIX
-        for (const auto &playlist : playlist_provider_()) {
+    auto playlists = playlist_provider_();
+    if (playlist_provider_) {
+        for (const auto &playlist : std::as_const(*playlists)) {
             playlistmenu->addAction(playlist.GetName(), this, [=]() {
                 emit UserAddingSongsToPlaylist(list, playlist);
             });

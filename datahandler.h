@@ -31,9 +31,10 @@ public:
     void SetVolume(unsigned vol);
     void PlayNext();
     void PlayPrevious();
-    QList<Playlist> &GetPlaylists();
+    QList<Playlist> *GetPlaylists();
     const Playlist &GetPlaylist(uint row);
     void AddToPlaylist(const QList<Song> &, const Playlist &);
+    void DeletePlaylist(uint row);
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);
