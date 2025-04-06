@@ -219,11 +219,11 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
         std::cout << "Update started! "<< std::endl;
     }
     if (events & MPD_IDLE_STORED_PLAYLIST) {
-        std::cout << "Stored playlist changed! "<< std::endl;
-    }
-    if (events & MPD_IDLE_PLAYLIST) {
         FetchPlaylists();
         emit PlaylistsChanged();
+        std::cout << "Stored playlist changed! "<< std::endl;
+    }
+    if (events & MPD_IDLE_PLAYLIST) { // THIS IS QUEUE, NOT "PLAYLIST"
         std::cout << "Playlist changed! "<< std::endl;
     }
     if (events & MPD_IDLE_PLAYER) {
