@@ -66,8 +66,8 @@ private:
 
     LibraryView *library_view_;
     ArtistView *artist_view_;
-    SongCollectionView *songcollection_view_;
-    PlaylistView *playlist_view_;
+    SongCollectionView *album_view_;
+    SongCollectionView *playlist_view_;
 
     QStringListModel *stringListModel_buttons;
     QStringListModel *stringListModel_playlists;

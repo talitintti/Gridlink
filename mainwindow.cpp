@@ -26,13 +26,18 @@ MainWindow::MainWindow(QWidget *parent)
     QListWidget *home = new QListWidget();
     library_view_ = new LibraryView(this);
     artist_view_ = new ArtistView(this);
-    songcollection_view_ = new SongCollectionView(this);
-    playlist_view_ = new PlaylistView(this);
+    album_view_ = new SongCollectionView(this);
+    playlist_view_ = new SongCollectionView(this);
 
     // albumview stuff
-    songcollection_view_->playlist_provider_ = [this]() {
+    auto get_playlists = [this]() {
         return datahandler_->GetPlaylists();
     };
+    album_view_->playlist_provider_ = get_playlists;
+
+    // playlistview stuff
+    playlist_view_->playlist_provider_ = get_playlists;
+
 
     // Init the progress bar
     auto progressbar_frame = ui_->frame_2;
@@ -59,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui_->stackedWidget->addWidget(home); // this is supposed to be "home" view whcih is not yet implemented
     ui_->stackedWidget->addWidget(library_view_);
     ui_->stackedWidget->addWidget(artist_view_);
-    ui_->stackedWidget->addWidget(songcollection_view_);
+    ui_->stackedWidget->addWidget(album_view_);
     ui_->stackedWidget->addWidget(search_view);
     ui_->stackedWidget->addWidget(playlist_view_);
 
@@ -73,13 +78,13 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::OnAlbumDoubleClickedSlot);
 
-    connect(songcollection_view_,
+    connect(album_view_,
             &SongCollectionView::SongChosenForPlaySignal,
             this,
             &MainWindow::PlaySongsSlot);
 
     connect(playlist_view_,
-            &PlaylistView::SongChosenForPlaySignal,
+            &SongCollectionView::SongChosenForPlaySignal,
             this,
             &MainWindow::PlaySongsSlot);
 
@@ -169,12 +174,12 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::OnPlaylistContextMenu);
 
-    connect(songcollection_view_,
+    connect(album_view_,
            &SongCollectionView::UserAddingSongsToQueue,
            this,
            &MainWindow::AddToQueue);
 
-    connect(songcollection_view_,
+    connect(album_view_,
             &SongCollectionView::UserAddingSongsToPlaylist,
             this,
             &MainWindow::AddToPlaylist);
@@ -232,7 +237,7 @@ void MainWindow::ChangeView(VIEW view) {
             ui_->stackedWidget->setCurrentWidget(artist_view_);
             break;
         case VIEW_ALBUM:
-            ui_->stackedWidget->setCurrentWidget(songcollection_view_);
+            ui_->stackedWidget->setCurrentWidget(album_view_);
             break;
         case VIEW_SEARCH:
             //ui->stackedWidget->setCurrentWidget(search);
@@ -312,7 +317,7 @@ void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
 void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
     viewhistory_.AddView(VIEW_ALBUM);
     const auto &collection = dynamic_cast<const SongCollection&>(album);
-    songcollection_view_->SetSongCollection(collection);
+    album_view_->SetSongCollection(collection);
     ChangeView(VIEW_ALBUM);
 }
 
@@ -370,13 +375,13 @@ void MainWindow::SongChanged(const Song &song) {
     ui_->label_playing_info->setText(QString("<b>%1</b><br>%2").
                                      arg(song_name, artist_name));
 
-    songcollection_view_->InformSongPlaying(song);
+    album_view_->InformSongPlaying(song);
     progress_bar_->SetLength(song.GetDurationSec());
 }
 
 void MainWindow::PlaybackStopped() {
     ui_->label_playing_info->setText("");
-    songcollection_view_->InformSongNotPlaying();
+    album_view_->InformSongNotPlaying();
     progress_bar_->HandleStop();
 }
 
@@ -451,13 +456,13 @@ void MainWindow::DatabaseUpdated() {
     artist_view_->SetData(datahandler_->GetAlbums(current_artist_in_av), current_artist_in_av);
 
     // update songcollectionview
-    auto current_collection = songcollection_view_->GetCurrentSongCollection();
+    auto current_collection = album_view_->GetCurrentSongCollection();
 
     if (current_collection.Identify() == ALBUM) {
         Album &current_album = dynamic_cast<Album&>(current_collection);
         auto a_name = current_collection.GetName();
         auto a_artist = current_album.GetAlbumArtist();
-        songcollection_view_->SetSongCollection(datahandler_->GetAlbum(a_artist, a_name));
+        album_view_->SetSongCollection(datahandler_->GetAlbum(a_artist, a_name));
     }
 
     // playlist update
@@ -467,8 +472,7 @@ void MainWindow::DatabaseUpdated() {
 void MainWindow::UserClickedPlaylist(const QModelIndex &index) {
     auto row = index.row();
     auto playlist = datahandler_->GetPlaylist(row);
-    qDebug() << playlist.GetName();
-    playlist_view_->SetPlaylist(playlist);
+    playlist_view_->SetSongCollection(playlist);
     ChangeView(VIEW_PLAYLIST);
 }
 
