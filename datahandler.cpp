@@ -333,7 +333,7 @@ void DataHandler::PlayPrevious() {
 
 
 void DataHandler::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
-//
+    mpd_communicator_.AppendToPlaylist(playlist.GetName().toStdString(), list);
 }
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {

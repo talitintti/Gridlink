@@ -456,5 +456,5 @@ void MainWindow::UserClickedPlaylist(const QModelIndex &index) {
 
 
 void MainWindow::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
-
+    datahandler_->AddToPlaylist(list, playlist);
 }
