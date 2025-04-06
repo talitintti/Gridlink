@@ -12,7 +12,8 @@ public:
         path_(path),
         last_modified_posix_(last_modified_posix) {}
 
-    time_t LastModified() { return last_modified_posix_; }
+    time_t LastModified() const;
+    songcollection_type Identify() const override;
 
 private:
     QString path_;

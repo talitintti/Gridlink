@@ -4,9 +4,9 @@
 #include <QMainWindow>
 #include <QStringListModel>
 #include "libraryview.h"
+#include "songcollectionview.h"
 #include "datahandler.h"
 #include "artistview.h"
-#include "albumview.h"
 #include "progressbarwidget.h"
 #include "enums.h"
 #include "viewhistory.h"
@@ -66,7 +66,7 @@ private:
 
     LibraryView *library_view_;
     ArtistView *artist_view_;
-    AlbumView *album_view_;
+    SongCollectionView *songcollection_view_;
     PlaylistView *playlist_view_;
 
     QStringListModel *stringListModel_buttons;

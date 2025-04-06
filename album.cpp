@@ -28,3 +28,7 @@
 QString Album::GetAlbumArtist() {
     return songs_.empty() ? "" : songs_.first().GetAlbumArtist();
 }
+
+songcollection_type Album::Identify() const {
+    return ALBUM;
+}

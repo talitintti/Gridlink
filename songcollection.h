@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QImage>
 
+enum songcollection_type { SONGCOLLECTION, PLAYLIST, ALBUM};
 
 class OImage {
 public:
@@ -55,6 +56,8 @@ public:
             length_sec_ += song.GetDurationSec();
         }
     }
+
+    virtual songcollection_type Identify() const { return SONGCOLLECTION; }
 
     QString GetName() const;
     const QList<Song> &GetSongs() const;

@@ -42,7 +42,8 @@ class Album : public SongCollection
 public:
     using SongCollection::SongCollection;
 
-QString GetAlbumArtist();
+    QString GetAlbumArtist();
+    songcollection_type Identify() const override;
 
 private:
     //QList<Song> songs_;
