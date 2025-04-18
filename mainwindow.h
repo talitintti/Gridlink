@@ -11,7 +11,7 @@
 #include "enums.h"
 #include "viewhistory.h"
 #include "playlistlistmodel.h"
-#include "playlistview.h"
+#include <any>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -55,10 +55,12 @@ private slots:
     void PlaylistUpdate();
     void DatabaseUpdated();
     void AddToQueue(const QList<Song> &);
-    void AddToPlaylist(const QList<Song> &, const Playlist &);
+    void AddToPlaylist(const QList<Song> &, const Playlist *);
 
     void OnPlaylistContextMenu(const QPoint &pos);
+    void OnDeletingFromPlaylists(const QList<Song> &, const Playlist *);
 
+    void HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple);
 private:
     Ui::MainWindow *ui_;
     DataHandler *datahandler_;
@@ -72,7 +74,7 @@ private:
     QStringListModel *stringListModel_buttons;
     QStringListModel *stringListModel_playlists;
 
-    ProgressBarWidget *progress_bar_; //TODO: better name lol
+    ProgressBarWidget *progress_bar_; //TODO: better name
     QSlider *volume_slider_;
     QPushButton *button_next_song_;
     QPushButton *button_previous_song_;
@@ -81,7 +83,7 @@ private:
 
     void Init_lower_toolbar(Ui::MainWindow *ui);
     void Init_upper_toolbar(Ui::MainWindow *ui);
-    void ChangeView(VIEW view);
+    void ChangeView(VIEW);
 
     void LoadStyleSheet(const QString &filePath);
   };

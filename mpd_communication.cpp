@@ -374,3 +374,12 @@ void MPDCommunication::RemovePlaylist(std::string name) {
         CheckForMPDError(conn_);
     }
 }
+
+void MPDCommunication::RemoveFromPlaylist(std::string playlist_name, uint pos_in_playlist) {
+    if (!CheckForMPDError(conn_)) return;
+
+    if (!mpd_run_playlist_delete(conn_, playlist_name.c_str(), pos_in_playlist)) {
+        qWarning() << "Could not delete from playlist \n";
+        CheckForMPDError(conn_);
+    }
+}

@@ -23,7 +23,7 @@ public:
         if (playlists_ == nullptr || !index.isValid() || index.row() >= playlists_->size()) return QVariant();
 
         if (role == Qt::DisplayRole) {
-            return playlists_->at(index.row()).GetName();
+            return playlists_->at(index.row())->GetName();
         }
 
         return QVariant();
@@ -57,8 +57,8 @@ public:
             emit AlbumDroppedOnModel(album_pointer);
         } else {
             // Dropped on a specific playlist
-            Playlist target_playlist = playlists_->at(row);
-            emit AlbumDroppedOnPlaylist(album_pointer, target_playlist);
+            auto target_playlist = playlists_->at(row);
+            emit AlbumDroppedOnPlaylist(album_pointer, target_playlist.data());
         }
 
         return true;
@@ -77,7 +77,7 @@ public:
         endResetModel();
     }
 
-    void SetPlaylists(QList<Playlist> *playlists) {
+    void SetPlaylists(QList<QSharedPointer<Playlist>> *playlists) {
         beginResetModel();
         playlists_ = playlists;
         endResetModel();
@@ -85,10 +85,10 @@ public:
 
 signals:
     void AlbumDroppedOnModel(Album *album);
-    void AlbumDroppedOnPlaylist(Album *album, const Playlist &playlist);
+    void AlbumDroppedOnPlaylist(Album *album, const Playlist *playlist);
 
 private:
-    QList<Playlist> *playlists_;
+    QList<QSharedPointer<Playlist>> *playlists_;
 
 };
 

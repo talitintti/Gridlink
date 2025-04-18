@@ -33,15 +33,15 @@ SongCollectionView::~SongCollectionView()
     delete ui_;
 }
 
-void SongCollectionView::SetSongCollection(const SongCollection &album) {
-    album_ = album;
+void SongCollectionView::SetSongCollection(const SongCollection *songcollection) {
+    songcollection_ = songcollection;
 
-    song_table_model_->SetSongs(album_.GetSongs());
+    song_table_model_->SetSongs(songcollection_->GetSongs());
 
     // Let's show the picture
-    if (album_.HasCoverData()) {
+    if (songcollection_->HasCoverData()) {
         auto label = ui_->label_album_pic;
-        const OImage &cover = album.GetCover();
+        const OImage &cover = songcollection->GetCover();
 
         QImage image(cover.GetImageData(),
                      cover.GetWidth(),
@@ -60,7 +60,7 @@ void SongCollectionView::SongChosenForPlaySlot(const QModelIndex &q_index) {
     }
     unsigned row = q_index.row();
 
-    emit SongChosenForPlaySignal(album_.GetSongs(), row);
+    emit SongChosenForPlaySignal(songcollection_->GetSongs(), row);
 }
 
 // Takes a song that is playing
@@ -75,8 +75,8 @@ void SongCollectionView::InformSongNotPlaying() {
     song_table_model_->SetPlayingAsStopped();
 }
 
-const SongCollection &SongCollectionView::GetCurrentSongCollection() {
-    return album_;
+const SongCollection *SongCollectionView::GetCurrentSongCollection() {
+    return songcollection_;
 }
 
 void SongCollectionView::OnTableContextMenu(const QPoint &pos) {
@@ -89,23 +89,31 @@ void SongCollectionView::OnTableContextMenu(const QPoint &pos) {
 
     QString add_to_playlist_text = "Add to playlist";
     QString add_to_queue_text = "Add to queue";
+    QString remove_from_playlist_text = "Remove from playlist";
 
-    auto song = album_.GetSongs().at(row);
-    QList<Song> list;
-    list.append(song);
+    auto song = songcollection_->GetSongs().at(row);
+    QList<Song> list = {song};
 
+    // Main menu
     QMenu menu;
     QAction *add_to_queue_action = menu.addAction(add_to_queue_text, this, [=]() {
         emit UserAddingSongsToQueue(list);
     });
 
+    if (songcollection_->Identify() == SONGCOLLECTION_TYPE::PLAYLIST) {
+        QAction *remove_from_playlist = menu.addAction(remove_from_playlist_text, this, [=] {
+            emit UserDeletingFromPlaylist(list, dynamic_cast<const Playlist *>(songcollection_));
+        });
+    }
+
+    // Sub menu for adding to playlists
     QMenu *playlistmenu = new QMenu(add_to_playlist_text, &menu);
 
     auto playlists = playlist_provider_();
     if (playlist_provider_) {
         for (const auto &playlist : std::as_const(*playlists)) {
-            playlistmenu->addAction(playlist.GetName(), this, [=]() {
-                emit UserAddingSongsToPlaylist(list, playlist);
+            playlistmenu->addAction(playlist->GetName(), this, [=]() {
+                emit UserAddingSongsToPlaylist(list, playlist.data());
             });
         }
     }

@@ -24,12 +24,12 @@ public:
     void InformSongNotPlaying();
     const Album &GetCurrentAlbum();
 
-    std::function< QList<Playlist>*()> playlist_provider_;
+    std::function<QList<QSharedPointer<Playlist>>*()> playlist_provider_;
 
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);
     void UserAddingSongsToQueue(const QList<Song> &);
-    void UserAddingSongsToPlaylist(const QList<Song> &, const Playlist &);
+    void UserAddingSongsToPlaylist(const QList<Song> &, Playlist *);
 
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);

@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QTimer>
 #include <iostream>
+#include <QSharedPointer>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -56,34 +57,53 @@ bool DataHandler::FetchStatusUpdate() {
     return true;
 }
 
-QList<Playlist> *DataHandler::GetPlaylists() {
+QList<QSharedPointer<Playlist>> *DataHandler::GetPlaylists() {
     FetchPlaylists();
     return &playlists_;
 }
 
 void DataHandler::FetchPlaylists() {
-    QList<Playlist> ready_playlists;
     auto mpd_playlists = mpd_communicator_.GetPlaylists();
+    if (mpd_playlists.isEmpty()) return;
 
+    playlists_.clear();
     for (const auto &mpd_playlist : std::as_const(mpd_playlists)) {
         auto path = mpd_playlist.path_;
         auto filename = QFileInfo(path).fileName();
         auto songs = mpd_communicator_.GetPlaylistSongs(filename.toStdString());
         auto modif_time = mpd_playlist.timestamp_;
 
-        ready_playlists.emplace_back(
-            std::move(songs),
-            filename,
-            path,
-            modif_time
+        playlists_.emplace_back(
+            QSharedPointer<Playlist>::create(
+                std::move(songs),
+                filename,
+                path,
+                modif_time
+            )
         );
     }
 
-    playlists_ = std::move(ready_playlists);
+    //playlists_ = std::move(ready_playlists);
 }
 
-const Playlist &DataHandler::GetPlaylist(uint row) {
+const QSharedPointer<Playlist> DataHandler::GetPlaylistH(size_t hash) {
+    for (size_t i = 0; i < playlists_.count(); i++) {
+        const auto ptr = playlists_.at(i);
+        if (ptr->GetHash() == hash) return ptr;
+    }
+    return {};
+}
+
+// Row based search (faster) but you have to know the row
+const QSharedPointer<Playlist> DataHandler::GetPlaylistR(unsigned row) {
+    if (row >= playlists_.count()) return {};
     return playlists_.at(row);
+}
+
+
+const Playlist *DataHandler::GetPlaylist(unsigned row) {
+    if (row >= playlists_.count()) return nullptr;
+    return playlists_.at(row).data();
 }
 
 
@@ -98,13 +118,13 @@ QList<QString> DataHandler::GetAlbumNames(const QString &artist_name) {
 }
 
 
-Album DataHandler::GetAlbum(const QString &artist_name, const QString &album_name) {
+const QSharedPointer<const Album> DataHandler::GetAlbum(const QString &artist_name, const QString &album_name) {
     QList<Song> songs;
     std::string ar_name_std = artist_name.toStdString();
     std::string al_name_std = album_name.toStdString();
     songs = mpd_communicator_.GetSongs(ar_name_std, al_name_std);
 
-    return Album(std::move(songs), album_name);
+    return QSharedPointer<Album>::create(std::move(songs), album_name);
 }
 
 
@@ -124,7 +144,7 @@ void DataHandler::SetAlbumCover(Album &album) const {
 }
 
 
-QList<Album> DataHandler::GetAlbums(const QString &artist_name) {
+QList<Album> DataHandler::GetAlbumsForArtist(const QString &artist_name) {
     QList<Album> albums;
     std::string ar_name_std = artist_name.toStdString();
 
@@ -332,15 +352,26 @@ void DataHandler::PlayPrevious() {
 }
 
 
-void DataHandler::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
-    mpd_communicator_.AppendToPlaylist(playlist.GetName().toStdString(), list);
+void DataHandler::AddToPlaylist(const QList<Song> &list, const Playlist *playlist) {
+    mpd_communicator_.AppendToPlaylist(playlist->GetName().toStdString(), list);
 }
 
 void DataHandler::DeletePlaylist(uint row) {
     if (row >= playlists_.count()) return;
 
-    auto playlist_name = playlists_.at(row).GetName();
+    auto playlist_name = playlists_.at(row)->GetName();
     mpd_communicator_.RemovePlaylist(playlist_name.toStdString());
+}
+
+
+void DataHandler::DeleteFromPlaylist(const QList<Song> &songs, const Playlist *playlist) {
+    auto playlist_name = playlist->GetName().toStdString();
+    int pos_in_playlist = -1;
+    for (const auto &song_to_be_delet : std::as_const(songs)) {
+        if((pos_in_playlist = playlist->GetSongPosition(song_to_be_delet)) != -1) {
+            mpd_communicator_.RemoveFromPlaylist(playlist_name, pos_in_playlist);
+        }
+    }
 }
 
 std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, int& height) {

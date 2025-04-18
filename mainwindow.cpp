@@ -6,7 +6,9 @@
 #include <QListWidget>
 #include "progressbarwidget.h"
 #include <QMenu>
+#include "enums.h"
 #include "songcollectionview.h"
+#include <utility>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -163,7 +165,6 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::UserClickedLastSong);
 
-
     connect(ui_->listView_playlists,
             &QAbstractItemView::clicked,
             this,
@@ -184,6 +185,10 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::AddToPlaylist);
 
+    connect(playlist_view_,
+            &SongCollectionView::UserDeletingFromPlaylist,
+            this,
+            &MainWindow::OnDeletingFromPlaylists);
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -227,24 +232,24 @@ MainWindow::~MainWindow()
 
 void MainWindow::ChangeView(VIEW view) {
     switch(view) {
-        case VIEW_HOME:
-            // TODO: IMPL
-            break;
-        case VIEW_LIBRARY:
-            ui_->stackedWidget->setCurrentWidget(library_view_);
-            break;
-        case VIEW_ARTIST:
-            ui_->stackedWidget->setCurrentWidget(artist_view_);
-            break;
-        case VIEW_ALBUM:
-            ui_->stackedWidget->setCurrentWidget(album_view_);
-            break;
-        case VIEW_SEARCH:
-            //ui->stackedWidget->setCurrentWidget(search);
-            break;
-        case VIEW_PLAYLIST:
-            ui_->stackedWidget->setCurrentWidget(playlist_view_);
-            break;
+        case VIEW::HOME:
+                // TODO: IMPL
+                break;
+        case VIEW::LIBRARY:
+                ui_->stackedWidget->setCurrentWidget(library_view_);
+                break;
+        case VIEW::ARTIST:
+                ui_->stackedWidget->setCurrentWidget(artist_view_);
+                break;
+        case VIEW::ALBUM:
+                ui_->stackedWidget->setCurrentWidget(album_view_);
+                break;
+        case VIEW::SEARCH:
+                //ui->stackedWidget->setCurrentWidget(search);
+                break;
+        case VIEW::PLAYLIST:
+                ui_->stackedWidget->setCurrentWidget(playlist_view_);
+                break;
         default:
             qWarning() << "Trying to change view to invalid values\n";
     }
@@ -290,35 +295,46 @@ void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index) {
     VIEW corrsp_view;
     switch (selectedIndex) {
     case 0:
-        corrsp_view = VIEW_HOME;
+        corrsp_view = VIEW::HOME;
         break;
     case 1:
-        corrsp_view = VIEW_LIBRARY;
+        corrsp_view = VIEW::LIBRARY;
         library_view_->SetData(datahandler_->GetArtistNames());
         break;
     case 2:
-        corrsp_view = VIEW_SEARCH;
+        corrsp_view = VIEW::SEARCH;
         break;
     default:
         qWarning() << "Pressed invalid view in viewselect!\n";
         return;
     }
 
-    viewhistory_.AddView(corrsp_view);
+    viewhistory_.AddView(corrsp_view, std::any{});
+
     ChangeView(corrsp_view);
 }
 
+
 void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
-    viewhistory_.AddView(VIEW_ARTIST);
-    artist_view_->SetData(datahandler_->GetAlbums(artistname), artistname);
-    ChangeView(VIEW_ARTIST);
+    auto albums = datahandler_->GetAlbumsForArtist(artistname);
+    std::any data = albums;
+    viewhistory_.AddView(VIEW::ARTIST, std::move(data));
+    artist_view_->SetData(datahandler_->GetAlbumsForArtist(artistname), artistname);
+
+    ChangeView(VIEW::ARTIST);
 }
 
+
 void MainWindow::OnAlbumDoubleClickedSlot(const Album &album) {
-    viewhistory_.AddView(VIEW_ALBUM);
-    const auto &collection = dynamic_cast<const SongCollection&>(album);
+    auto album_ptr = QSharedPointer<Album>::create(album);
+
+    auto raw_ptr = album_ptr.get();
+    const auto *collection = dynamic_cast<const SongCollection*>(raw_ptr);
     album_view_->SetSongCollection(collection);
-    ChangeView(VIEW_ALBUM);
+
+    std::any data = std::move(album_ptr);
+    viewhistory_.AddView(VIEW::ALBUM, std::move(data));
+    ChangeView(VIEW::ALBUM);
 }
 
 // Status updates from outside the UI
@@ -394,8 +410,8 @@ void MainWindow::PlaybackStarted() {
 }
 
 void MainWindow::ViewBackClicked() {
-    VIEW last_view = viewhistory_.MoveBack();
-    ChangeView(last_view);
+    auto last_view = viewhistory_.MoveBack();
+    HandleViewHistoryRet(last_view);
 }
 
 void MainWindow::SongPositionChanged(unsigned elapsed_ms) {
@@ -403,8 +419,8 @@ void MainWindow::SongPositionChanged(unsigned elapsed_ms) {
 }
 
 void MainWindow::ViewForwardClicked() {
-    VIEW next_view = viewhistory_.MoveForward();
-    ChangeView(next_view);
+    auto next_view = viewhistory_.MoveForward();
+    HandleViewHistoryRet(next_view);
 }
 
 void MainWindow::SongPositionChangeByUser(unsigned ms) {
@@ -448,36 +464,55 @@ void MainWindow::PlaylistUpdate() {
 // Update all the views
 // TODO: IF OTHER VIEWS ADDED REMEMBER TO UPDATE THIS
 void MainWindow::DatabaseUpdated() {
-    // update libaryview
-    library_view_->SetData(datahandler_->GetArtistNames());
-
-    // update artistview
-    auto current_artist_in_av = artist_view_->GetCurrentArtist();
-    artist_view_->SetData(datahandler_->GetAlbums(current_artist_in_av), current_artist_in_av);
-
-    // update songcollectionview
-    auto current_collection = album_view_->GetCurrentSongCollection();
-
-    if (current_collection.Identify() == ALBUM) {
-        Album &current_album = dynamic_cast<Album&>(current_collection);
-        auto a_name = current_collection.GetName();
-        auto a_artist = current_album.GetAlbumArtist();
-        album_view_->SetSongCollection(datahandler_->GetAlbum(a_artist, a_name));
-    }
+    // Clean all views except the first added and move to it
 
     // playlist update
     datahandler_->GetPlaylists();
 }
 
+void MainWindow::HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple) {
+    auto view = get<0>(tuple);
+    auto data = get<1>(tuple);
+
+    switch (view) {
+    case VIEW::LIBRARY:
+        break;
+    case VIEW::ARTIST:
+        break;
+    case VIEW::ALBUM: {
+        auto raw_ptr = std::any_cast<QSharedPointer<Album>>(data).data();
+        album_view_->SetSongCollection(raw_ptr);
+        break;
+    }
+    case VIEW::PLAYLIST: {
+        auto raw_ptr = std::any_cast<QSharedPointer<Playlist>>(data).data();
+        playlist_view_->SetSongCollection(raw_ptr);
+        break;
+    }
+    case VIEW::SEARCH:
+        break;
+    case VIEW::HOME:
+        break;
+    case VIEW::UNKNOWN:
+        break;
+    }
+
+    ChangeView(view);
+}
+
 void MainWindow::UserClickedPlaylist(const QModelIndex &index) {
     auto row = index.row();
-    auto playlist = datahandler_->GetPlaylist(row);
-    playlist_view_->SetSongCollection(playlist);
-    ChangeView(VIEW_PLAYLIST);
+    auto shared_ptr = datahandler_->GetPlaylistR(row);
+
+    std::any data(shared_ptr);
+
+    viewhistory_.AddView(VIEW::PLAYLIST, std::move(data));
+    playlist_view_->SetSongCollection(shared_ptr.data());
+    ChangeView(VIEW::PLAYLIST);
 }
 
 
-void MainWindow::AddToPlaylist(const QList<Song> &list, const Playlist &playlist) {
+void MainWindow::AddToPlaylist(const QList<Song> &list, const Playlist *playlist) {
     datahandler_->AddToPlaylist(list, playlist);
 }
 
@@ -498,9 +533,16 @@ void MainWindow::OnPlaylistContextMenu(const QPoint &pos) {
     QAction *selectedAction = menu.exec(ui_->listView_playlists->viewport()->mapToGlobal(pos));
 
     if (selectedAction == delete_playlist_action) {
+        auto ptr = datahandler_->GetPlaylist(row);
+        viewhistory_.Remove(ptr->GetHash());
         datahandler_->DeletePlaylist(row);
     }
     if (selectedAction == rename_playlist_action) {
         //datahandler_.RenamePlaylist(uint row);
     }
+}
+
+
+void MainWindow::OnDeletingFromPlaylists(const QList<Song> &songs, const Playlist *playlist) {
+    datahandler_->DeleteFromPlaylist(songs, playlist);
 }

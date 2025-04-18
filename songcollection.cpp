@@ -28,3 +28,13 @@ bool SongCollection::HasCoverData() const {
 const OImage &SongCollection::GetCover() const {
     return cover_image_;
 }
+
+SONGCOLLECTION_TYPE SongCollection::Identify() const {
+    return SONGCOLLECTION_TYPE::SONGCOLLECTION;
+}
+
+size_t SongCollection::GetHash() const {
+    std::size_t h1 = std::hash<unsigned>()(this->length_sec_);
+    std::size_t h2 = std::hash<QString>()(this->name_); // Example: hashing song duration
+    return h1 ^ (h2 << 1); // Bitwise XOR + shift for better distribution
+}

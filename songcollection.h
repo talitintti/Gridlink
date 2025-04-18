@@ -3,10 +3,10 @@
 
 #include <QList>
 #include "song.h"
+#include "enums.h"
 #include <QDebug>
 #include <QImage>
 
-enum songcollection_type { SONGCOLLECTION, PLAYLIST, ALBUM};
 
 class OImage {
 public:
@@ -57,17 +57,16 @@ public:
         }
     }
 
-    virtual songcollection_type Identify() const { return SONGCOLLECTION; }
-
     QString GetName() const;
     const QList<Song> &GetSongs() const;
-
     const uint8_t *GetCoverData() const;
     const OImage &GetCover() const;
     bool HasCoverData() const;
-
     void AddSong(Song &&song);
     void SetCoverData(OImage &&image);
+    size_t GetHash() const;
+    virtual SONGCOLLECTION_TYPE Identify() const;
+
 
 protected:
     QList<Song> songs_;

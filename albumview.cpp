@@ -103,8 +103,8 @@ void AlbumView::OnTableContextMenu(const QPoint &pos) {
     auto playlists = playlist_provider_();
     if (playlist_provider_) {
         for (const auto &playlist : std::as_const(*playlists)) {
-            playlistmenu->addAction(playlist.GetName(), this, [=]() {
-                emit UserAddingSongsToPlaylist(list, playlist);
+            playlistmenu->addAction(playlist->GetName(), this, [=]() {
+                emit UserAddingSongsToPlaylist(list, playlist.data());
             });
         }
     }

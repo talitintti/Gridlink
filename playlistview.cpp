@@ -25,8 +25,9 @@ PlaylistView::~PlaylistView()
     delete ui_;
 }
 
+
 void PlaylistView::SetPlaylist(const Playlist &playlist) {
-    playlist_ = playlist;
+    playlist_ = playlist; // we do actually want to copy here because song order might be shuffled
 
     song_table_model_->SetSongs(playlist_.GetSongs());
 
@@ -44,7 +45,6 @@ void PlaylistView::SetPlaylist(const Playlist &playlist) {
         label->setPixmap(QPixmap::fromImage(scaled_image));
     }
 }
-
 
 
 void PlaylistView::SongChosenForPlaySlot(const QModelIndex &q_index) {

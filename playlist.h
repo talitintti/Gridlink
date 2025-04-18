@@ -2,6 +2,7 @@
 #define PLAYLIST_H
 
 #include "songcollection.h"
+#include "enums.h"
 
 class Playlist : public SongCollection {
 public:
@@ -13,7 +14,8 @@ public:
         last_modified_posix_(last_modified_posix) {}
 
     time_t LastModified() const;
-    songcollection_type Identify() const override;
+    SONGCOLLECTION_TYPE Identify() const override;
+    int GetSongPosition(const Song &) const;
 
 private:
     QString path_;

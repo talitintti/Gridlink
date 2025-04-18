@@ -20,8 +20,9 @@ public:
     bool Initialize();
     QList<QString> GetArtistNames();
     QList<QString> GetAlbumNames(const QString &artist_name);
-    QList<Album> GetAlbums(const QString &artist_name);
-    Album GetAlbum(const QString &artist_name, const QString &album_name);
+    QList<Album> GetAlbumsForArtist(const QString &artist_name);
+    const QSharedPointer<const Album> GetAlbum(const QString &artist_name, const QString &album_name);
+
     void TogglePlay();
     void AddToQueue(const QList<Song> &);
     void StartPlayingQueue(unsigned index = 0);
@@ -31,10 +32,16 @@ public:
     void SetVolume(unsigned vol);
     void PlayNext();
     void PlayPrevious();
-    QList<Playlist> *GetPlaylists();
-    const Playlist &GetPlaylist(uint row);
-    void AddToPlaylist(const QList<Song> &, const Playlist &);
+
+    QList<QSharedPointer<Playlist>> *GetPlaylists();
+    const Playlist *GetPlaylist(unsigned row);
+    // Row based search (faster)
+    const QSharedPointer<Playlist> GetPlaylistR(unsigned row);
+    // Hash based search (slower)
+    const QSharedPointer<Playlist> GetPlaylistH(size_t hash);
+    void AddToPlaylist(const QList<Song> &, const Playlist *);
     void DeletePlaylist(uint row);
+    void DeleteFromPlaylist(const QList<Song> &, const Playlist *);
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);
@@ -56,7 +63,7 @@ private:
     MPDNotif *mpd_status_updates_;
     Config config_;
     MPDStatus last_update_;
-    QList<Playlist> playlists_;
+    QList<QSharedPointer<Playlist>> playlists_;
 
 
     bool WriteConfigFile(QFile &configFile, const Config &config);

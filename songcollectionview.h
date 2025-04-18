@@ -18,17 +18,18 @@ public:
     explicit SongCollectionView(QWidget *parent = nullptr);
     ~SongCollectionView();
 
-    void SetSongCollection(const SongCollection &album);
+    void SetSongCollection(const SongCollection *);
     void InformSongPlaying(const Song &);
     void InformSongNotPlaying();
-    const SongCollection &GetCurrentSongCollection();
+    const SongCollection *GetCurrentSongCollection();
 
-    std::function< QList<Playlist>*()> playlist_provider_;
+    std::function<QList<QSharedPointer<Playlist>>*()> playlist_provider_;
 
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);
     void UserAddingSongsToQueue(const QList<Song> &);
-    void UserAddingSongsToPlaylist(const QList<Song> &, const Playlist &);
+    void UserAddingSongsToPlaylist(const QList<Song> &, const Playlist *);
+    void UserDeletingFromPlaylist(const QList<Song> &, const Playlist*);
 
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);
@@ -37,7 +38,7 @@ private slots:
 private:
     Ui::SongCollectionView *ui_;
     SongTableModel *song_table_model_ = nullptr;
-    SongCollection album_;
+    const SongCollection *songcollection_;
 
     void ForegroundUpdateForItem(const Song &);
 };

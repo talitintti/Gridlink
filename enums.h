@@ -1,6 +1,20 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
-enum VIEW { VIEW_LIBRARY, VIEW_ARTIST, VIEW_ALBUM, VIEW_SEARCH, VIEW_HOME, VIEW_PLAYLIST, VIEW_UNKNOWN };
+enum class VIEW {
+    LIBRARY,
+    ARTIST,
+    ALBUM,
+    SEARCH,
+    HOME,
+    PLAYLIST,
+    UNKNOWN
+};
+
+enum class SONGCOLLECTION_TYPE {
+    SONGCOLLECTION,
+    PLAYLIST,
+    ALBUM
+};
 
 #endif // ENUMS_H
