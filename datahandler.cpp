@@ -356,11 +356,14 @@ void DataHandler::AddToPlaylist(const QList<Song> &list, const Playlist *playlis
     mpd_communicator_.AppendToPlaylist(playlist->GetName().toStdString(), list);
 }
 
-void DataHandler::DeletePlaylist(uint row) {
-    if (row >= playlists_.count()) return;
-
-    auto playlist_name = playlists_.at(row)->GetName();
-    mpd_communicator_.RemovePlaylist(playlist_name.toStdString());
+void DataHandler::DeletePlaylist(size_t hash) {
+    for (size_t i = 0; i < playlists_.count(); i++) {
+        auto checking = playlists_.at(i);
+        if (checking->GetHash() == hash) {
+            mpd_communicator_.RemovePlaylist(checking->GetName().toStdString());
+            return;
+        }
+    }
 }
 
 

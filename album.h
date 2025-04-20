@@ -2,6 +2,7 @@
 #define ALBUM_H
 #include <QList>
 #include "songcollection.h"
+#include "enums.h"
 #include <QDebug>
 #include <QImage>
 
@@ -43,7 +44,7 @@ public:
     using SongCollection::SongCollection;
 
     QString GetAlbumArtist();
-    songcollection_type Identify() const override;
+    SONGCOLLECTION_TYPE Identify() const override;
 
 private:
     //QList<Song> songs_;

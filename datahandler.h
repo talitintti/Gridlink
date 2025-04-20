@@ -40,7 +40,7 @@ public:
     // Hash based search (slower)
     const QSharedPointer<Playlist> GetPlaylistH(size_t hash);
     void AddToPlaylist(const QList<Song> &, const Playlist *);
-    void DeletePlaylist(uint row);
+    void DeletePlaylist(size_t hash);
     void DeleteFromPlaylist(const QList<Song> &, const Playlist *);
 
 signals:

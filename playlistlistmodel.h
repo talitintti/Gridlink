@@ -90,6 +90,9 @@ signals:
 private:
     QList<QSharedPointer<Playlist>> *playlists_;
 
+    QList<QSharedPointer<Playlist>> &GetList() {
+        return *playlists_;
+    }
 };
 
 

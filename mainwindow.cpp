@@ -49,11 +49,15 @@ MainWindow::MainWindow(QWidget *parent)
     layout->setContentsMargins(0, 0, 0, 0);
 
     // init the playlist list on the left
-    playlist_model_ = new PlaylistListModel(this);
+    //playlist_model_ = new PlaylistListModel(this);
+    //auto playlists = datahandler_->GetPlaylists();
+    //playlist_model_->SetPlaylists(playlists);
+    //ui_->listView_playlists->setModel(playlist_model_);
+    //ui_->listView_playlists->setContextMenuPolicy(Qt::CustomContextMenu);
+    playlist_list_ = new PlaylistList(this);
     auto playlists = datahandler_->GetPlaylists();
-    playlist_model_->SetPlaylists(playlists);
-    ui_->listView_playlists->setModel(playlist_model_);
-    ui_->listView_playlists->setContextMenuPolicy(Qt::CustomContextMenu);
+    playlist_list_->SetPlaylists(playlists);
+    ui_->verticalLayout_leftside->insertWidget(1,playlist_list_);
 
     //Volume slider
     volume_slider_ = ui_->volume_slider;
@@ -122,8 +126,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(datahandler_,
             &DataHandler::PlaylistsChanged,
-            this,
-            &MainWindow::PlaylistUpdate);
+            playlist_list_,
+            &PlaylistList::PlaylistUpdate);
 
     connect(datahandler_,
             &DataHandler::DatabaseChanged,
@@ -165,15 +169,15 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::UserClickedLastSong);
 
-    connect(ui_->listView_playlists,
-            &QAbstractItemView::clicked,
+    connect(playlist_list_,
+            &PlaylistList::PlaylistClickedSignal,
             this,
             &MainWindow::UserClickedPlaylist);
 
-    connect(ui_->listView_playlists,
-            &QAbstractItemView::customContextMenuRequested,
+    connect(playlist_list_,
+            &PlaylistList::DeletingPlaylist,
             this,
-            &MainWindow::OnPlaylistContextMenu);
+            &MainWindow::DeletePlaylist);
 
     connect(album_view_,
            &SongCollectionView::UserAddingSongsToQueue,
@@ -211,8 +215,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui_->listView_viewSelects->setModel(stringListModel_buttons);
 
-    ui_->listView_playlists->setSpacing(2);
-    ui_->listView_viewSelects->setSpacing(2);
+    //ui_->listView_playlists->setSpacing(2);
+    //ui_->listView_viewSelects->setSpacing(2);
 
 
     ui_->playing_now_picture->setPixmap(QPixmap("/media/pictures/pepe_smile.jpg"));
@@ -278,18 +282,8 @@ void MainWindow::Init_lower_toolbar(Ui::MainWindow *ui) {
 }
 
 
-
-
-
-
-void MainWindow::on_listView_playlists_pressed(const QModelIndex &index)
-{
-    ui_->listView_viewSelects->clearSelection();
-}
-
-
 void MainWindow::on_listView_viewSelects_pressed(const QModelIndex &index) {
-    ui_->listView_playlists->clearSelection();
+    playlist_list_->ClearSelection();
     int selectedIndex = ui_->listView_viewSelects->currentIndex().row();
 
     VIEW corrsp_view;
@@ -457,9 +451,6 @@ if (action == QAbstractSlider::SliderPageStepAdd ||
     }
 }
 
-void MainWindow::PlaylistUpdate() {
-    playlist_model_->ResetModel();
-}
 
 // Update all the views
 // TODO: IF OTHER VIEWS ADDED REMEMBER TO UPDATE THIS
@@ -500,9 +491,11 @@ void MainWindow::HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple) {
     ChangeView(view);
 }
 
-void MainWindow::UserClickedPlaylist(const QModelIndex &index) {
-    auto row = index.row();
-    auto shared_ptr = datahandler_->GetPlaylistR(row);
+
+void MainWindow::UserClickedPlaylist(size_t hash) {
+    ui_->listView_viewSelects->clearSelection();
+
+    auto shared_ptr = datahandler_->GetPlaylistH(hash);
 
     std::any data(shared_ptr);
 
@@ -516,31 +509,37 @@ void MainWindow::AddToPlaylist(const QList<Song> &list, const Playlist *playlist
     datahandler_->AddToPlaylist(list, playlist);
 }
 
-void MainWindow::OnPlaylistContextMenu(const QPoint &pos) {
-    QModelIndex index = ui_->listView_playlists->indexAt(pos);
 
-    if (!index.isValid()) return;
-
-    int row = index.row();
-
-    QString delete_playlist_text = "Delete playlist";
-    QString rename_playlist_text = "Rename playlist";
-
-    QMenu menu;
-    QAction *delete_playlist_action = menu.addAction(delete_playlist_text);
-    QAction *rename_playlist_action = menu.addAction(rename_playlist_text);
-
-    QAction *selectedAction = menu.exec(ui_->listView_playlists->viewport()->mapToGlobal(pos));
-
-    if (selectedAction == delete_playlist_action) {
-        auto ptr = datahandler_->GetPlaylist(row);
-        viewhistory_.Remove(ptr->GetHash());
-        datahandler_->DeletePlaylist(row);
-    }
-    if (selectedAction == rename_playlist_action) {
-        //datahandler_.RenamePlaylist(uint row);
-    }
+void MainWindow::DeletePlaylist(size_t hash) {
+    datahandler_->DeletePlaylist(hash);
 }
+
+
+//void MainWindow::OnPlaylistContextMenu(const QPoint &pos) {
+//    QModelIndex index = ui_->listView_playlists->indexAt(pos);
+//
+//    if (!index.isValid()) return;
+//
+//    int row = index.row();
+//
+//    QString delete_playlist_text = "Delete playlist";
+//    QString rename_playlist_text = "Rename playlist";
+//
+//    QMenu menu;
+//    QAction *delete_playlist_action = menu.addAction(delete_playlist_text);
+//    QAction *rename_playlist_action = menu.addAction(rename_playlist_text);
+//
+//    QAction *selectedAction = menu.exec(ui_->listView_playlists->viewport()->mapToGlobal(pos));
+//
+//    if (selectedAction == delete_playlist_action) {
+//        auto ptr = datahandler_->GetPlaylist(row);
+//        viewhistory_.Remove(ptr->GetHash());
+//        datahandler_->DeletePlaylist(row);
+//    }
+//    if (selectedAction == rename_playlist_action) {
+//        //datahandler_.RenamePlaylist(uint row);
+//    }
+//}
 
 
 void MainWindow::OnDeletingFromPlaylists(const QList<Song> &songs, const Playlist *playlist) {

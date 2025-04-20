@@ -10,7 +10,7 @@
 #include "progressbarwidget.h"
 #include "enums.h"
 #include "viewhistory.h"
-#include "playlistlistmodel.h"
+#include "playlistlist.h"
 #include <any>
 
 QT_BEGIN_NAMESPACE
@@ -31,7 +31,6 @@ public slots:
 
 private slots:
     // TODO: make uniform casing
-    void on_listView_playlists_pressed(const QModelIndex &index); //TODO: connnect by hand
     void on_listView_viewSelects_pressed(const QModelIndex &index);//TODO: connnect by hand
     void on_pushButton_pause_clicked();//TODO: connnect by hand
     void PlaySongsSlot(const QList<Song> &, unsigned);
@@ -44,7 +43,7 @@ private slots:
     void UserClickedVolSlider(int action);
     void UserClickedNextSong();
     void UserClickedLastSong();
-    void UserClickedPlaylist(const QModelIndex &index);
+    void UserClickedPlaylist(size_t hash);
 
     void PlaybackPaused();
     void PlaybackStarted();
@@ -52,15 +51,15 @@ private slots:
     void SongChanged(const Song &);
     void PlaybackStopped();
     void VolumeUpdate(unsigned vol);
-    void PlaylistUpdate();
     void DatabaseUpdated();
     void AddToQueue(const QList<Song> &);
     void AddToPlaylist(const QList<Song> &, const Playlist *);
 
-    void OnPlaylistContextMenu(const QPoint &pos);
     void OnDeletingFromPlaylists(const QList<Song> &, const Playlist *);
+    void DeletePlaylist(size_t hash);
 
     void HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple);
+
 private:
     Ui::MainWindow *ui_;
     DataHandler *datahandler_;
@@ -79,7 +78,7 @@ private:
     QPushButton *button_next_song_;
     QPushButton *button_previous_song_;
 
-    PlaylistListModel *playlist_model_;
+    PlaylistList *playlist_list_;
 
     void Init_lower_toolbar(Ui::MainWindow *ui);
     void Init_upper_toolbar(Ui::MainWindow *ui);
