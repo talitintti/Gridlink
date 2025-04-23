@@ -22,6 +22,7 @@ SongCollectionView::SongCollectionView(QWidget *parent)
             &SongCollectionView::SongChosenForPlaySlot);
 
     ui_->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+
     connect(ui_->tableView,
             &QTableView::customContextMenuRequested,
             this,
@@ -108,6 +109,11 @@ void SongCollectionView::OnTableContextMenu(const QPoint &pos) {
 
     // Sub menu for adding to playlists
     QMenu *playlistmenu = new QMenu(add_to_playlist_text, &menu);
+
+    // adding an item for adding new playlist
+    playlistmenu->addAction("+[Add new playlist]", this, [=]() {
+        emit ShowPlaylistAddDialog();
+    });
 
     auto playlists = playlist_provider_();
     if (playlist_provider_) {

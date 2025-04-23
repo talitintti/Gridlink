@@ -9,6 +9,7 @@
 #include "enums.h"
 #include "songcollectionview.h"
 #include <utility>
+#include "playlistadddialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -193,6 +194,16 @@ MainWindow::MainWindow(QWidget *parent)
             &SongCollectionView::UserDeletingFromPlaylist,
             this,
             &MainWindow::OnDeletingFromPlaylists);
+
+    //these two below are the same
+    connect(album_view_,
+            &SongCollectionView::ShowPlaylistAddDialog,
+            this,
+            &MainWindow::ShowPlaylistDialog);
+    connect(playlist_view_,
+            &SongCollectionView::ShowPlaylistAddDialog,
+            this,
+            &MainWindow::ShowPlaylistDialog);
 
     datahandler_->ManualStatusUpdate(); // status update once at start
 
@@ -544,4 +555,16 @@ void MainWindow::DeletePlaylist(size_t hash) {
 
 void MainWindow::OnDeletingFromPlaylists(const QList<Song> &songs, const Playlist *playlist) {
     datahandler_->DeleteFromPlaylist(songs, playlist);
+}
+
+
+void MainWindow::ShowPlaylistDialog() {
+    PlaylistAddDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted) {
+        QString plname = dialog.GetPlaylistName();
+        if (!plname.isEmpty()) {
+            datahandler_->AddPlaylist(plname);
+        }
+    }
+
 }

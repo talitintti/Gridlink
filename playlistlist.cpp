@@ -30,6 +30,9 @@ PlaylistList::PlaylistList(QWidget *parent)
             &PlaylistList::ShowPlaylistContextMenu);
 
     this->setMaximumWidth(200);
+
+
+    layout->setContentsMargins(0, 0, 0, 0);
 }
 
 PlaylistList::~PlaylistList() {};

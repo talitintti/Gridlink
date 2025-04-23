@@ -60,6 +60,8 @@ private slots:
 
     void HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple);
 
+    void ShowPlaylistDialog();
+
 private:
     Ui::MainWindow *ui_;
     DataHandler *datahandler_;

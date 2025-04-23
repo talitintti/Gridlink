@@ -517,3 +517,8 @@ std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, i
 
     return result;
 }
+
+
+void DataHandler::AddPlaylist(const QString &playlist_name) {
+
+}

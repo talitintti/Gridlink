@@ -55,6 +55,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         songcollectionview.h songcollectionview.cpp songcollectionview.ui
         Playlist.cpp
         playlistlist.h playlistlist.cpp
+        playlistadddialog.h playlistadddialog.cpp
 
     )
 # Define target properties for Android with Qt 6 as:
