@@ -81,29 +81,29 @@ const SongCollection *SongCollectionView::GetCurrentSongCollection() {
 }
 
 void SongCollectionView::OnTableContextMenu(const QPoint &pos) {
-    QModelIndex index = ui_->tableView->indexAt(pos);
-
-    if (!index.isValid())
-        return;
-
-    int row = index.row();
+    QItemSelectionModel *selection_model = ui_->tableView->selectionModel();
+    QModelIndexList selected_rows = selection_model->selectedRows();
 
     QString add_to_playlist_text = "Add to playlist";
     QString add_to_queue_text = "Add to queue";
     QString remove_from_playlist_text = "Remove from playlist";
 
-    auto song = songcollection_->GetSongs().at(row);
-    QList<Song> list = {song};
+    auto songs = songcollection_->GetSongs();
+    QList<Song> selected_songs;
+    for (const auto selected_index : std::as_const(selected_rows)) {
+        auto selected_song = songs.at(selected_index.row());
+        selected_songs.append(selected_song);
+    }
 
     // Main menu
     QMenu menu;
     QAction *add_to_queue_action = menu.addAction(add_to_queue_text, this, [=]() {
-        emit UserAddingSongsToQueue(list);
+        emit UserAddingSongsToQueue(selected_songs);
     });
 
     if (songcollection_->Identify() == SONGCOLLECTION_TYPE::PLAYLIST) {
         QAction *remove_from_playlist = menu.addAction(remove_from_playlist_text, this, [=] {
-            emit UserDeletingFromPlaylist(list, dynamic_cast<const Playlist *>(songcollection_));
+            emit UserDeletingFromPlaylist(selected_songs, dynamic_cast<const Playlist *>(songcollection_));
         });
     }
 
@@ -112,14 +112,14 @@ void SongCollectionView::OnTableContextMenu(const QPoint &pos) {
 
     // adding an item for adding new playlist
     playlistmenu->addAction("+[Add new playlist]", this, [=]() {
-        emit ShowPlaylistAddDialog();
+        emit ShowPlaylistAddDialog(selected_songs);
     });
 
     auto playlists = playlist_provider_();
     if (playlist_provider_) {
         for (const auto &playlist : std::as_const(*playlists)) {
             playlistmenu->addAction(playlist->GetName(), this, [=]() {
-                emit UserAddingSongsToPlaylist(list, playlist.data());
+                emit UserAddingSongsToPlaylist(selected_songs, playlist.data());
             });
         }
     }

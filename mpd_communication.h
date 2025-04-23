@@ -47,8 +47,9 @@ public:
     void PlayPrevious();
 
     void AppendToPlaylist(const std::string &playlist_name, const QList<Song> songs);
-    void RemovePlaylist(std::string playlist_name);
-    void RemoveFromPlaylist(std::string playlist_name, uint pos_in_playlist);
+    void RemovePlaylist(std::string &playlist_name);
+    void RemoveFromPlaylist(std::string &playlist_name, uint pos_in_playlist);
+    void AddToPlaylist(std::string &playlist_name, std::string &song_path);
 private:
     QList<QString> GetTags(const char *return_tag, const char *constraint_tag, const char *constraint_val);
     struct mpd_connection* conn_;

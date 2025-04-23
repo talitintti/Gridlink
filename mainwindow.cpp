@@ -526,44 +526,18 @@ void MainWindow::DeletePlaylist(size_t hash) {
 }
 
 
-//void MainWindow::OnPlaylistContextMenu(const QPoint &pos) {
-//    QModelIndex index = ui_->listView_playlists->indexAt(pos);
-//
-//    if (!index.isValid()) return;
-//
-//    int row = index.row();
-//
-//    QString delete_playlist_text = "Delete playlist";
-//    QString rename_playlist_text = "Rename playlist";
-//
-//    QMenu menu;
-//    QAction *delete_playlist_action = menu.addAction(delete_playlist_text);
-//    QAction *rename_playlist_action = menu.addAction(rename_playlist_text);
-//
-//    QAction *selectedAction = menu.exec(ui_->listView_playlists->viewport()->mapToGlobal(pos));
-//
-//    if (selectedAction == delete_playlist_action) {
-//        auto ptr = datahandler_->GetPlaylist(row);
-//        viewhistory_.Remove(ptr->GetHash());
-//        datahandler_->DeletePlaylist(row);
-//    }
-//    if (selectedAction == rename_playlist_action) {
-//        //datahandler_.RenamePlaylist(uint row);
-//    }
-//}
-
 
 void MainWindow::OnDeletingFromPlaylists(const QList<Song> &songs, const Playlist *playlist) {
     datahandler_->DeleteFromPlaylist(songs, playlist);
 }
 
 
-void MainWindow::ShowPlaylistDialog() {
+void MainWindow::ShowPlaylistDialog(const QList<Song> &songs) {
     PlaylistAddDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted) {
-        QString plname = dialog.GetPlaylistName();
+        auto plname = dialog.GetPlaylistName();
         if (!plname.isEmpty()) {
-            datahandler_->AddPlaylist(plname);
+            datahandler_->AddToPlaylist(plname, songs);
         }
     }
 

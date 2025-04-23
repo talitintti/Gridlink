@@ -30,7 +30,7 @@ signals:
     void UserAddingSongsToQueue(const QList<Song> &);
     void UserAddingSongsToPlaylist(const QList<Song> &, const Playlist *);
     void UserDeletingFromPlaylist(const QList<Song> &, const Playlist*);
-    void ShowPlaylistAddDialog();
+    void ShowPlaylistAddDialog(const QList<Song>&);
 
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);

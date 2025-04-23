@@ -60,7 +60,7 @@ private slots:
 
     void HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple);
 
-    void ShowPlaylistDialog();
+    void ShowPlaylistDialog(const QList<Song> &);
 
 private:
     Ui::MainWindow *ui_;

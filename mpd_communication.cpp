@@ -366,7 +366,7 @@ void MPDCommunication::AppendToPlaylist(const std::string &playlist_name, const 
 
 }
 
-void MPDCommunication::RemovePlaylist(std::string name) {
+void MPDCommunication::RemovePlaylist(std::string &name) {
     if (!CheckForMPDError(conn_)) return;
 
     if (!mpd_run_rm(conn_, name.c_str())) {
@@ -375,11 +375,20 @@ void MPDCommunication::RemovePlaylist(std::string name) {
     }
 }
 
-void MPDCommunication::RemoveFromPlaylist(std::string playlist_name, uint pos_in_playlist) {
+void MPDCommunication::RemoveFromPlaylist(std::string &playlist_name, uint pos_in_playlist) {
     if (!CheckForMPDError(conn_)) return;
 
     if (!mpd_run_playlist_delete(conn_, playlist_name.c_str(), pos_in_playlist)) {
         qWarning() << "Could not delete from playlist \n";
+        CheckForMPDError(conn_);
+    }
+}
+
+void MPDCommunication::AddToPlaylist(std::string &playlist_name, std::string &song_path) {
+    if (song_path.empty() || !CheckForMPDError(conn_)) return;
+
+    if (!mpd_run_playlist_add(conn_, playlist_name.c_str(), song_path.c_str())) {
+        qWarning() << "Could not add to playlist \n Name:" + playlist_name;
         CheckForMPDError(conn_);
     }
 }

@@ -360,7 +360,8 @@ void DataHandler::DeletePlaylist(size_t hash) {
     for (size_t i = 0; i < playlists_.count(); i++) {
         auto checking = playlists_.at(i);
         if (checking->GetHash() == hash) {
-            mpd_communicator_.RemovePlaylist(checking->GetName().toStdString());
+            auto std_name = checking->GetName().toStdString();
+            mpd_communicator_.RemovePlaylist(std_name);
             return;
         }
     }
@@ -518,7 +519,53 @@ std::shared_ptr<uint8_t[]> GetPicture(const std::string& filename, int& width, i
     return result;
 }
 
+// True is returned if duplicate or duplicate with (N) is found
+// If playlist_name = stored name -> return stored_name(1) \n
+// If playlist_name(N) = stored_name where N [0,inf[ -> return playlist_name(N+1) \n
+// If playlist_name != stored_name -> return playlist_name
+bool HandleName(const QString &stored_name, const QString &playlist_name, QString &new_name) {
+        unsigned increment = 0;
+        bool had_duplicate = false;
+        new_name = QString(playlist_name);
 
-void DataHandler::AddPlaylist(const QString &playlist_name) {
+        if (stored_name == playlist_name) {
+            increment++;
+            new_name = new_name + "(" + QString::number(increment) + ")";
 
+            had_duplicate = true;
+        }
+        else {
+            QRegularExpression re("^" + QRegularExpression::escape(playlist_name) + R"(\(\d+\)$)");
+            auto match = re.match(stored_name);
+            if (match.hasMatch()) {
+                increment = match.captured(1).toInt();
+                increment++;
+                new_name = new_name + "(" + QString::number(increment) + ")";
+
+                had_duplicate = true;
+            }
+        }
+
+        return had_duplicate;
 }
+
+
+// Add songs to playlist if name is new we create a new playlist
+void DataHandler::AddToPlaylist(const QString &playlist_name , const QList<Song> &songs) {
+    QString new_name;
+
+    // Check that there isn't a playlist with the same name already
+    for (const auto &playlist : std::as_const(playlists_)) {
+        auto stored_name = playlist->GetName();
+        if (HandleName(stored_name, playlist_name, new_name)) break;
+    }
+
+    // Creating an empty playlist
+    auto new_name_std = new_name.toStdString();
+    for (const auto &song : songs) {
+        auto song_uri = song.GetSongPath().toStdString();
+        mpd_communicator_.AddToPlaylist(new_name_std, song_uri);
+    }
+}
+
+

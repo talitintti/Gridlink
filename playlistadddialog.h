@@ -13,10 +13,6 @@ public:
     explicit PlaylistAddDialog(QWidget *parent = nullptr);
     QString GetPlaylistName();
 
-private slots:
-    void HandleOkClicked();
-
-
 private:
     QLineEdit *lineedit_name_;
 };
