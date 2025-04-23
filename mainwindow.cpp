@@ -537,8 +537,7 @@ void MainWindow::ShowPlaylistDialog(const QList<Song> &songs) {
     if (dialog.exec() == QDialog::Accepted) {
         auto plname = dialog.GetPlaylistName();
         if (!plname.isEmpty()) {
-            datahandler_->AddToPlaylist(plname, songs);
+            datahandler_->CreatePlaylist(plname, songs);
         }
     }
-
 }

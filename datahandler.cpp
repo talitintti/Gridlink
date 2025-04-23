@@ -551,7 +551,7 @@ bool HandleName(const QString &stored_name, const QString &playlist_name, QStrin
 
 
 // Add songs to playlist if name is new we create a new playlist
-void DataHandler::AddToPlaylist(const QString &playlist_name , const QList<Song> &songs) {
+void DataHandler::CreatePlaylist(const QString &playlist_name , const QList<Song> &songs) {
     QString new_name;
 
     // Check that there isn't a playlist with the same name already

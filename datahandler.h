@@ -42,7 +42,7 @@ public:
     void AddToPlaylist(const QList<Song> &, const Playlist *);
     void DeletePlaylist(size_t hash);
     void DeleteFromPlaylist(const QList<Song> &, const Playlist *);
-    void AddToPlaylist(const QString &name, const QList<Song> &songs);
+    void CreatePlaylist(const QString &name, const QList<Song> &songs);
 
 signals:
     //void StatusUpdateSignal(const MPDStatus&);
