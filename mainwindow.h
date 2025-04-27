@@ -54,9 +54,10 @@ private slots:
     void DatabaseUpdated();
     void AddToQueue(const QList<Song> &);
     void AddToPlaylist(const QList<Song> &, const Playlist *);
+    void PlaylistsDeleted(QList<size_t> hahes);
 
     void OnDeletingFromPlaylists(const QList<Song> &, const Playlist *);
-    void DeletePlaylist(size_t hash);
+    void DeletePlaylist(unsigned row);
 
     void HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple);
 

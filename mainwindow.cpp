@@ -131,6 +131,21 @@ MainWindow::MainWindow(QWidget *parent)
             &PlaylistList::PlaylistUpdate);
 
     connect(datahandler_,
+            &DataHandler::PlaylistsChanged,
+            playlist_view_,
+            &SongCollectionView::RefreshData);
+
+    connect(datahandler_,
+            &DataHandler::PlaylistAdded,
+            playlist_list_,
+            &PlaylistList::PlaylistUpdate);
+
+    connect(datahandler_,
+            &DataHandler::PlaylistsDeleted,
+            this,
+            &MainWindow::PlaylistsDeleted);
+
+    connect(datahandler_,
             &DataHandler::DatabaseChanged,
             this,
             &MainWindow::DatabaseUpdated);
@@ -464,12 +479,9 @@ if (action == QAbstractSlider::SliderPageStepAdd ||
 
 
 // Update all the views
-// TODO: IF OTHER VIEWS ADDED REMEMBER TO UPDATE THIS
 void MainWindow::DatabaseUpdated() {
     // Clean all views except the first added and move to it
-
-    // playlist update
-    datahandler_->GetPlaylists();
+    viewhistory_.MoveToFirstAndCleanOthers();
 }
 
 void MainWindow::HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple) {
@@ -521,8 +533,9 @@ void MainWindow::AddToPlaylist(const QList<Song> &list, const Playlist *playlist
 }
 
 
-void MainWindow::DeletePlaylist(size_t hash) {
-    datahandler_->DeletePlaylist(hash);
+void MainWindow::DeletePlaylist(unsigned row) {
+    playlist_list_->PlaylistAboutToBeRemoved(row);
+    datahandler_->DeletePlaylist(row);
 }
 
 
@@ -540,4 +553,13 @@ void MainWindow::ShowPlaylistDialog(const QList<Song> &songs) {
             datahandler_->CreatePlaylist(plname, songs);
         }
     }
+}
+
+void MainWindow::PlaylistsDeleted(QList<size_t> hashes) {
+    playlist_list_->PlaylistRemoved();
+    auto viewdata = viewhistory_.MoveToFirst();
+    HandleViewHistoryRet(viewdata);
+
+    for (const auto &hash : hashes)
+        viewhistory_.Remove(hash);
 }

@@ -226,6 +226,37 @@ void DataHandler::ManualStatusUpdate() {
     if (FetchStatusUpdate()) ParseStatusUpdate();
 }
 
+void DataHandler::PlaylistChangeHandler() {
+    int playlist_count_before = this->playlists_.count();
+
+    QList<size_t> hash_list;
+    for (const auto &pl_ptr : std::as_const(playlists_))
+        hash_list.append(pl_ptr->GetHash());
+
+    FetchPlaylists();
+    int playlist_count_now = this->playlists_.count();
+
+    // finding the deleted playlists
+    QList<size_t> deleted;
+    for (const auto &new_pl_ptr : std::as_const(playlists_)) {
+        size_t curr_hash = new_pl_ptr->GetHash();
+        for (const auto &old_hash : std::as_const(hash_list))
+            if (curr_hash == old_hash) goto iter;
+        deleted.append(curr_hash);
+        iter:
+        ;
+    }
+
+    if (playlist_count_before > playlist_count_now) {
+        emit PlaylistsDeleted(deleted);
+    }
+    else if (playlist_count_before < playlist_count_now) {
+        emit PlaylistAdded();
+    }
+    else {
+        emit PlaylistsChanged();
+    }
+}
 
 
 //TODO: implement all
@@ -239,8 +270,7 @@ void DataHandler::StatusUpdateSlot(mpd_idle events) {
         std::cout << "Update started! "<< std::endl;
     }
     if (events & MPD_IDLE_STORED_PLAYLIST) {
-        FetchPlaylists();
-        emit PlaylistsChanged();
+        PlaylistChangeHandler();
         std::cout << "Stored playlist changed! "<< std::endl;
     }
     if (events & MPD_IDLE_PLAYLIST) { // THIS IS QUEUE, NOT "PLAYLIST"
@@ -356,15 +386,18 @@ void DataHandler::AddToPlaylist(const QList<Song> &list, const Playlist *playlis
     mpd_communicator_.AppendToPlaylist(playlist->GetName().toStdString(), list);
 }
 
-void DataHandler::DeletePlaylist(size_t hash) {
-    for (size_t i = 0; i < playlists_.count(); i++) {
-        auto checking = playlists_.at(i);
-        if (checking->GetHash() == hash) {
-            auto std_name = checking->GetName().toStdString();
-            mpd_communicator_.RemovePlaylist(std_name);
-            return;
-        }
-    }
+void DataHandler::DeletePlaylist(unsigned row) {
+    auto name = playlists_.at(row)->GetName();
+    std::string name_std = name.toStdString();
+    mpd_communicator_.RemovePlaylist(name_std);
+    //for (size_t i = 0; i < playlists_.count(); i++) {
+    //    auto checking = playlists_.at(i);
+    //    if (checking->GetHash() == hash) {
+    //        auto std_name = checking->GetName().toStdString();
+    //        mpd_communicator_.RemovePlaylist(std_name);
+    //        return;
+    //    }
+    //}
 }
 
 

@@ -40,7 +40,7 @@ public:
     // Hash based search (slower)
     const QSharedPointer<Playlist> GetPlaylistH(size_t hash);
     void AddToPlaylist(const QList<Song> &, const Playlist *);
-    void DeletePlaylist(size_t hash);
+    void DeletePlaylist(unsigned row);
     void DeleteFromPlaylist(const QList<Song> &, const Playlist *);
     void CreatePlaylist(const QString &name, const QList<Song> &songs);
 
@@ -53,6 +53,8 @@ signals:
     void SongElapsedSignal(unsigned elapsed_ms);
     void VolumeChanged(unsigned volume);
     void PlaylistsChanged();
+    void PlaylistAdded();
+    void PlaylistsDeleted(QList<size_t> hashes);
     void DatabaseChanged();
 
 
@@ -73,6 +75,7 @@ private:
     bool FetchStatusUpdate();
     void ParseStatusUpdate();
     void FetchPlaylists();
+    void PlaylistChangeHandler();
 };
 
 #endif // DATAHANDLER_H

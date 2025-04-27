@@ -64,6 +64,12 @@ public:
         return smth_rmvd;
     }
 
+    const std::tuple<VIEW, std::any> MoveToFirst() {
+        if (current_index_ == -1) return unkonwn_;
+        current_index_ = 0;
+        return views_.at(current_index_);
+    }
+
     const std::tuple<VIEW, std::any> &MoveToFirstAndCleanOthers() {
         if (current_index_ == -1) return unkonwn_;
         size_t remove_n = views_.count() - 1;

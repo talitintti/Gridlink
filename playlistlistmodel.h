@@ -83,6 +83,13 @@ public:
         endResetModel();
     }
 
+    void PlaylistAboutToBeRemoved(unsigned row) {
+        beginRemoveRows(QModelIndex(), row, row);
+    }
+    void PlaylistRemoved() {
+        endRemoveRows();
+    }
+
 signals:
     void AlbumDroppedOnModel(Album *album);
     void AlbumDroppedOnPlaylist(Album *album, const Playlist *playlist);

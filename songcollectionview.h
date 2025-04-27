@@ -32,6 +32,9 @@ signals:
     void UserDeletingFromPlaylist(const QList<Song> &, const Playlist*);
     void ShowPlaylistAddDialog(const QList<Song>&);
 
+public slots:
+    void RefreshData();
+
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);
     void OnTableContextMenu(const QPoint &pos);

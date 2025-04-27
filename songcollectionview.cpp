@@ -129,3 +129,7 @@ void SongCollectionView::OnTableContextMenu(const QPoint &pos) {
     QAction *selectedAction = menu.exec(ui_->tableView->viewport()->mapToGlobal(pos));
 }
 
+
+void SongCollectionView::RefreshData() {
+    song_table_model_->ResetModel();
+}

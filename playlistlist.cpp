@@ -65,8 +65,7 @@ void PlaylistList::ShowPlaylistContextMenu(const QPoint &pos) {
     QAction *selectedAction = menu.exec(listview_->viewport()->mapToGlobal(pos));
 
     if (selectedAction == delete_playlist_action) {
-        auto hash = playlists_->at(row)->GetHash();
-        emit DeletingPlaylist(hash);
+        emit DeletingPlaylist(row);
     }
 
     if (selectedAction == rename_playlist_action) {
@@ -77,6 +76,14 @@ void PlaylistList::ShowPlaylistContextMenu(const QPoint &pos) {
 
 void PlaylistList::PlaylistUpdate() {
     model_->ResetModel();
+}
+
+void PlaylistList::PlaylistAboutToBeRemoved(unsigned row) {
+    model_->PlaylistAboutToBeRemoved(row);
+}
+
+void PlaylistList::PlaylistRemoved() {
+    model_->PlaylistRemoved();
 }
 
 void PlaylistList::ClearSelection() {

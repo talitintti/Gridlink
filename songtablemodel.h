@@ -127,6 +127,11 @@ public:
         endResetModel();
     }
 
+    void ResetModel() {
+        beginResetModel();
+        endResetModel();
+    }
+
 private:
     QList<Song> song_list_;
     int playing_song_row_;

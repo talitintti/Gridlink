@@ -23,7 +23,7 @@ public:
     void SetPlaylists(QList<QSharedPointer<Playlist>>*);
 
 signals:
-    void DeletingPlaylist(size_t hash);
+    void DeletingPlaylist(unsigned row);
     void PlaylistClickedSignal(size_t hash);
 
 private slots:
@@ -33,6 +33,8 @@ private slots:
 public slots:
     void PlaylistUpdate();
     void ClearSelection();
+    void PlaylistAboutToBeRemoved(unsigned row);
+    void PlaylistRemoved();
 
 private:
     PlaylistListModel *model_;
