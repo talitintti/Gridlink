@@ -54,10 +54,11 @@ private slots:
     void DatabaseUpdated();
     void AddToQueue(const QList<Song> &);
     void AddToPlaylist(const QList<Song> &, const Playlist *);
-    void PlaylistsDeleted(QList<size_t> hahes);
+    void PlaylistsDeleted(const QList<QString> names);
 
     void OnDeletingFromPlaylists(const QList<Song> &, const Playlist *);
     void DeletePlaylist(unsigned row);
+    void OnPlaylistUpdate(const QList<QSharedPointer<Playlist>> changed);
 
     void HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple);
 

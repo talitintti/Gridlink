@@ -132,8 +132,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(datahandler_,
             &DataHandler::PlaylistsChanged,
-            playlist_view_,
-            &SongCollectionView::RefreshData);
+            this,
+            &MainWindow::OnPlaylistUpdate);
 
     connect(datahandler_,
             &DataHandler::PlaylistAdded,
@@ -555,11 +555,25 @@ void MainWindow::ShowPlaylistDialog(const QList<Song> &songs) {
     }
 }
 
-void MainWindow::PlaylistsDeleted(QList<size_t> hashes) {
+void MainWindow::PlaylistsDeleted(const QList<QString> names) {
     playlist_list_->PlaylistRemoved();
     auto viewdata = viewhistory_.MoveToFirst();
     HandleViewHistoryRet(viewdata);
 
-    for (const auto &hash : hashes)
-        viewhistory_.Remove(hash);
+    for (const auto &name : names)
+        viewhistory_.Remove(name);
+}
+
+void MainWindow::OnPlaylistUpdate(const QList<QSharedPointer<Playlist>> playlists) {
+    auto tuple = viewhistory_.Current();
+    auto curr_view = get<0>(tuple);
+    auto curr_ptr = std::any_cast<QSharedPointer<Playlist>>(get<1>(tuple));
+
+    if (curr_view == VIEW::PLAYLIST) {
+        for (const auto &pl : std::as_const(playlists)) {
+            if (pl->GetName() == curr_ptr->GetName())
+                playlist_view_->SetSongCollection(pl.data());
+        }
+    }
+    viewhistory_.UpdatePlaylists(playlists);
 }

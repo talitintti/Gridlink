@@ -46,13 +46,13 @@ public:
 
     // Removes all playlist views from history with given hash
     // True means that something was removed
-    bool Remove(size_t data_hash) {
+    bool Remove(const QString &name) {
         bool smth_rmvd = false;
         size_t i = 0;
         while (i < views_.count()) {
             auto tuple = views_.at(i);
             if (std::get<0>(tuple) == VIEW::PLAYLIST
-                && std::any_cast<QSharedPointer<Playlist>>(std::get<1>(tuple))->GetHash() == data_hash) { // TODO:This could be uuhhhhh prettified
+                && std::any_cast<QSharedPointer<Playlist>>(std::get<1>(tuple))->GetName() == name) { // TODO:This could be uuhhhhh prettified
                 views_.remove(i);
                 smth_rmvd = true;
                 current_index_--;
@@ -62,6 +62,23 @@ public:
             }
         }
         return smth_rmvd;
+    }
+
+    // If any modification happens, true is returned
+    bool UpdatePlaylists(const QList<QSharedPointer<Playlist>> playlists) {
+        bool modified = false;
+        for (const auto &pl_ptr : playlists) {
+            for (int i = 0; i < views_.count(); i++) {
+                auto stored = views_.at(i);
+                if (get<0>(stored) == VIEW::PLAYLIST && std::any_cast<QSharedPointer<Playlist>>(get<1>(stored))->GetName() == pl_ptr->GetName()) {
+                    std::tuple<VIEW, std::any> tuple(VIEW::PLAYLIST, std::any(pl_ptr));
+                    views_.replace(i, tuple);
+                    modified = true;
+                }
+            }
+        }
+
+        return modified;
     }
 
     const std::tuple<VIEW, std::any> MoveToFirst() {
@@ -75,6 +92,11 @@ public:
         size_t remove_n = views_.count() - 1;
         views_.remove(1, remove_n);
         return views_.at(0);
+    }
+
+    const std::tuple<VIEW, std::any> &Current() {
+        if (current_index_ == -1) return unkonwn_;
+        return views_.at(current_index_);
     }
 
 private:

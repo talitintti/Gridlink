@@ -230,22 +230,35 @@ void DataHandler::PlaylistChangeHandler() {
     int playlist_count_before = this->playlists_.count();
 
     QList<size_t> hash_list;
-    for (const auto &pl_ptr : std::as_const(playlists_))
+    QList<QString> name_list;
+    for (const auto &pl_ptr : std::as_const(playlists_)) { // I'm not using tuples fuck you
         hash_list.append(pl_ptr->GetHash());
+        name_list.append(pl_ptr->GetName());
+    }
 
     FetchPlaylists();
     int playlist_count_now = this->playlists_.count();
 
-    // finding the deleted playlists
-    QList<size_t> deleted;
+    // finding the deleted playlists and checking if the playlists have changed
+    QList<QString> deleted;
+    QList<QSharedPointer<Playlist>> changed;
     for (const auto &new_pl_ptr : std::as_const(playlists_)) {
         size_t curr_hash = new_pl_ptr->GetHash();
-        for (const auto &old_hash : std::as_const(hash_list))
-            if (curr_hash == old_hash) goto iter;
-        deleted.append(curr_hash);
+        const QString &curr_name = new_pl_ptr->GetName();
+        for (size_t i = 0; i < name_list.count(); i++) {
+            auto old_name = name_list.at(i);
+            auto old_hash = hash_list.at(i);
+            if (curr_name == old_name) {
+                if (curr_hash != old_hash) changed.append(new_pl_ptr);
+                goto iter;
+            }
+        deleted.append(curr_name);
         iter:
         ;
+        }
     }
+
+
 
     if (playlist_count_before > playlist_count_now) {
         emit PlaylistsDeleted(deleted);
@@ -254,7 +267,7 @@ void DataHandler::PlaylistChangeHandler() {
         emit PlaylistAdded();
     }
     else {
-        emit PlaylistsChanged();
+        emit PlaylistsChanged(changed);
     }
 }
 

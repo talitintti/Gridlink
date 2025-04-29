@@ -52,9 +52,9 @@ signals:
     void SongStoppedSignal();
     void SongElapsedSignal(unsigned elapsed_ms);
     void VolumeChanged(unsigned volume);
-    void PlaylistsChanged();
+    void PlaylistsChanged(QList<QSharedPointer<Playlist>> changed);
     void PlaylistAdded();
-    void PlaylistsDeleted(QList<size_t> hashes);
+    void PlaylistsDeleted(QList<QString> names);
     void DatabaseChanged();
 
 

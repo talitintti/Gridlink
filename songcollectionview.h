@@ -25,6 +25,7 @@ public:
 
     std::function<QList<QSharedPointer<Playlist>>*()> playlist_provider_;
 
+
 signals:
     void SongChosenForPlaySignal(const QList<Song> &songs, unsigned index);
     void UserAddingSongsToQueue(const QList<Song> &);
@@ -33,7 +34,9 @@ signals:
     void ShowPlaylistAddDialog(const QList<Song>&);
 
 public slots:
-    void RefreshData();
+    //void RefreshData();
+    void StartModelReset();
+    void EndModelReset();
 
 private slots:
     void SongChosenForPlaySlot(const QModelIndex &);

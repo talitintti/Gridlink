@@ -130,6 +130,14 @@ void SongCollectionView::OnTableContextMenu(const QPoint &pos) {
 }
 
 
-void SongCollectionView::RefreshData() {
-    song_table_model_->ResetModel();
+//void SongCollectionView::RefreshData() {
+//    song_table_model_->ResetModel();
+//}
+
+void SongCollectionView::StartModelReset() {
+    song_table_model_->StartModelReset();
+}
+
+void SongCollectionView::EndModelReset() {
+    song_table_model_->EndModelReset();
 }
