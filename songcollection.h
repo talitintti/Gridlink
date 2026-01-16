@@ -13,12 +13,14 @@ public:
     OImage() :
         width_(0),
         height_(0),
+        bytes_per_line_(0),
         image_format_(QImage::Format_Invalid) {}
 
-    OImage(std::shared_ptr<uint8_t> ptr, uint width, uint height, QImage::Format format) :
+    OImage(std::shared_ptr<uint8_t[]> ptr, uint width, uint height, uint bytes_per_line, QImage::Format format) :
         image_data_(ptr),
         width_(width),
         height_(height),
+        bytes_per_line_(bytes_per_line),
         image_format_(format)
     {
         // TODO: support other formats (allocated sizes have to be taken into account
@@ -29,14 +31,16 @@ public:
 
     uint GetWidth() const { return width_; }
     uint GetHeight() const { return width_; }
+    uint GetBytesPerLine() const { return bytes_per_line_; }
     const uint8_t *GetImageData() const { return image_data_.get(); }
     bool HasImage() const { return image_data_ ? true : false; }
     QImage::Format GetFormat() const { return image_format_; }
 
 private:
-    std::shared_ptr<uint8_t> image_data_;
+    std::shared_ptr<uint8_t[]> image_data_;
     uint width_;
     uint height_;
+    uint bytes_per_line_;
     QImage::Format image_format_;
 };
 
@@ -60,10 +64,10 @@ public:
     QString GetName() const;
     const QList<Song> &GetSongs() const;
     const uint8_t *GetCoverData() const;
-    const OImage &GetCover() const;
+    const QImage &GetCover() const;
     bool HasCoverData() const;
     void AddSong(Song &&song);
-    void SetCoverData(OImage &&image);
+    void SetCoverData(QImage &&img);
     size_t GetHash() const;
     virtual SONGCOLLECTION_TYPE Identify() const;
 
@@ -72,7 +76,7 @@ protected:
     QList<Song> songs_;
     QString name_;
     unsigned length_sec_ = 0;
-    OImage cover_image_;
+    QImage cover_image_;
 };
 
 #endif // SONGCOLLECTION_H

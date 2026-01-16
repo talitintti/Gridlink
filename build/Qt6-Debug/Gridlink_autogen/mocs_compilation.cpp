@@ -6,6 +6,8 @@
 #include "EWIEGA46WW/moc_mainwindow.cpp"
 #include "EWIEGA46WW/moc_mimedata.cpp"
 #include "EWIEGA46WW/moc_mpdnotif.cpp"
+#include "EWIEGA46WW/moc_playlistadddialog.cpp"
+#include "EWIEGA46WW/moc_playlistlist.cpp"
 #include "EWIEGA46WW/moc_playlistlistmodel.cpp"
 #include "EWIEGA46WW/moc_playlistview.cpp"
 #include "EWIEGA46WW/moc_progressbarwidget.cpp"

@@ -39,17 +39,11 @@ void SongCollectionView::SetSongCollection(const SongCollection *songcollection)
 
     song_table_model_->SetSongs(songcollection_->GetSongs());
 
-    // Let's show the picture
     if (songcollection_->HasCoverData()) {
         auto label = ui_->label_album_pic;
-        const OImage &cover = songcollection->GetCover();
+        const QImage &image = songcollection->GetCover();
 
-        QImage image(cover.GetImageData(),
-                     cover.GetWidth(),
-                     cover.GetHeight(),
-                     cover.GetFormat());
-
-        QImage scaled_image = image.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QImage scaled_image( image.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) );
         label->setPixmap(QPixmap::fromImage(scaled_image));
     }
 }

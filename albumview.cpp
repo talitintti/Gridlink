@@ -40,12 +40,7 @@ void AlbumView::SetAlbum(const Album &album) {
     // Let's show the picture
     if (album_.HasCoverData()) {
         auto label = ui_->label_album_pic;
-        const OImage &cover = album.GetCover();
-
-        QImage image(cover.GetImageData(),
-                     cover.GetWidth(),
-                     cover.GetHeight(),
-                     cover.GetFormat());
+        auto &image = album.GetCover();
 
         QImage scaled_image = image.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(scaled_image));

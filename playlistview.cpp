@@ -31,15 +31,10 @@ void PlaylistView::SetPlaylist(const Playlist &playlist) {
 
     song_table_model_->SetSongs(playlist_.GetSongs());
 
-    // Let's set the picture
+    // let's set the picture
     if (playlist_.HasCoverData()) {
         auto label = ui_->label_playlist_pic;
-        const OImage &cover = playlist.GetCover();
-
-        QImage image(cover.GetImageData(),
-                     cover.GetWidth(),
-                     cover.GetHeight(),
-                     cover.GetFormat());
+        const QImage &image = playlist.GetCover();
 
         QImage scaled_image = image.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(scaled_image));

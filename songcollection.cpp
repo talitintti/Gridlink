@@ -14,18 +14,18 @@ const QList<Song> &SongCollection::GetSongs() const {
 }
 
 const uint8_t *SongCollection::GetCoverData() const {
-    return cover_image_.GetImageData();
+    return cover_image_.bits();
 }
 
-void SongCollection::SetCoverData(OImage &&image) {
-    cover_image_ = std::move(image);
+void SongCollection::SetCoverData(QImage &&qimage) {
+    cover_image_ = std::move(qimage);
 }
 
 bool SongCollection::HasCoverData() const {
-    return cover_image_.HasImage();
+    return !cover_image_.isNull();
 }
 
-const OImage &SongCollection::GetCover() const {
+const QImage &SongCollection::GetCover() const {
     return cover_image_;
 }
 
@@ -35,6 +35,6 @@ SONGCOLLECTION_TYPE SongCollection::Identify() const {
 
 size_t SongCollection::GetHash() const {
     std::size_t h1 = std::hash<unsigned>()(this->length_sec_);
-    std::size_t h2 = std::hash<QString>()(this->name_); // Example: hashing song duration
-    return h1 ^ (h2 << 1); // Bitwise XOR + shift for better distribution
+    std::size_t h2 = std::hash<QString>()(this->name_);
+    return h1 ^ (h2 << 1);
 }
