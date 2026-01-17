@@ -20,23 +20,36 @@ typedef struct {
     int dest_linesizes[4];
 } image_t;
 
-image_t GetPicture(const std::string& filename, int& width, int& height,
-                                      AVPixelFormat destination_format, uint8_t padding) {
-    image_t ret;
-    ret = {};
+
+
+
+// AVPacket& packet = format_ctx->streams[image_stream_index]->attached_pic;
+// uint8_t* data_ptr = packet.data;   // pointer to the JPEG/PNG bytes
+// int data_size = packet.size;       // size in bytes
+// QImage image;
+//if (!image.loadFromData(imageData)) {
+//    qWarning() << "Failed to load embedded image!";
+//    return ret;
+//}
+//
+//
+//
+QImage GetPicture(const std::string& filename, int& width, int& height,
+                   AVPixelFormat destination_format, uint8_t padding) {
+    QImage image;
 
     // Open the input file
     AVFormatContext* format_ctx = nullptr;
     if (avformat_open_input(&format_ctx, filename.c_str(), nullptr, nullptr) != 0) {
         qWarning() << ("Could not open file: " + filename);
-        return ret;
+        return image;
     }
 
     // Retrieve stream information
     if (avformat_find_stream_info(format_ctx, nullptr) < 0) {
         avformat_close_input(&format_ctx);
         qWarning() << ("Could not find stream information.");
-        return ret;
+        return image;
     }
 
     // Find the attached picture stream
@@ -51,126 +64,186 @@ image_t GetPicture(const std::string& filename, int& width, int& height,
     if (image_stream_index == -1) {
         avformat_close_input(&format_ctx);
         qWarning() << ("No embedded image found in the file.");
-        return ret;
+        return image;
     }
 
     // Get the attached picture packet
     AVPacket& packet = format_ctx->streams[image_stream_index]->attached_pic;
 
-    // Find the decoder for the image
-    AVCodecParameters* codec_params = format_ctx->streams[image_stream_index]->codecpar;
-    const AVCodec* codec = avcodec_find_decoder(codec_params->codec_id);
-    if (!codec) {
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Unsupported image codec.");
-        return ret;
+    uint8_t* data_ptr = packet.data;   // pointer to the JPEG/PNG bytes
+    int data_size = packet.size;       // size in bytes
+
+    QByteArray imageData(reinterpret_cast<char*>(data_ptr), data_size);
+
+    if (!image.loadFromData(imageData)) {
+        qWarning() << "Failed to load embedded image!";
     }
 
-    // Allocate a codec context
-    AVCodecContext* codec_ctx = avcodec_alloc_context3(codec);
-    if (!codec_ctx) {
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Could not allocate codec context.");
-        return ret;
-    }
-
-    // Copy codec parameters to the codec context
-    if (avcodec_parameters_to_context(codec_ctx, codec_params) < 0) {
-        avcodec_free_context(&codec_ctx);
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Could not copy codec parameters to context.");
-        return ret;
-    }
-
-    // Open the codec
-    if (avcodec_open2(codec_ctx, codec, nullptr) < 0) {
-        avcodec_free_context(&codec_ctx);
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Could not open codec.");
-        return ret;
-    }
-
-    // Allocate a frame for decoding
-    AVFrame* frame = av_frame_alloc();
-    if (!frame) {
-        avcodec_free_context(&codec_ctx);
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Could not allocate frame.");
-        return ret;
-    }
-
-    // Send the packet to the decoder
-    if (avcodec_send_packet(codec_ctx, &packet) < 0) {
-        av_frame_free(&frame);
-        avcodec_free_context(&codec_ctx);
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Failed to send packet to decoder.");
-        return ret;
-    }
-
-    // Receive the decoded frame
-    if (avcodec_receive_frame(codec_ctx, frame) < 0) {
-        av_frame_free(&frame);
-        avcodec_free_context(&codec_ctx);
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Failed to receive frame from decoder.");
-        return ret;
-    }
-
-    // Get image dimensions
-    width = frame->width;
-    height = frame->height;
-
-
-    // Convert the frame to RGB24 format
-    SwsContext* sws_ctx = sws_getContext(
-                    width, height, static_cast<AVPixelFormat>(frame->format), // Source format
-                    width, height, destination_format,  // Destination format
-                    SWS_BILINEAR, nullptr, nullptr, nullptr);
-
-    if (!sws_ctx) {
-        av_frame_free(&frame);
-        avcodec_free_context(&codec_ctx);
-        avformat_close_input(&format_ctx);
-        qWarning() << ("Could not initialize SwsContext.");
-        return ret;
-    }
-
-    uint8_t *dst_data[4] = { nullptr, nullptr, nullptr, nullptr };
-    int dest_linesize[4] = { 0, 0, 0, 0 };
-
-    int buffer_size = av_image_alloc(dst_data, dest_linesize, width, height,
-                                     destination_format, padding);
-    if (buffer_size < 0) {
-        qWarning() << "Error: Couldn't allocate destination buffer.";
-        sws_freeContext(sws_ctx);
-        av_frame_free(&frame);
-        avcodec_free_context(&codec_ctx);
-        avformat_close_input(&format_ctx);
-        ret.data_plane_ptrs[0] = nullptr;
-        return ret;
-    }
-
-    sws_scale(sws_ctx, frame->data, frame->linesize, 0, height, dst_data, dest_linesize);
-
-    // Clean up
-    sws_freeContext(sws_ctx);
-    av_frame_free(&frame);
-    avcodec_free_context(&codec_ctx);
     avformat_close_input(&format_ctx);
 
-    ret.data_plane_ptrs[0] = dst_data[0];
-    ret.data_plane_ptrs[1] = dst_data[1];
-    ret.data_plane_ptrs[2] = dst_data[2];
-    ret.data_plane_ptrs[3] = dst_data[3];
-
-    ret.dest_linesizes[0] = dest_linesize[0];
-    ret.dest_linesizes[1] = dest_linesize[1];
-    ret.dest_linesizes[2] = dest_linesize[2];
-    ret.dest_linesizes[3] = dest_linesize[3];
-
-    return ret;
+    return image;
 }
+
+
+
+
+
+
+
+
+
+
+//image_t GetPicture(const std::string& filename, int& width, int& height,
+//                                      AVPixelFormat destination_format, uint8_t padding) {
+//    image_t ret;
+//    ret = {};
+//
+//    // Open the input file
+//    AVFormatContext* format_ctx = nullptr;
+//    if (avformat_open_input(&format_ctx, filename.c_str(), nullptr, nullptr) != 0) {
+//        qWarning() << ("Could not open file: " + filename);
+//        return ret;
+//    }
+//
+//    // Retrieve stream information
+//    if (avformat_find_stream_info(format_ctx, nullptr) < 0) {
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Could not find stream information.");
+//        return ret;
+//    }
+//
+//    // Find the attached picture stream
+//    int image_stream_index = -1;
+//    for (unsigned int i = 0; i < format_ctx->nb_streams; i++) {
+//        if (format_ctx->streams[i]->disposition & AV_DISPOSITION_ATTACHED_PIC) {
+//            image_stream_index = i;
+//            break;
+//        }
+//    }
+//
+//    if (image_stream_index == -1) {
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("No embedded image found in the file.");
+//        return ret;
+//    }
+//
+//    // Get the attached picture packet
+//    AVPacket& packet = format_ctx->streams[image_stream_index]->attached_pic;
+//
+//    // Find the decoder for the image
+//    AVCodecParameters* codec_params = format_ctx->streams[image_stream_index]->codecpar;
+//    const AVCodec* codec = avcodec_find_decoder(codec_params->codec_id);
+//    if (!codec) {
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Unsupported image codec.");
+//        return ret;
+//    }
+//
+//    // Allocate a codec context
+//    AVCodecContext* codec_ctx = avcodec_alloc_context3(codec);
+//    if (!codec_ctx) {
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Could not allocate codec context.");
+//        return ret;
+//    }
+//
+//    // Copy codec parameters to the codec context
+//    if (avcodec_parameters_to_context(codec_ctx, codec_params) < 0) {
+//        avcodec_free_context(&codec_ctx);
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Could not copy codec parameters to context.");
+//        return ret;
+//    }
+//
+//    // Open the codec
+//    if (avcodec_open2(codec_ctx, codec, nullptr) < 0) {
+//        avcodec_free_context(&codec_ctx);
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Could not open codec.");
+//        return ret;
+//    }
+//
+//    // Allocate a frame for decoding
+//    AVFrame* frame = av_frame_alloc();
+//    if (!frame) {
+//        avcodec_free_context(&codec_ctx);
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Could not allocate frame.");
+//        return ret;
+//    }
+//
+//    // Send the packet to the decoder
+//    if (avcodec_send_packet(codec_ctx, &packet) < 0) {
+//        av_frame_free(&frame);
+//        avcodec_free_context(&codec_ctx);
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Failed to send packet to decoder.");
+//        return ret;
+//    }
+//
+//    // Receive the decoded frame
+//    if (avcodec_receive_frame(codec_ctx, frame) < 0) {
+//        av_frame_free(&frame);
+//        avcodec_free_context(&codec_ctx);
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Failed to receive frame from decoder.");
+//        return ret;
+//    }
+//
+//    // Get image dimensions
+//    width = frame->width;
+//    height = frame->height;
+//
+//
+//    // Convert the frame to RGB24 format
+//    SwsContext* sws_ctx = sws_getContext(
+//                    width, height, static_cast<AVPixelFormat>(frame->format), // Source format
+//                    width, height, destination_format,  // Destination format
+//                    SWS_BILINEAR, nullptr, nullptr, nullptr);
+//
+//    if (!sws_ctx) {
+//        av_frame_free(&frame);
+//        avcodec_free_context(&codec_ctx);
+//        avformat_close_input(&format_ctx);
+//        qWarning() << ("Could not initialize SwsContext.");
+//        return ret;
+//    }
+//
+//    uint8_t *dst_data[4] = { nullptr, nullptr, nullptr, nullptr };
+//    int dest_linesize[4] = { 0, 0, 0, 0 };
+//
+//    int buffer_size = av_image_alloc(dst_data, dest_linesize, width, height,
+//                                     destination_format, padding);
+//    if (buffer_size < 0) {
+//        qWarning() << "Error: Couldn't allocate destination buffer.";
+//        sws_freeContext(sws_ctx);
+//        av_frame_free(&frame);
+//        avcodec_free_context(&codec_ctx);
+//        avformat_close_input(&format_ctx);
+//        ret.data_plane_ptrs[0] = nullptr;
+//        return ret;
+//    }
+//
+//    sws_scale(sws_ctx, frame->data, frame->linesize, 0, height, dst_data, dest_linesize);
+//
+//    // Clean up
+//    sws_freeContext(sws_ctx);
+//    av_frame_free(&frame);
+//    avcodec_free_context(&codec_ctx);
+//    avformat_close_input(&format_ctx);
+//
+//    ret.data_plane_ptrs[0] = dst_data[0];
+//    ret.data_plane_ptrs[1] = dst_data[1];
+//    ret.data_plane_ptrs[2] = dst_data[2];
+//    ret.data_plane_ptrs[3] = dst_data[3];
+//
+//    ret.dest_linesizes[0] = dest_linesize[0];
+//    ret.dest_linesizes[1] = dest_linesize[1];
+//    ret.dest_linesizes[2] = dest_linesize[2];
+//    ret.dest_linesizes[3] = dest_linesize[3];
+//
+//    return ret;
+//}
 
 DataHandler::~DataHandler() {
 }
@@ -300,23 +373,27 @@ void DataHandler::SetAlbumCover(Album &album) const {
 
     auto pic = GetPicture(full_path, width, height, dst_format, align);
 
-    // Need only the first plane since we use RGB24, change accordingly if you use something else
-    auto buffer = pic.data_plane_ptrs[0];
-    auto linesize = pic.dest_linesizes[0];
-    if (buffer) {
-        QImage qimage(
-            buffer,
-            width,
-            height,
-            linesize,
-            dst_format_in_qimage,
-            [](void* ptr) {
-                av_free(ptr);
-            },
-            buffer
-        );
-        album.SetCoverData(std::move(qimage));
+    if (!pic.isNull()) {
+        album.SetCoverData(std::move(pic));
     }
+
+    // Need only the first plane since we use RGB24, change accordingly if you use something else
+    //auto buffer = pic.data_plane_ptrs[0];
+    //auto linesize = pic.dest_linesizes[0];
+    //if (buffer) {
+    //    QImage qimage(
+    //        buffer,
+    //        width,
+    //        height,
+    //        linesize,
+    //        dst_format_in_qimage,
+    //        [](void* ptr) {
+    //            av_free(ptr);
+    //        },
+    //        buffer
+    //    );
+    //    album.SetCoverData(std::move(qimage));
+    //}
 }
 
 
