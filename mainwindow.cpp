@@ -195,6 +195,16 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::DeletePlaylist);
 
+    connect(playlist_view_,
+           &SongCollectionView::UserAddingSongsToQueue,
+           this,
+           &MainWindow::AddToQueue);
+
+    connect(playlist_view_,
+            &SongCollectionView::UserAddingSongsToPlaylist,
+            this,
+            &MainWindow::AddToPlaylist);
+
     connect(album_view_,
            &SongCollectionView::UserAddingSongsToQueue,
            this,
@@ -567,9 +577,9 @@ void MainWindow::PlaylistsDeleted(const QList<QString> names) {
 void MainWindow::OnPlaylistUpdate(const QList<QSharedPointer<Playlist>> playlists) {
     auto tuple = viewhistory_.Current();
     auto curr_view = get<0>(tuple);
-    auto curr_ptr = std::any_cast<QSharedPointer<Playlist>>(get<1>(tuple));
 
     if (curr_view == VIEW::PLAYLIST) {
+        auto curr_ptr = std::any_cast<QSharedPointer<Playlist>>(get<1>(tuple));
         for (const auto &pl : std::as_const(playlists)) {
             if (pl->GetName() == curr_ptr->GetName())
                 playlist_view_->SetSongCollection(pl.data());

@@ -354,7 +354,7 @@ QList<Song> MPDCommunication::GetPlaylistSongs(std::string playlist_name) {
 }
 
 void MPDCommunication::AppendToPlaylist(const std::string &playlist_name, const QList<Song> songs) {
-    if (!CheckForMPDError(conn_))  return;
+    if (!CheckForMPDError(conn_)) return;
 
     for (const auto &song : songs) {
         if ( !mpd_run_playlist_add(conn_, playlist_name.c_str(), song.GetSongPath().toStdString().c_str()) )
