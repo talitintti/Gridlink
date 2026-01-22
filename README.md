@@ -5,12 +5,7 @@ Gridlink is a modern and lightweight client for [Music Player Daemon (MPD)](http
 ## Features
 
 - **Fast and Lightweight**: Optimized performance using C++ and Qt.
-- **Intuitive UI**: A sleek and user-friendly interface for browsing and managing your MPD library.
-- **Playlist Management**: Create, edit, and save playlists effortlessly.
-- **Album Art Support**: Displays album artwork from embedded tags or external sources.
-- **Responsive Controls**: Play, pause, skip, and seek with ease.
-- **Search and Filter**: Quickly find your favorite tracks, artists, or albums.
-- **Cross-Platform**: Runs on Linux, Windows, and macOS.
+
 
 ## Installation
 
@@ -19,7 +14,7 @@ Gridlink is a modern and lightweight client for [Music Player Daemon (MPD)](http
 Ensure you have the following dependencies installed:
 
 - MPD server running on your system or network
-- Qt (version 5 or 6)
+- Qt (6)
 - CMake (if building from source)
 - A C++17-compatible compiler
 
