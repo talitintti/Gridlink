@@ -1,10 +1,6 @@
 #include "playlist.h"
 #include "enums.h"
 
-time_t Playlist::LastModified() const {
-    return last_modified_posix_;
-}
-
 SONGCOLLECTION_TYPE Playlist::Identify() const {
     return SONGCOLLECTION_TYPE::PLAYLIST;
 }
