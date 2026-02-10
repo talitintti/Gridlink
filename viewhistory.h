@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <any>
 #include "playlist.h"
+#include "album.h"
 
 // Stores VIEWS and correspondign data and remembers the current position
 class ViewHistory {
@@ -15,22 +16,21 @@ public:
     // Returns the next view in views and moves to it
     // If current is the last view, we return the current view
     const std::tuple<VIEW, std::any> &MoveForward() {
-        auto last_index = views_.count() - 1;
+        auto last_index = views_.size() - 1;
         if (last_index == -1) return unknown_;
+
         if (current_index_ == last_index) return views_.at(last_index);
         current_index_++;
         return views_.at(current_index_);
     }
 
-    // Adds a new view into the history
+    // Adds a new view into the history and moves to it
     // if you store data you have to wrap it in a QStoredPointer, otherwise give empty
     void AddView(VIEW view, std::any &&data) {
-        if (current_index_ == 0) {
-            auto temp = views_.at(0);
-            views_.clear();
-            views_.append(temp);
-        }
         current_index_++;
+
+        if (views_.size() != current_index_) views_.resize(current_index_);
+
         views_.emplace_back(view, std::move(data));
     }
 
