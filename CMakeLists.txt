@@ -54,7 +54,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         playlistview.h playlistview.cpp playlistview.ui
         appearance.h
         songcollectionview.h songcollectionview.cpp songcollectionview.ui
-        Playlist.cpp
+        playlist.cpp
         playlistlist.h playlistlist.cpp
         playlistadddialog.h playlistadddialog.cpp
 

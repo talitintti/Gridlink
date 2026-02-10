@@ -30,6 +30,7 @@ public:
     QString GetAlbum() const;
     QString GetGenre() const;
     QString GetSongPath() const;
+    time_t GetLastModified() const;
     unsigned GetDurationSec() const;
     std::size_t GetHash() const;
     bool IsEmpty() const;

@@ -47,21 +47,13 @@ private:
 class SongCollection
 {
 public:
-    SongCollection() = default;
+    SongCollection(QList<Song> &&songs, const QString &name);
     SongCollection(const SongCollection&) = default;
     SongCollection& operator=(const SongCollection&) = default;
     SongCollection& operator=(SongCollection &&other) = default;
 
-    SongCollection(QList<Song> &&songs, const QString &name) :
-        songs_(std::move(songs)),
-        name_(name)
-    {
-        for (const Song &song : std::as_const(songs_)) {
-            length_sec_ += song.GetDurationSec();
-        }
-    }
-
     QString GetName() const;
+    time_t LastModified() const;
     const QList<Song> &GetSongs() const;
     const uint8_t *GetCoverData() const;
     const QImage &GetCover() const;
@@ -71,12 +63,16 @@ public:
     size_t GetHash() const;
     virtual SONGCOLLECTION_TYPE Identify() const;
 
+    // Gets the mtime of the most recently modified song file in this collection
+    // Can be used for sorting by last modified
+    time_t GetLastModifFile() const;
 
 protected:
     QList<Song> songs_;
     QString name_;
     unsigned length_sec_ = 0;
     QImage cover_image_;
+    time_t last_modified_song_time_ = 0;
 };
 
 #endif // SONGCOLLECTION_H

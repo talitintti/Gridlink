@@ -51,3 +51,7 @@ std::size_t Song::GetHash() const {
 bool Song::IsEmpty() const {
     return mpd_song_.get() == nullptr;
 }
+
+time_t Song::GetLastModified() const {
+    return mpd_song_get_last_modified(mpd_song_.get());
+}

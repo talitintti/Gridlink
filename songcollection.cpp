@@ -1,5 +1,22 @@
 #include "songcollection.h"
 
+SongCollection::SongCollection(QList<Song> &&songs, const QString &name) :
+        songs_(std::move(songs)),
+        name_(name)
+    {
+        time_t most_recent_mtime = 0;
+        for (const Song &song : std::as_const(songs_)) {
+            length_sec_ += song.GetDurationSec();
+
+            auto last_modif = song.GetLastModified();
+            if (last_modif > most_recent_mtime)
+                most_recent_mtime = last_modif;
+        }
+
+        last_modified_song_time_ = most_recent_mtime;
+    }
+
+
 void SongCollection::AddSong(Song &&song) {
     length_sec_ += song.GetDurationSec();
     songs_.push_back(std::move(song));
@@ -37,4 +54,8 @@ size_t SongCollection::GetHash() const {
     std::size_t h1 = std::hash<unsigned>()(this->length_sec_);
     std::size_t h2 = std::hash<QString>()(this->name_);
     return h1 ^ (h2 << 1);
+}
+
+time_t SongCollection::GetLastModifFile() const {
+    return last_modified_song_time_;
 }
