@@ -16,7 +16,7 @@ public:
     // If current is the last view, we return the current view
     const std::tuple<VIEW, std::any> &MoveForward() {
         auto last_index = views_.count() - 1;
-        if (last_index == -1) return unkonwn_;
+        if (last_index == -1) return unknown_;
         if (current_index_ == last_index) return views_.at(last_index);
         current_index_++;
         return views_.at(current_index_);
@@ -37,7 +37,7 @@ public:
     // Returns the last item
     // If current is the last item we return the current
     const std::tuple<VIEW, std::any> &MoveBack() {
-        if (current_index_ == -1) return unkonwn_;
+        if (current_index_ == -1) return unknown_;
         if (!current_index_) return views_.at(0);
 
         current_index_--;
@@ -82,27 +82,32 @@ public:
     }
 
     const std::tuple<VIEW, std::any> MoveToFirst() {
-        if (current_index_ == -1) return unkonwn_;
+        if (current_index_ == -1) return unknown_;
         current_index_ = 0;
         return views_.at(current_index_);
     }
 
     const std::tuple<VIEW, std::any> &MoveToFirstAndCleanOthers() {
-        if (current_index_ == -1) return unkonwn_;
+        if (current_index_ == -1) return unknown_;
         size_t remove_n = views_.count() - 1;
         views_.remove(1, remove_n);
         return views_.at(0);
     }
 
     const std::tuple<VIEW, std::any> &Current() {
-        if (current_index_ == -1) return unkonwn_;
+        if (current_index_ == -1) return unknown_;
         return views_.at(current_index_);
+    }
+
+    const std::tuple<VIEW, std::any> &First() {
+        if (current_index_ == -1) return unknown_;
+        return views_.at(0);
     }
 
 private:
     QList<std::tuple<VIEW, std::any>> views_;
     int current_index_;
-    const std::tuple<VIEW, std::any> unkonwn_ = {VIEW::UNKNOWN, std::any()};
+    const std::tuple<VIEW, std::any> unknown_ = {VIEW::UNKNOWN, std::any()};
 };
 
 #endif // VIEWHISTORY_H
