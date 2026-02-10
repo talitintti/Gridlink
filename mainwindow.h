@@ -74,8 +74,8 @@ private:
     SongCollectionView *album_view_;
     SongCollectionView *playlist_view_;
 
-    QStringListModel *stringListModel_buttons;
-    QStringListModel *stringListModel_playlists;
+    QStringListModel *stringListModel_buttons_;
+    QStringListModel *stringListModel_playlists_;
 
     ProgressBarWidget *progress_bar_; //TODO: better name
     QSlider *volume_slider_;

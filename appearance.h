@@ -26,19 +26,19 @@ static void SetTableAppearance(QTableView *table_view) {
     // --- Apply Theme ---
     table_view->setStyleSheet(
         "QTableView {"
-        "   background-color: #121212;"
-        "   color: white;" // White text
-        "   selection-background-color: #333333;" // Dark Gray when row is selected
-        "   gridline-color: #121212;"
+        //"   background-color: #121212;"
+        //"   color: white;" // White text
+        //"   selection-background-color: #333333;" // Dark Gray when row is selected
+        //"   gridline-color: #121212;"
         " 	outline: none;"
         "} "
         "QTableView::item {"
-        "   background-color: #121212;" // Ensure all rows are uniform dark color
+        //"   background-color: #121212;" // Ensure all rows are uniform dark color
         "   padding: 5px;"
         "} "
         "QTableView::item:selected {"
-        "   background-color: #333333;" // Row selection color
-        "   color: white;"
+        //"   background-color: #333333;" // Row selection color
+        //"   color: white;"
         "} "
         "QTableView::item:focus {"
         "   outline: 0;"
@@ -50,8 +50,8 @@ static void SetTableAppearance(QTableView *table_view) {
         "}"
         "QTableView::item:selected:focus { background:#333333; }"
         "QHeaderView::section {		"
-        "background-color: #121212;		"
-        "color: lightgray;		"
+        //"background-color: #121212;		"
+        //"color: lightgray;		"
         "font-weight: normal;		"
         "padding: 5px;		"
         "border: 1px solid #292929;	"

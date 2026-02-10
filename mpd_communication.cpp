@@ -8,7 +8,7 @@ MPDCommunication::MPDCommunication() {
 
 //TODO: set port as parameter to be loaded from config
 bool MPDCommunication::Initialize() {
-    conn_ = mpd_connection_new(NULL, 0, 0);
+    conn_ = mpd_connection_new(NULL, 6800, 0);
 
     if (conn_ == NULL) {
         qWarning() << "Could not connect to mpd \n";

@@ -74,6 +74,16 @@ void PlaylistList::ShowPlaylistContextMenu(const QPoint &pos) {
 
 }
 
+void PlaylistList::SelectPlaylist(Playlist &playlist)
+{
+    for (int row = 0; row < model_->rowCount(QModelIndex()); row++) {
+        if (playlists_->at(row)->GetHash() == playlist.GetHash()) {
+            auto index = model_->index(row, 0);
+            listview_->setCurrentIndex(index);
+        }
+    }
+}
+
 void PlaylistList::PlaylistUpdate() {
     model_->ResetModel();
 }

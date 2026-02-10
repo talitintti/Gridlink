@@ -21,7 +21,7 @@ public:
     ~PlaylistList();
 
     void SetPlaylists(QList<QSharedPointer<Playlist>>*);
-
+    void SelectPlaylist(Playlist &playlist);
 signals:
     void DeletingPlaylist(unsigned row);
     void PlaylistClickedSignal(size_t hash);

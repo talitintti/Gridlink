@@ -9,6 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
@@ -98,6 +99,14 @@ set_target_properties(Gridlink PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
+## Force debug symbols and disable optimization for profiling
+#set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "" FORCE)
+#
+## Add debug flags for GCC/Clang
+#if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fno-omit-frame-pointer")
+#endif()
 
 install(TARGETS Gridlink
     BUNDLE DESTINATION .

@@ -86,6 +86,7 @@ public:
     void PlaylistAboutToBeRemoved(unsigned row) {
         beginRemoveRows(QModelIndex(), row, row);
     }
+
     void PlaylistRemoved() {
         endRemoveRows();
     }

@@ -233,8 +233,8 @@ MainWindow::MainWindow(QWidget *parent)
     datahandler_->ManualStatusUpdate(); // status update once at start
 
 
-    stringListModel_buttons = new QStringListModel(this);
-    stringListModel_playlists = new QStringListModel(this);
+    stringListModel_buttons_ = new QStringListModel(this);
+    stringListModel_playlists_ = new QStringListModel(this);
 
     QStringList buttons;
 
@@ -243,13 +243,13 @@ MainWindow::MainWindow(QWidget *parent)
     QByteArray hex_house = QByteArray::fromHex("F09F8FA0");
     QString utf_house = QString::fromUtf8(hex_house);
 
-    buttons << utf_house + " Home";
-    buttons << utf_house + " Library";
-    buttons << utf_house + " Discover";
+    buttons.insert(0, utf_house + " Home");
+    buttons.insert(1, utf_house + " Library");
+    buttons.insert(2, utf_house + " Discover");
 
-    stringListModel_buttons -> setStringList(buttons);
+    stringListModel_buttons_ -> setStringList(buttons);
 
-    ui_->listView_viewSelects->setModel(stringListModel_buttons);
+    ui_->listView_viewSelects->setModel(stringListModel_buttons_);
 
     //ui_->listView_playlists->setSpacing(2);
     //ui_->listView_viewSelects->setSpacing(2);
@@ -349,7 +349,7 @@ void MainWindow::OnArtistDoubleClickedSlot(const QString &artistname) {
     auto albums = datahandler_->GetAlbumsForArtist(artistname);
     std::any data = albums;
     viewhistory_.AddView(VIEW::ARTIST, std::move(data));
-    artist_view_->SetData(datahandler_->GetAlbumsForArtist(artistname), artistname);
+    artist_view_->SetData(albums, artistname);
 
     ChangeView(VIEW::ARTIST);
 }
@@ -500,22 +500,35 @@ void MainWindow::HandleViewHistoryRet(std::tuple<VIEW, std::any> &tuple) {
 
     switch (view) {
     case VIEW::LIBRARY:
+        playlist_list_->ClearSelection();
+        //ui_->listView_viewSelects->setCurrentIndex(
+        //    stringListModel_buttons_->index(BUTTON_INDEXES[(int)VIEW::LIBRARY][1])
+        //    );
         break;
     case VIEW::ARTIST:
+        playlist_list_->ClearSelection();
+        //ui_->listView_viewSelects->setCurrentIndex(
+        //    stringListModel_buttons_->index(BUTTON_INDEXES[(int)VIEW::ARTIST][1])
+        //    );
         break;
     case VIEW::ALBUM: {
         auto raw_ptr = std::any_cast<QSharedPointer<Album>>(data).data();
         album_view_->SetSongCollection(raw_ptr);
+        playlist_list_->ClearSelection();
         break;
     }
     case VIEW::PLAYLIST: {
         auto raw_ptr = std::any_cast<QSharedPointer<Playlist>>(data).data();
         playlist_view_->SetSongCollection(raw_ptr);
+        ui_->listView_viewSelects->clearSelection();
+        playlist_list_->SelectPlaylist(*raw_ptr);
         break;
     }
     case VIEW::SEARCH:
+        playlist_list_->ClearSelection();
         break;
     case VIEW::HOME:
+        playlist_list_->ClearSelection();
         break;
     case VIEW::UNKNOWN:
         break;
